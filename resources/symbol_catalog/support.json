@@ -1,0 +1,5170 @@
+[
+  {
+    "id": "support.step.forward",
+    "category": "support",
+    "name": "Step forward",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▮",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.step.backward",
+    "category": "support",
+    "name": "Step backward",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▮",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.step.left",
+    "category": "support",
+    "name": "Step left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▮",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.step.right",
+    "category": "support",
+    "name": "Step right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▮",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.step.diagonal_forward_left",
+    "category": "support",
+    "name": "Step diagonal forward left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▮",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.step.diagonal_forward_right",
+    "category": "support",
+    "name": "Step diagonal forward right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▮",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.step.diagonal_backward_left",
+    "category": "support",
+    "name": "Step diagonal backward left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▮",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.step.diagonal_backward_right",
+    "category": "support",
+    "name": "Step diagonal backward right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▮",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.step.place",
+    "category": "support",
+    "name": "Step place",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▮",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.transfer.forward",
+    "category": "support",
+    "name": "Weight Transfer forward",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▰",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.transfer.backward",
+    "category": "support",
+    "name": "Weight Transfer backward",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▰",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.transfer.left",
+    "category": "support",
+    "name": "Weight Transfer left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▰",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.transfer.right",
+    "category": "support",
+    "name": "Weight Transfer right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▰",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.transfer.diagonal_forward_left",
+    "category": "support",
+    "name": "Weight Transfer diagonal forward left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▰",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.transfer.diagonal_forward_right",
+    "category": "support",
+    "name": "Weight Transfer diagonal forward right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▰",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.transfer.diagonal_backward_left",
+    "category": "support",
+    "name": "Weight Transfer diagonal backward left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▰",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.transfer.diagonal_backward_right",
+    "category": "support",
+    "name": "Weight Transfer diagonal backward right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▰",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.transfer.place",
+    "category": "support",
+    "name": "Weight Transfer place",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▰",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.rise.forward",
+    "category": "support",
+    "name": "Rise forward",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▴",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.rise.backward",
+    "category": "support",
+    "name": "Rise backward",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▴",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.rise.left",
+    "category": "support",
+    "name": "Rise left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▴",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.rise.right",
+    "category": "support",
+    "name": "Rise right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▴",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.rise.diagonal_forward_left",
+    "category": "support",
+    "name": "Rise diagonal forward left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▴",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.rise.diagonal_forward_right",
+    "category": "support",
+    "name": "Rise diagonal forward right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▴",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.rise.diagonal_backward_left",
+    "category": "support",
+    "name": "Rise diagonal backward left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▴",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.rise.diagonal_backward_right",
+    "category": "support",
+    "name": "Rise diagonal backward right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▴",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.rise.place",
+    "category": "support",
+    "name": "Rise place",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▴",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.lower.forward",
+    "category": "support",
+    "name": "Lower forward",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▾",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.lower.backward",
+    "category": "support",
+    "name": "Lower backward",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▾",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.lower.left",
+    "category": "support",
+    "name": "Lower left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▾",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.lower.right",
+    "category": "support",
+    "name": "Lower right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▾",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.lower.diagonal_forward_left",
+    "category": "support",
+    "name": "Lower diagonal forward left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▾",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.lower.diagonal_forward_right",
+    "category": "support",
+    "name": "Lower diagonal forward right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▾",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.lower.diagonal_backward_left",
+    "category": "support",
+    "name": "Lower diagonal backward left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▾",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.lower.diagonal_backward_right",
+    "category": "support",
+    "name": "Lower diagonal backward right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▾",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.lower.place",
+    "category": "support",
+    "name": "Lower place",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▾",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.kneel.forward",
+    "category": "support",
+    "name": "Kneel forward",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◬",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.kneel.backward",
+    "category": "support",
+    "name": "Kneel backward",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◬",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.kneel.left",
+    "category": "support",
+    "name": "Kneel left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◬",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.kneel.right",
+    "category": "support",
+    "name": "Kneel right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◬",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.kneel.diagonal_forward_left",
+    "category": "support",
+    "name": "Kneel diagonal forward left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◬",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.kneel.diagonal_forward_right",
+    "category": "support",
+    "name": "Kneel diagonal forward right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◬",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.kneel.diagonal_backward_left",
+    "category": "support",
+    "name": "Kneel diagonal backward left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◬",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.kneel.diagonal_backward_right",
+    "category": "support",
+    "name": "Kneel diagonal backward right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◬",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.kneel.place",
+    "category": "support",
+    "name": "Kneel place",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◬",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.lunge.forward",
+    "category": "support",
+    "name": "Lunge forward",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◧",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.lunge.backward",
+    "category": "support",
+    "name": "Lunge backward",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◧",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.lunge.left",
+    "category": "support",
+    "name": "Lunge left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◧",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.lunge.right",
+    "category": "support",
+    "name": "Lunge right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◧",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.lunge.diagonal_forward_left",
+    "category": "support",
+    "name": "Lunge diagonal forward left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◧",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.lunge.diagonal_forward_right",
+    "category": "support",
+    "name": "Lunge diagonal forward right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◧",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.lunge.diagonal_backward_left",
+    "category": "support",
+    "name": "Lunge diagonal backward left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◧",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.lunge.diagonal_backward_right",
+    "category": "support",
+    "name": "Lunge diagonal backward right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◧",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.lunge.place",
+    "category": "support",
+    "name": "Lunge place",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◧",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.stand.forward",
+    "category": "support",
+    "name": "Stand forward",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▯",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.stand.backward",
+    "category": "support",
+    "name": "Stand backward",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▯",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.stand.left",
+    "category": "support",
+    "name": "Stand left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▯",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.stand.right",
+    "category": "support",
+    "name": "Stand right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▯",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.stand.diagonal_forward_left",
+    "category": "support",
+    "name": "Stand diagonal forward left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▯",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.stand.diagonal_forward_right",
+    "category": "support",
+    "name": "Stand diagonal forward right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▯",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.stand.diagonal_backward_left",
+    "category": "support",
+    "name": "Stand diagonal backward left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▯",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.stand.diagonal_backward_right",
+    "category": "support",
+    "name": "Stand diagonal backward right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▯",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.stand.place",
+    "category": "support",
+    "name": "Stand place",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▯",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.balance.forward",
+    "category": "support",
+    "name": "Balance forward",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◇",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.balance.backward",
+    "category": "support",
+    "name": "Balance backward",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◇",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.balance.left",
+    "category": "support",
+    "name": "Balance left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◇",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.balance.right",
+    "category": "support",
+    "name": "Balance right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◇",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.balance.diagonal_forward_left",
+    "category": "support",
+    "name": "Balance diagonal forward left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◇",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.balance.diagonal_forward_right",
+    "category": "support",
+    "name": "Balance diagonal forward right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◇",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.balance.diagonal_backward_left",
+    "category": "support",
+    "name": "Balance diagonal backward left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◇",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.balance.diagonal_backward_right",
+    "category": "support",
+    "name": "Balance diagonal backward right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◇",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.balance.place",
+    "category": "support",
+    "name": "Balance place",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◇",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.releve.forward",
+    "category": "support",
+    "name": "Relevé forward",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◭",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.releve.backward",
+    "category": "support",
+    "name": "Relevé backward",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◭",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.releve.left",
+    "category": "support",
+    "name": "Relevé left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◭",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.releve.right",
+    "category": "support",
+    "name": "Relevé right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◭",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.releve.diagonal_forward_left",
+    "category": "support",
+    "name": "Relevé diagonal forward left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◭",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.releve.diagonal_forward_right",
+    "category": "support",
+    "name": "Relevé diagonal forward right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◭",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.releve.diagonal_backward_left",
+    "category": "support",
+    "name": "Relevé diagonal backward left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◭",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.releve.diagonal_backward_right",
+    "category": "support",
+    "name": "Relevé diagonal backward right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◭",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.releve.place",
+    "category": "support",
+    "name": "Relevé place",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◭",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.plie.forward",
+    "category": "support",
+    "name": "Plié forward",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◮",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.plie.backward",
+    "category": "support",
+    "name": "Plié backward",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◮",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.plie.left",
+    "category": "support",
+    "name": "Plié left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◮",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.plie.right",
+    "category": "support",
+    "name": "Plié right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◮",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.plie.diagonal_forward_left",
+    "category": "support",
+    "name": "Plié diagonal forward left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◮",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.plie.diagonal_forward_right",
+    "category": "support",
+    "name": "Plié diagonal forward right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◮",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.plie.diagonal_backward_left",
+    "category": "support",
+    "name": "Plié diagonal backward left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◮",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.plie.diagonal_backward_right",
+    "category": "support",
+    "name": "Plié diagonal backward right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◮",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.plie.place",
+    "category": "support",
+    "name": "Plié place",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◮",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.pivot_support.forward",
+    "category": "support",
+    "name": "Pivot Support forward",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⬖",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.pivot_support.backward",
+    "category": "support",
+    "name": "Pivot Support backward",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⬖",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.pivot_support.left",
+    "category": "support",
+    "name": "Pivot Support left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⬖",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.pivot_support.right",
+    "category": "support",
+    "name": "Pivot Support right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⬖",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.pivot_support.diagonal_forward_left",
+    "category": "support",
+    "name": "Pivot Support diagonal forward left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⬖",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.pivot_support.diagonal_forward_right",
+    "category": "support",
+    "name": "Pivot Support diagonal forward right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⬖",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.pivot_support.diagonal_backward_left",
+    "category": "support",
+    "name": "Pivot Support diagonal backward left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⬖",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.pivot_support.diagonal_backward_right",
+    "category": "support",
+    "name": "Pivot Support diagonal backward right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⬖",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.pivot_support.place",
+    "category": "support",
+    "name": "Pivot Support place",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⬖",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.stamp.forward",
+    "category": "support",
+    "name": "Stamp forward",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⬛",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.stamp.backward",
+    "category": "support",
+    "name": "Stamp backward",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⬛",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.stamp.left",
+    "category": "support",
+    "name": "Stamp left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⬛",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.stamp.right",
+    "category": "support",
+    "name": "Stamp right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⬛",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.stamp.diagonal_forward_left",
+    "category": "support",
+    "name": "Stamp diagonal forward left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⬛",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.stamp.diagonal_forward_right",
+    "category": "support",
+    "name": "Stamp diagonal forward right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⬛",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.stamp.diagonal_backward_left",
+    "category": "support",
+    "name": "Stamp diagonal backward left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⬛",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.stamp.diagonal_backward_right",
+    "category": "support",
+    "name": "Stamp diagonal backward right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⬛",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.stamp.place",
+    "category": "support",
+    "name": "Stamp place",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⬛",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.heel.forward",
+    "category": "support",
+    "name": "Heel Support forward",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◫",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.heel.backward",
+    "category": "support",
+    "name": "Heel Support backward",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◫",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.heel.left",
+    "category": "support",
+    "name": "Heel Support left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◫",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.heel.right",
+    "category": "support",
+    "name": "Heel Support right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◫",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.heel.diagonal_forward_left",
+    "category": "support",
+    "name": "Heel Support diagonal forward left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◫",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.heel.diagonal_forward_right",
+    "category": "support",
+    "name": "Heel Support diagonal forward right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◫",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.heel.diagonal_backward_left",
+    "category": "support",
+    "name": "Heel Support diagonal backward left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◫",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.heel.diagonal_backward_right",
+    "category": "support",
+    "name": "Heel Support diagonal backward right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◫",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.heel.place",
+    "category": "support",
+    "name": "Heel Support place",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◫",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.toe.forward",
+    "category": "support",
+    "name": "Toe Support forward",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◪",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.toe.backward",
+    "category": "support",
+    "name": "Toe Support backward",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◪",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.toe.left",
+    "category": "support",
+    "name": "Toe Support left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◪",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.toe.right",
+    "category": "support",
+    "name": "Toe Support right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◪",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.toe.diagonal_forward_left",
+    "category": "support",
+    "name": "Toe Support diagonal forward left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◪",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.toe.diagonal_forward_right",
+    "category": "support",
+    "name": "Toe Support diagonal forward right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◪",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.toe.diagonal_backward_left",
+    "category": "support",
+    "name": "Toe Support diagonal backward left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◪",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.toe.diagonal_backward_right",
+    "category": "support",
+    "name": "Toe Support diagonal backward right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◪",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.toe.place",
+    "category": "support",
+    "name": "Toe Support place",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◪",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.slide_support.forward",
+    "category": "support",
+    "name": "Slide Support forward",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⬒",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.slide_support.backward",
+    "category": "support",
+    "name": "Slide Support backward",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⬒",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.slide_support.left",
+    "category": "support",
+    "name": "Slide Support left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⬒",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.slide_support.right",
+    "category": "support",
+    "name": "Slide Support right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⬒",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.slide_support.diagonal_forward_left",
+    "category": "support",
+    "name": "Slide Support diagonal forward left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⬒",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.slide_support.diagonal_forward_right",
+    "category": "support",
+    "name": "Slide Support diagonal forward right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⬒",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.slide_support.diagonal_backward_left",
+    "category": "support",
+    "name": "Slide Support diagonal backward left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⬒",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.slide_support.diagonal_backward_right",
+    "category": "support",
+    "name": "Slide Support diagonal backward right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⬒",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.slide_support.place",
+    "category": "support",
+    "name": "Slide Support place",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⬒",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.hop_support.forward",
+    "category": "support",
+    "name": "Hop Support forward",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⬓",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.hop_support.backward",
+    "category": "support",
+    "name": "Hop Support backward",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⬓",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.hop_support.left",
+    "category": "support",
+    "name": "Hop Support left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⬓",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.hop_support.right",
+    "category": "support",
+    "name": "Hop Support right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⬓",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.hop_support.diagonal_forward_left",
+    "category": "support",
+    "name": "Hop Support diagonal forward left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⬓",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.hop_support.diagonal_forward_right",
+    "category": "support",
+    "name": "Hop Support diagonal forward right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⬓",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.hop_support.diagonal_backward_left",
+    "category": "support",
+    "name": "Hop Support diagonal backward left",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⬓",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.hop_support.diagonal_backward_right",
+    "category": "support",
+    "name": "Hop Support diagonal backward right",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⬓",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.hop_support.place",
+    "category": "support",
+    "name": "Hop Support place",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⬓",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.step",
+    "category": "support",
+    "name": "Step",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▮",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.transfer",
+    "category": "support",
+    "name": "Weight Transfer",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▰",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.rise",
+    "category": "support",
+    "name": "Rise",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▴",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.lower",
+    "category": "support",
+    "name": "Lower",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▾",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.kneel",
+    "category": "support",
+    "name": "Kneel",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◬",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.lunge",
+    "category": "support",
+    "name": "Lunge",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": true,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◧",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.stand",
+    "category": "support",
+    "name": "Stand",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▯",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  },
+  {
+    "id": "support.balance",
+    "category": "support",
+    "name": "Balance",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": true,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◇",
+      "width": 20,
+      "height": 20,
+      "anchor": "foot",
+      "staff_column": "support"
+    }
+  }
+]

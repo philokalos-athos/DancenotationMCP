@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/schemas/notation-ir.schema.json",
+  "title": "DanceNotation IR",
+  "type": "object",
+  "required": ["metadata", "symbols"],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "required": ["ir_version", "schema_version"],
+      "properties": {
+        "title": {"type": "string"},
+        "source_prompt": {"type": "string"},
+        "ir_version": {"type": "string"},
+        "schema_version": {"type": "string"}
+      }
+    },
+    "symbols": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["symbol_id", "body_part", "timing"],
+        "properties": {
+          "symbol_id": {"type": "string"},
+          "body_part": {
+            "type": "string",
+            "enum": ["left_arm", "right_arm", "left_leg", "right_leg", "torso", "head"]
+          },
+          "direction": {"type": ["string", "null"]},
+          "level": {"type": ["string", "null"], "enum": ["high", "middle", "low", null]},
+          "timing": {
+            "type": "object",
+            "required": ["measure", "beat", "duration_beats"],
+            "properties": {
+              "measure": {"type": "integer", "minimum": 1},
+              "beat": {"type": "number", "minimum": 0},
+              "duration_beats": {"type": "number", "exclusiveMinimum": 0}
+            }
+          },
+          "modifiers": {"type": "object"}
+        }
+      }
+    },
+    "extensions": {"type": "object"}
+  }
+}

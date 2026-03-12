@@ -1,0 +1,420 @@
+[
+  {
+    "id": "quality.sudden",
+    "category": "quality",
+    "name": "Sudden",
+    "allowed_body_parts": [
+      "left_arm",
+      "right_arm",
+      "left_leg",
+      "right_leg",
+      "torso",
+      "head"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "!",
+      "width": 14,
+      "height": 14,
+      "anchor": "adjacent",
+      "staff_column": "quality"
+    }
+  },
+  {
+    "id": "quality.sustained",
+    "category": "quality",
+    "name": "Sustained",
+    "allowed_body_parts": [
+      "left_arm",
+      "right_arm",
+      "left_leg",
+      "right_leg",
+      "torso",
+      "head"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "~",
+      "width": 14,
+      "height": 14,
+      "anchor": "adjacent",
+      "staff_column": "quality"
+    }
+  },
+  {
+    "id": "quality.strong",
+    "category": "quality",
+    "name": "Strong",
+    "allowed_body_parts": [
+      "left_arm",
+      "right_arm",
+      "left_leg",
+      "right_leg",
+      "torso",
+      "head"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⬣",
+      "width": 14,
+      "height": 14,
+      "anchor": "adjacent",
+      "staff_column": "quality"
+    }
+  },
+  {
+    "id": "quality.light",
+    "category": "quality",
+    "name": "Light",
+    "allowed_body_parts": [
+      "left_arm",
+      "right_arm",
+      "left_leg",
+      "right_leg",
+      "torso",
+      "head"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◌",
+      "width": 14,
+      "height": 14,
+      "anchor": "adjacent",
+      "staff_column": "quality"
+    }
+  },
+  {
+    "id": "quality.direct",
+    "category": "quality",
+    "name": "Direct",
+    "allowed_body_parts": [
+      "left_arm",
+      "right_arm",
+      "left_leg",
+      "right_leg",
+      "torso",
+      "head"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "→",
+      "width": 14,
+      "height": 14,
+      "anchor": "adjacent",
+      "staff_column": "quality"
+    }
+  },
+  {
+    "id": "quality.flexible",
+    "category": "quality",
+    "name": "Flexible",
+    "allowed_body_parts": [
+      "left_arm",
+      "right_arm",
+      "left_leg",
+      "right_leg",
+      "torso",
+      "head"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "↝",
+      "width": 14,
+      "height": 14,
+      "anchor": "adjacent",
+      "staff_column": "quality"
+    }
+  },
+  {
+    "id": "quality.bound",
+    "category": "quality",
+    "name": "Bound",
+    "allowed_body_parts": [
+      "left_arm",
+      "right_arm",
+      "left_leg",
+      "right_leg",
+      "torso",
+      "head"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⟂",
+      "width": 14,
+      "height": 14,
+      "anchor": "adjacent",
+      "staff_column": "quality"
+    }
+  },
+  {
+    "id": "quality.free",
+    "category": "quality",
+    "name": "Free",
+    "allowed_body_parts": [
+      "left_arm",
+      "right_arm",
+      "left_leg",
+      "right_leg",
+      "torso",
+      "head"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "∞",
+      "width": 14,
+      "height": 14,
+      "anchor": "adjacent",
+      "staff_column": "quality"
+    }
+  },
+  {
+    "id": "level.high",
+    "category": "level",
+    "name": "High Level",
+    "allowed_body_parts": [
+      "left_arm",
+      "right_arm",
+      "left_leg",
+      "right_leg",
+      "torso",
+      "head"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "H",
+      "width": 14,
+      "height": 14,
+      "anchor": "adjacent",
+      "staff_column": "level"
+    }
+  },
+  {
+    "id": "level.middle",
+    "category": "level",
+    "name": "Middle Level",
+    "allowed_body_parts": [
+      "left_arm",
+      "right_arm",
+      "left_leg",
+      "right_leg",
+      "torso",
+      "head"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "M",
+      "width": 14,
+      "height": 14,
+      "anchor": "adjacent",
+      "staff_column": "level"
+    }
+  },
+  {
+    "id": "level.low",
+    "category": "level",
+    "name": "Low Level",
+    "allowed_body_parts": [
+      "left_arm",
+      "right_arm",
+      "left_leg",
+      "right_leg",
+      "torso",
+      "head"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "L",
+      "width": 14,
+      "height": 14,
+      "anchor": "adjacent",
+      "staff_column": "level"
+    }
+  }
+]
