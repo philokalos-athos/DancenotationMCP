@@ -1,0 +1,39 @@
+{
+  "metadata": {
+    "title": "Untitled",
+    "source_prompt": "Step forward with right leg, then turn right.",
+    "ir_version": "0.1.0",
+    "schema_version": "0.1.0"
+  },
+  "symbols": [
+    {
+      "symbol_id": "support.step",
+      "body_part": "right_leg",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {
+        "measure": 1,
+        "beat": 1.0,
+        "duration_beats": 1.0
+      },
+      "modifiers": {
+        "source_text": "step forward with right leg"
+      }
+    },
+    {
+      "symbol_id": "turn.pivot",
+      "body_part": "right_leg",
+      "direction": "right",
+      "level": "middle",
+      "timing": {
+        "measure": 1,
+        "beat": 2.0,
+        "duration_beats": 1.0
+      },
+      "modifiers": {
+        "source_text": "then turn right"
+      }
+    }
+  ],
+  "extensions": {}
+}

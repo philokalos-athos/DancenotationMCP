@@ -1,0 +1,13 @@
+[
+  {"id":"quality.sudden","category":"quality","name":"Sudden"},
+  {"id":"quality.sustained","category":"quality","name":"Sustained"},
+  {"id":"quality.strong","category":"quality","name":"Strong"},
+  {"id":"quality.light","category":"quality","name":"Light"},
+  {"id":"quality.direct","category":"quality","name":"Direct"},
+  {"id":"quality.flexible","category":"quality","name":"Flexible"},
+  {"id":"quality.bound","category":"quality","name":"Bound"},
+  {"id":"quality.free","category":"quality","name":"Free"},
+  {"id":"level.high","category":"level","name":"High Level"},
+  {"id":"level.middle","category":"level","name":"Middle Level"},
+  {"id":"level.low","category":"level","name":"Low Level"}
+]

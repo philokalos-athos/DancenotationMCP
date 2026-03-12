@@ -1,0 +1,27 @@
+{
+  "metadata": {
+    "title": "Invalid phrase",
+    "source_prompt": "bad",
+    "ir_version": "0.1.0",
+    "schema_version": "0.1.0"
+  },
+  "symbols": [
+    {
+      "symbol_id": "unknown.symbol",
+      "body_part": "right_leg",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+      "modifiers": {}
+    },
+    {
+      "symbol_id": "support.step",
+      "body_part": "left_leg",
+      "direction": "left",
+      "level": "middle",
+      "timing": {"measure": 1, "beat": 1.2, "duration_beats": -1},
+      "modifiers": {}
+    }
+  ],
+  "extensions": {}
+}
