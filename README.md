@@ -11,8 +11,17 @@ This repository contains a milestone-1 runtime focused on agent-native tooling:
 - SVG renderer using symbol geometry metadata.
 - Local MCP stdio server with composable tools.
 
+## Implementation milestones
+- **Milestone 1 (implemented):**
+  - Canonical IR + schema + validation.
+  - Prompt -> phrase plan -> IR.
+  - SVG output using symbol geometry metadata.
+  - MCP tools for plan/build/validate/repair/render.
+- **Milestone 2 (next):** richer language parsing + stronger semantics + larger symbol behavior model.
+- **Milestone 3 (next):** expanded engraving-quality rendering and larger coverage of notation signs.
+
 ## Symbol catalog coverage
-The catalog is now heavily expanded and split into machine-editable JSON files in `resources/symbol_catalog/`:
+The catalog is split into machine-editable JSON files in `resources/symbol_catalog/`:
 - `support.json`
 - `directions.json`
 - `actions.json`
@@ -63,7 +72,11 @@ Run tests:
 PYTHONPATH=src python -m unittest discover -s tests -v
 ```
 
+## Symbol catalog strategy
+`resources/symbol_catalog/` contains a seeded, extensible symbol inventory split by categories (support, direction, actions, qualities/levels). This is intended as a growth path toward broad Laban-style notation coverage while keeping milestone-1 implementation verifiable and incremental.
+
 ## Assumptions
 - This is an agent runtime, not a desktop notation editor.
-- Parsing is deterministic and still intentionally conservative in milestone 1.
+- Parsing is deterministic and intentionally conservative in milestone 1.
+- Networking/cloud deployment is out of scope.
 - High-quality engraving layout is a future milestone.
