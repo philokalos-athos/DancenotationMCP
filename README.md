@@ -72,6 +72,29 @@ Run tests:
 PYTHONPATH=src python -m unittest discover -s tests -v
 ```
 
+## GitHub automation
+This repository now includes a minimal CI workflow at `.github/workflows/ci.yml` that runs the test suite on pushes to `main` and on pull requests. Set your branch protection required check to `test` after the workflow runs once.
+
+For local GitHub automation with `gh`:
+```powershell
+# Push current branch, create/update PR, and enable auto-merge
+.\scripts\pr_auto.ps1 -Base main -Title "Your PR title" -Body "Your PR body" -AutoMerge
+```
+
+For full Codex CLI automation:
+```powershell
+# Requires: git auth for push, gh auth login, codex installed
+.\scripts\codex_full_auto.ps1 -Prompt "Implement X and update tests" -Base main
+```
+
+What the full automation script does:
+- creates or resets a feature branch
+- runs `codex exec` with your prompt
+- commits all resulting changes
+- pushes the branch
+- creates or updates a PR
+- enables GitHub auto-merge with squash strategy
+
 ## Symbol catalog strategy
 `resources/symbol_catalog/` contains a seeded, extensible symbol inventory split by categories (support, direction, actions, qualities/levels). This is intended as a growth path toward broad Laban-style notation coverage while keeping milestone-1 implementation verifiable and incremental.
 
