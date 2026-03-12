@@ -1,8 +1,8 @@
 [
   {
-    "id": "quality.sudden",
-    "category": "quality",
-    "name": "Sudden",
+    "id": "timing.duration.1_8",
+    "category": "timing",
+    "name": "Duration 1_8",
     "allowed_body_parts": [
       "left_arm",
       "right_arm",
@@ -30,17 +30,17 @@
       "low"
     ],
     "geometry": {
-      "glyph": "!",
-      "width": 14,
-      "height": 14,
+      "glyph": "⅛",
+      "width": 12,
+      "height": 12,
       "anchor": "adjacent",
-      "staff_column": "quality"
+      "staff_column": "timing"
     }
   },
   {
-    "id": "quality.sustained",
-    "category": "quality",
-    "name": "Sustained",
+    "id": "timing.duration.1_4",
+    "category": "timing",
+    "name": "Duration 1_4",
     "allowed_body_parts": [
       "left_arm",
       "right_arm",
@@ -68,17 +68,17 @@
       "low"
     ],
     "geometry": {
-      "glyph": "~",
-      "width": 14,
-      "height": 14,
+      "glyph": "¼",
+      "width": 12,
+      "height": 12,
       "anchor": "adjacent",
-      "staff_column": "quality"
+      "staff_column": "timing"
     }
   },
   {
-    "id": "quality.strong",
-    "category": "quality",
-    "name": "Strong",
+    "id": "timing.duration.1_2",
+    "category": "timing",
+    "name": "Duration 1_2",
     "allowed_body_parts": [
       "left_arm",
       "right_arm",
@@ -106,17 +106,17 @@
       "low"
     ],
     "geometry": {
-      "glyph": "⬣",
-      "width": 14,
-      "height": 14,
+      "glyph": "½",
+      "width": 12,
+      "height": 12,
       "anchor": "adjacent",
-      "staff_column": "quality"
+      "staff_column": "timing"
     }
   },
   {
-    "id": "quality.light",
-    "category": "quality",
-    "name": "Light",
+    "id": "timing.duration.1",
+    "category": "timing",
+    "name": "Duration 1",
     "allowed_body_parts": [
       "left_arm",
       "right_arm",
@@ -144,17 +144,17 @@
       "low"
     ],
     "geometry": {
-      "glyph": "◌",
-      "width": 14,
-      "height": 14,
+      "glyph": "1",
+      "width": 12,
+      "height": 12,
       "anchor": "adjacent",
-      "staff_column": "quality"
+      "staff_column": "timing"
     }
   },
   {
-    "id": "quality.direct",
-    "category": "quality",
-    "name": "Direct",
+    "id": "timing.duration.2",
+    "category": "timing",
+    "name": "Duration 2",
     "allowed_body_parts": [
       "left_arm",
       "right_arm",
@@ -182,17 +182,17 @@
       "low"
     ],
     "geometry": {
-      "glyph": "→",
-      "width": 14,
-      "height": 14,
+      "glyph": "2",
+      "width": 12,
+      "height": 12,
       "anchor": "adjacent",
-      "staff_column": "quality"
+      "staff_column": "timing"
     }
   },
   {
-    "id": "quality.flexible",
-    "category": "quality",
-    "name": "Flexible",
+    "id": "timing.duration.3",
+    "category": "timing",
+    "name": "Duration 3",
     "allowed_body_parts": [
       "left_arm",
       "right_arm",
@@ -220,17 +220,17 @@
       "low"
     ],
     "geometry": {
-      "glyph": "↝",
-      "width": 14,
-      "height": 14,
+      "glyph": "3",
+      "width": 12,
+      "height": 12,
       "anchor": "adjacent",
-      "staff_column": "quality"
+      "staff_column": "timing"
     }
   },
   {
-    "id": "quality.bound",
-    "category": "quality",
-    "name": "Bound",
+    "id": "timing.duration.4",
+    "category": "timing",
+    "name": "Duration 4",
     "allowed_body_parts": [
       "left_arm",
       "right_arm",
@@ -258,17 +258,17 @@
       "low"
     ],
     "geometry": {
-      "glyph": "⟂",
-      "width": 14,
-      "height": 14,
+      "glyph": "4",
+      "width": 12,
+      "height": 12,
       "anchor": "adjacent",
-      "staff_column": "quality"
+      "staff_column": "timing"
     }
   },
   {
-    "id": "quality.free",
-    "category": "quality",
-    "name": "Free",
+    "id": "timing.syncopated",
+    "category": "timing",
+    "name": "Syncopated",
     "allowed_body_parts": [
       "left_arm",
       "right_arm",
@@ -296,17 +296,17 @@
       "low"
     ],
     "geometry": {
-      "glyph": "∞",
-      "width": 14,
-      "height": 14,
+      "glyph": "∿",
+      "width": 12,
+      "height": 12,
       "anchor": "adjacent",
-      "staff_column": "quality"
+      "staff_column": "timing"
     }
   },
   {
-    "id": "level.high",
-    "category": "level",
-    "name": "High Level",
+    "id": "timing.accent",
+    "category": "timing",
+    "name": "Accent",
     "allowed_body_parts": [
       "left_arm",
       "right_arm",
@@ -334,17 +334,17 @@
       "low"
     ],
     "geometry": {
-      "glyph": "H",
-      "width": 14,
-      "height": 14,
+      "glyph": "^",
+      "width": 12,
+      "height": 12,
       "anchor": "adjacent",
-      "staff_column": "level"
+      "staff_column": "timing"
     }
   },
   {
-    "id": "level.middle",
-    "category": "level",
-    "name": "Middle Level",
+    "id": "timing.staccato",
+    "category": "timing",
+    "name": "Staccato",
     "allowed_body_parts": [
       "left_arm",
       "right_arm",
@@ -372,17 +372,17 @@
       "low"
     ],
     "geometry": {
-      "glyph": "M",
-      "width": 14,
-      "height": 14,
+      "glyph": "·",
+      "width": 12,
+      "height": 12,
       "anchor": "adjacent",
-      "staff_column": "level"
+      "staff_column": "timing"
     }
   },
   {
-    "id": "level.low",
-    "category": "level",
-    "name": "Low Level",
+    "id": "timing.tenuto",
+    "category": "timing",
+    "name": "Tenuto",
     "allowed_body_parts": [
       "left_arm",
       "right_arm",
@@ -410,11 +410,49 @@
       "low"
     ],
     "geometry": {
-      "glyph": "L",
-      "width": 14,
-      "height": 14,
+      "glyph": "¯",
+      "width": 12,
+      "height": 12,
       "anchor": "adjacent",
-      "staff_column": "level"
+      "staff_column": "timing"
+    }
+  },
+  {
+    "id": "timing.fermata",
+    "category": "timing",
+    "name": "Fermata",
+    "allowed_body_parts": [
+      "left_arm",
+      "right_arm",
+      "left_leg",
+      "right_leg",
+      "torso",
+      "head"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "𝄐",
+      "width": 12,
+      "height": 12,
+      "anchor": "adjacent",
+      "staff_column": "timing"
     }
   }
 ]

@@ -1,11 +1,344 @@
 [
-  {"id":"direction.forward","category":"direction","name":"Forward"},
-  {"id":"direction.backward","category":"direction","name":"Backward"},
-  {"id":"direction.left","category":"direction","name":"Left"},
-  {"id":"direction.right","category":"direction","name":"Right"},
-  {"id":"direction.diagonal_forward_left","category":"direction","name":"Diagonal Forward Left"},
-  {"id":"direction.diagonal_forward_right","category":"direction","name":"Diagonal Forward Right"},
-  {"id":"direction.diagonal_backward_left","category":"direction","name":"Diagonal Backward Left"},
-  {"id":"direction.diagonal_backward_right","category":"direction","name":"Diagonal Backward Right"},
-  {"id":"direction.place","category":"direction","name":"Place"}
+  {
+    "id": "direction.forward",
+    "category": "direction",
+    "name": "Forward",
+    "allowed_body_parts": [
+      "left_arm",
+      "right_arm",
+      "left_leg",
+      "right_leg",
+      "torso",
+      "head"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▲",
+      "width": 16,
+      "height": 16,
+      "anchor": "center",
+      "staff_column": "direction"
+    }
+  },
+  {
+    "id": "direction.backward",
+    "category": "direction",
+    "name": "Backward",
+    "allowed_body_parts": [
+      "left_arm",
+      "right_arm",
+      "left_leg",
+      "right_leg",
+      "torso",
+      "head"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▼",
+      "width": 16,
+      "height": 16,
+      "anchor": "center",
+      "staff_column": "direction"
+    }
+  },
+  {
+    "id": "direction.left",
+    "category": "direction",
+    "name": "Left",
+    "allowed_body_parts": [
+      "left_arm",
+      "right_arm",
+      "left_leg",
+      "right_leg",
+      "torso",
+      "head"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◀",
+      "width": 16,
+      "height": 16,
+      "anchor": "center",
+      "staff_column": "direction"
+    }
+  },
+  {
+    "id": "direction.right",
+    "category": "direction",
+    "name": "Right",
+    "allowed_body_parts": [
+      "left_arm",
+      "right_arm",
+      "left_leg",
+      "right_leg",
+      "torso",
+      "head"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "▶",
+      "width": 16,
+      "height": 16,
+      "anchor": "center",
+      "staff_column": "direction"
+    }
+  },
+  {
+    "id": "direction.diagonal_forward_left",
+    "category": "direction",
+    "name": "Diagonal Forward Left",
+    "allowed_body_parts": [
+      "left_arm",
+      "right_arm",
+      "left_leg",
+      "right_leg",
+      "torso",
+      "head"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◢",
+      "width": 16,
+      "height": 16,
+      "anchor": "center",
+      "staff_column": "direction"
+    }
+  },
+  {
+    "id": "direction.diagonal_forward_right",
+    "category": "direction",
+    "name": "Diagonal Forward Right",
+    "allowed_body_parts": [
+      "left_arm",
+      "right_arm",
+      "left_leg",
+      "right_leg",
+      "torso",
+      "head"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◣",
+      "width": 16,
+      "height": 16,
+      "anchor": "center",
+      "staff_column": "direction"
+    }
+  },
+  {
+    "id": "direction.diagonal_backward_left",
+    "category": "direction",
+    "name": "Diagonal Backward Left",
+    "allowed_body_parts": [
+      "left_arm",
+      "right_arm",
+      "left_leg",
+      "right_leg",
+      "torso",
+      "head"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◥",
+      "width": 16,
+      "height": 16,
+      "anchor": "center",
+      "staff_column": "direction"
+    }
+  },
+  {
+    "id": "direction.diagonal_backward_right",
+    "category": "direction",
+    "name": "Diagonal Backward Right",
+    "allowed_body_parts": [
+      "left_arm",
+      "right_arm",
+      "left_leg",
+      "right_leg",
+      "torso",
+      "head"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "◤",
+      "width": 16,
+      "height": 16,
+      "anchor": "center",
+      "staff_column": "direction"
+    }
+  },
+  {
+    "id": "direction.place",
+    "category": "direction",
+    "name": "Place",
+    "allowed_body_parts": [
+      "left_arm",
+      "right_arm",
+      "left_leg",
+      "right_leg",
+      "torso",
+      "head"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "●",
+      "width": 16,
+      "height": 16,
+      "anchor": "center",
+      "staff_column": "direction"
+    }
+  }
 ]
