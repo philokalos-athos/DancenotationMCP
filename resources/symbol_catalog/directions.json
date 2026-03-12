@@ -1,0 +1,11 @@
+[
+  {"id":"direction.forward","category":"direction","name":"Forward"},
+  {"id":"direction.backward","category":"direction","name":"Backward"},
+  {"id":"direction.left","category":"direction","name":"Left"},
+  {"id":"direction.right","category":"direction","name":"Right"},
+  {"id":"direction.diagonal_forward_left","category":"direction","name":"Diagonal Forward Left"},
+  {"id":"direction.diagonal_forward_right","category":"direction","name":"Diagonal Forward Right"},
+  {"id":"direction.diagonal_backward_left","category":"direction","name":"Diagonal Backward Left"},
+  {"id":"direction.diagonal_backward_right","category":"direction","name":"Diagonal Backward Right"},
+  {"id":"direction.place","category":"direction","name":"Place"}
+]

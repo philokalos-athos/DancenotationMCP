@@ -1,0 +1,31 @@
+{
+  "version": "0.1.0",
+  "steps": [
+    {
+      "action": "step",
+      "symbol_id": "support.step",
+      "body_part": "right_leg",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {
+        "measure": 1,
+        "beat": 1.0,
+        "duration_beats": 1.0
+      },
+      "source_text": "step forward with right leg"
+    },
+    {
+      "action": "turn",
+      "symbol_id": "turn.pivot",
+      "body_part": "right_leg",
+      "direction": "right",
+      "level": "middle",
+      "timing": {
+        "measure": 1,
+        "beat": 2.0,
+        "duration_beats": 1.0
+      },
+      "source_text": "then turn right"
+    }
+  ]
+}

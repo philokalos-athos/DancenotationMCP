@@ -1,0 +1,10 @@
+[
+  {"id":"support.step","category":"support","name":"Step"},
+  {"id":"support.transfer","category":"support","name":"Weight Transfer"},
+  {"id":"support.rise","category":"support","name":"Rise"},
+  {"id":"support.lower","category":"support","name":"Lower"},
+  {"id":"support.kneel","category":"support","name":"Kneel"},
+  {"id":"support.lunge","category":"support","name":"Lunge"},
+  {"id":"support.stand","category":"support","name":"Stand"},
+  {"id":"support.balance","category":"support","name":"Balance"}
+]
