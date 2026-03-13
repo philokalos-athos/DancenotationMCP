@@ -418,6 +418,44 @@
     }
   },
   {
+    "id": "timing.hold",
+    "category": "timing",
+    "name": "Hold",
+    "allowed_body_parts": [
+      "left_arm",
+      "right_arm",
+      "left_leg",
+      "right_leg",
+      "torso",
+      "head"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "diagonal_forward_left",
+      "diagonal_forward_right",
+      "diagonal_backward_left",
+      "diagonal_backward_right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⏑",
+      "width": 12,
+      "height": 12,
+      "anchor": "adjacent",
+      "staff_column": "timing"
+    }
+  },
+  {
     "id": "timing.fermata",
     "category": "timing",
     "name": "Fermata",

@@ -14,19 +14,185 @@ from dancenotation_mcp.validation.validator import validate_ir
 REPO_ROOT = Path(__file__).resolve().parents[3]
 SVG_EXAMPLES_DIR = REPO_ROOT / "examples" / "svg"
 PDF_EXAMPLES_DIR = REPO_ROOT / "examples" / "pdf"
+HEADER_FAMILY_BY_SYMBOL = {
+    "music.time.2_4": "time_signature",
+    "music.time.3_4": "time_signature",
+    "music.time.4_4": "time_signature",
+    "music.tempo.mark": "tempo",
+    "music.cadence.mark": "cadence",
+}
+HEADER_FAMILY_ORDER = {"time_signature": 0, "tempo": 1, "cadence": 2}
+
+
+def _symbol_index_from_path(path: str) -> int | None:
+    parts = path.strip("/").split("/")
+    if len(parts) >= 2 and parts[0] == "symbols":
+        try:
+            return int(parts[1])
+        except ValueError:
+            return None
+    return None
+
+
+def _modifier_key_from_path(path: str) -> str | None:
+    parts = path.strip("/").split("/")
+    if len(parts) >= 4 and parts[2] == "modifiers":
+        return parts[3]
+    return None
 
 
 def repair_ir(ir: dict, diagnostics: dict) -> dict:
     patched = json.loads(json.dumps(ir))
+    symbols_to_remove: set[int] = set()
+    reorder_header_measures: set[int] = set()
+    reorder_repeat_measures: set[int] = set()
     for hint in diagnostics.get("repair_hints", []):
+        if hint["action"] == "remove_symbol":
+            sym_idx = _symbol_index_from_path(hint.get("path", ""))
+            if sym_idx is not None:
+                symbols_to_remove.add(sym_idx)
+        if hint["action"] == "reorder_measure_headers":
+            sym_idx = _symbol_index_from_path(hint.get("path", ""))
+            if sym_idx is not None and 0 <= sym_idx < len(patched.get("symbols", [])):
+                measure = int(patched["symbols"][sym_idx].get("timing", {}).get("measure", 1))
+                reorder_header_measures.add(measure)
+        if hint["action"] == "reorder_repeat_boundaries":
+            sym_idx = _symbol_index_from_path(hint.get("path", ""))
+            if sym_idx is not None and 0 <= sym_idx < len(patched.get("symbols", [])):
+                measure = int(patched["symbols"][sym_idx].get("timing", {}).get("measure", 1))
+                reorder_repeat_measures.add(measure)
         if hint["action"] == "set_duration":
-            for sym in patched.get("symbols", []):
-                if sym.get("timing", {}).get("duration_beats", 0) <= 0:
-                    sym["timing"]["duration_beats"] = hint.get("value", 1.0)
+            sym_idx = _symbol_index_from_path(hint.get("path", ""))
+            if sym_idx is not None:
+                patched.get("symbols", [])[sym_idx].setdefault("timing", {})["duration_beats"] = float(hint.get("value", 1.0))
+            else:
+                for sym in patched.get("symbols", []):
+                    if sym.get("timing", {}).get("duration_beats", 0) <= 0:
+                        sym["timing"]["duration_beats"] = float(hint.get("value", 1.0))
         if hint["action"] == "replace_symbol":
             for sym in patched.get("symbols", []):
                 if sym.get("symbol_id", "").startswith("unknown"):
                     sym["symbol_id"] = "support.step"
+        if hint["action"] == "set_beat":
+            sym_idx = _symbol_index_from_path(hint.get("path", ""))
+            if sym_idx is not None:
+                patched.get("symbols", [])[sym_idx].setdefault("timing", {})["beat"] = float(hint.get("value", 1.0))
+        if hint["action"] == "set_body_part":
+            sym_idx = _symbol_index_from_path(hint.get("path", ""))
+            if sym_idx is not None:
+                patched.get("symbols", [])[sym_idx]["body_part"] = str(hint.get("value", "torso"))
+        if hint["action"] == "remove_modifier":
+            sym_idx = _symbol_index_from_path(hint.get("path", ""))
+            modifier_key = _modifier_key_from_path(hint.get("path", ""))
+            if sym_idx is not None and modifier_key:
+                modifiers = patched.get("symbols", [])[sym_idx].get("modifiers", {})
+                if isinstance(modifiers, dict):
+                    modifiers.pop(modifier_key, None)
+        if hint["action"] == "set_modifier":
+            sym_idx = _symbol_index_from_path(hint.get("path", ""))
+            modifier_key = str(hint.get("key", ""))
+            if sym_idx is not None and modifier_key:
+                patched.get("symbols", [])[sym_idx].setdefault("modifiers", {})[modifier_key] = hint.get("value")
+        if hint["action"] == "retarget_attachment":
+            sym_idx = _symbol_index_from_path(hint.get("path", ""))
+            modifier_key = _modifier_key_from_path(hint.get("path", ""))
+            if sym_idx is not None and modifier_key == "attach_to":
+                current = patched.get("symbols", [])[sym_idx]
+                current_timing = current.get("timing", {})
+                current_measure = int(current_timing.get("measure", 1))
+                current_beat = float(current_timing.get("beat", 0))
+                current_body = current.get("body_part")
+                candidates = []
+                for candidate in patched.get("symbols", []):
+                    symbol_id = candidate.get("symbol_id")
+                    if not symbol_id or symbol_id == current.get("symbol_id"):
+                        continue
+                    timing = candidate.get("timing", {})
+                    measure = int(timing.get("measure", 1))
+                    beat = float(timing.get("beat", 0))
+                    duration = float(timing.get("duration_beats", 0))
+                    ends_at = beat + max(duration, 0.0)
+                    if measure < current_measure or (measure == current_measure and beat <= current_beat):
+                        preferred_measure = 0 if measure == current_measure else 1
+                        coverage_penalty = 0 if measure == current_measure and ends_at + 0.01 >= current_beat else 1
+                        preferred_family = 0 if symbol_id.startswith(("support.", "direction.", "path.", "body.", "gesture.", "turn.", "jump.")) else 1
+                        preferred_body = 0 if current_body and candidate.get("body_part") == current_body else 1
+                        measure_distance = abs(current_measure - measure)
+                        beat_distance = abs(current_beat - beat)
+                        candidates.append((preferred_measure, coverage_penalty, preferred_body, preferred_family, measure_distance, beat_distance, measure, beat, symbol_id))
+                if candidates:
+                    _, _, _, _, _, _, _, _, symbol_id = min(candidates)
+                    current.setdefault("modifiers", {})["attach_to"] = symbol_id
+                else:
+                    current.setdefault("modifiers", {}).pop("attach_to", None)
+        if hint["action"] == "retarget_repeat_span":
+            sym_idx = _symbol_index_from_path(hint.get("path", ""))
+            modifier_key = _modifier_key_from_path(hint.get("path", ""))
+            if sym_idx is not None and (modifier_key == "repeat_span_to" or modifier_key is None):
+                current = patched.get("symbols", [])[sym_idx]
+                current_timing = current.get("timing", {})
+                current_measure = int(current_timing.get("measure", 1))
+                current_beat = float(current_timing.get("beat", 0))
+                candidates = []
+                for candidate in patched.get("symbols", []):
+                    symbol_id = candidate.get("symbol_id")
+                    if not symbol_id or not symbol_id.startswith("repeat."):
+                        continue
+                    timing = candidate.get("timing", {})
+                    measure = int(timing.get("measure", 1))
+                    beat = float(timing.get("beat", 0))
+                    if measure > current_measure or (measure == current_measure and beat > current_beat):
+                        candidates.append((measure, beat, symbol_id))
+                if candidates:
+                    _, _, symbol_id = min(candidates)
+                    current.setdefault("modifiers", {})["repeat_span_to"] = symbol_id
+                else:
+                    current.setdefault("modifiers", {}).pop("repeat_span_to", None)
+    for sym_idx in sorted(symbols_to_remove, reverse=True):
+        if 0 <= sym_idx < len(patched.get("symbols", [])):
+            patched["symbols"].pop(sym_idx)
+    if reorder_header_measures:
+        for measure in sorted(reorder_header_measures):
+            measure_indices = [
+                idx
+                for idx, sym in enumerate(patched.get("symbols", []))
+                if int(sym.get("timing", {}).get("measure", 1)) == measure
+            ]
+            if not measure_indices:
+                continue
+            measure_symbols = [patched["symbols"][idx] for idx in measure_indices]
+            header_symbols = [sym for sym in measure_symbols if sym.get("modifiers", {}).get("measure_header")]
+            content_symbols = [sym for sym in measure_symbols if not sym.get("modifiers", {}).get("measure_header")]
+            ordered_headers = sorted(
+                header_symbols,
+                key=lambda sym: HEADER_FAMILY_ORDER.get(HEADER_FAMILY_BY_SYMBOL.get(sym.get("symbol_id", ""), ""), 99),
+            )
+            new_measure_symbols = ordered_headers + content_symbols
+            for idx, sym in zip(measure_indices, new_measure_symbols):
+                patched["symbols"][idx] = sym
+    if reorder_repeat_measures:
+        for measure in sorted(reorder_repeat_measures):
+            measure_indices = [
+                idx
+                for idx, sym in enumerate(patched.get("symbols", []))
+                if int(sym.get("timing", {}).get("measure", 1)) == measure
+            ]
+            if not measure_indices:
+                continue
+            measure_symbols = [patched["symbols"][idx] for idx in measure_indices]
+            header_symbols = [sym for sym in measure_symbols if sym.get("modifiers", {}).get("measure_header")]
+            repeat_start_symbols = [sym for sym in measure_symbols if sym.get("symbol_id") == "repeat.start"]
+            repeat_end_symbols = [sym for sym in measure_symbols if sym.get("symbol_id") in {"repeat.end", "repeat.double"}]
+            content_symbols = [
+                sym
+                for sym in measure_symbols
+                if not sym.get("modifiers", {}).get("measure_header")
+                and sym.get("symbol_id") != "repeat.start"
+                and sym.get("symbol_id") not in {"repeat.end", "repeat.double"}
+            ]
+            new_measure_symbols = header_symbols + repeat_start_symbols + content_symbols + repeat_end_symbols
+            for idx, sym in zip(measure_indices, new_measure_symbols):
+                patched["symbols"][idx] = sym
     return patched
 
 

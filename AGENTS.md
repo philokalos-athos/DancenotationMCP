@@ -45,13 +45,111 @@ Work through this list in order. Mark each item `[x]` immediately upon completio
   - Verify PDF file is created alongside SVG
   - Verify `cairosvg` unavailable path returns SVG-only without crash
 - [x] Update `docs/architecture.md` to document dual-output rendering pipeline
-- [ ] Open PR with sample SVG + PDF attached
+- [x] Install system Cairo runtime and verify real PDF export
+  - Ensure `generate_score` returns a non-null `pdf_path` on this machine
+  - Generate a real sample PDF in `examples/pdf/`
+  - Keep SVG-only fallback behavior covered by tests
+- [x] Create a fresh development branch from latest `origin/main`
+  - Do not continue development on a branch that has already been merged
+  - Preserve current worktree state before branching
+- [ ] Advance Milestone 2 parsing and semantic behavior model
+  - Parsing coverage and language mapping
+    - [x] Support richer action, direction, level, body-part, and duration words
+    - [x] Support basic music/repeat language (`2/4`, `3/4`, `4/4`, `tempo 120`, `120 bpm`, `ritardando`, `rit.`, `a tempo`, `accelerando`, `accel.`, `begin repeat`, `end repeat`)
+    - [x] Support short parallel connectors (`while`, `with`, `together`, `simultaneously`, `alongside`)
+    - [x] Support short sequential connectors (`before`, `after`, `followed by`)
+    - [ ] Support explicit count language beyond current fixed phrases (`for four beats`, `half beat`, `quarter beat`, `and a half`)
+    - [ ] Support repetition/count language in prompts (`repeat twice`, `repeat three times`, `again`)
+    - [ ] Support negation and cancellation language (`without turn`, `no repeat`, `release hold`)
+    - [ ] Support conditional/qualifying language (`then immediately`, `slowly`, `suddenly then hold`)
+    - [ ] Support grouped clause parsing with parentheses/paired phrases where practical
+    - [ ] Support richer body language aliases (`head`, `chest`, `hips`, `both arms`, `both legs`, `hands`, `feet`)
+    - [ ] Support richer directional nuance (`upstage`, `downstage`, `clockwise`, `counterclockwise`, `in place`)
+    - [ ] Support parser normalization for punctuation-fragmented music words so abbreviations survive tokenization
+  - Phrase planning behavior
+    - [x] Honor active time signatures for measure rollover
+    - [x] Keep structural music/repeat symbols from consuming beat time
+    - [x] Emit companion `quality.*` and `timing.*` symbols from semantic adjectives
+    - [x] Alternate default limbs for under-specified simple sequences
+    - [ ] Add phrase-planning heuristics for implied body continuity vs deliberate body switches
+    - [ ] Add phrase-planning heuristics for implied continuation of direction/level across short coordinated phrases
+    - [ ] Add phrase-planning support for explicit rests/pauses and silence gaps
+    - [ ] Add phrase-planning support for phrase-level repeat spans across multiple clauses/measures
+    - [ ] Add phrase-planning support for grouped simultaneous branches with different durations and proper anchor advancement
+  - Semantic validation and repair hints
+    - [x] Validate attachment source/target roles, target ordering, same-measure preference, and body-part preference
+    - [x] Validate repeat span source/target roles, target ordering, nearest-closing behavior, and missing explicit targets
+    - [x] Validate music-header ordering, duplication, position-before-content, and torso normalization
+    - [x] Validate repeat boundary duplication, mixed-slot conflicts, torso normalization, boundary timing, and boundary ordering
+    - [x] Validate measure overflow against active time signatures
+    - [x] Repair invalid structures through remove/retarget/retime/reorder/set-body/set-modifier actions
+    - [ ] Add severity stratification review so truly invalid IR vs repairable stylistic warnings are consistently separated
+    - [ ] Add semantic rules for explicit rests interacting with attachments, repeats, and timing companions
+    - [ ] Add semantic rules for mutually exclusive modifiers on the same symbol (`hold` vs `staccato`, contradictory qualities, incompatible line styles)
+    - [ ] Add semantic rules for cross-measure continuity (`hold` continuation, sustained qualities, carried cadence/tempo scope)
+    - [ ] Add semantic rules for measure-level completeness (`repeat.start`/`repeat.end` around empty measures, header-only measures, rest-only measures)
+    - [ ] Add semantic rules for multi-symbol body coordination (same body in impossible simultaneous directions/levels across primary motions)
+    - [ ] Add semantic rules for lane/family compatibility between anchors and companions (e.g. music attachments vs movement attachments)
+    - [ ] Add semantic rules for symbol-family-specific required modifiers beyond current generic checks
+    - [ ] Expand repair hint vocabulary where current fixes are too blunt (symbol replacement, semantic downgrade, split duration, insert rest)
+    - [ ] Ensure repair ordering is deterministic when multiple semantic families compete (headers, repeats, attachments, timing)
+  - Symbol behavior model
+    - [x] Add machine-readable geometry and semantic constraints to the catalog
+    - [x] Add official extras for repeat/music/path/pin/motif/surface/space families
+    - [ ] Audit catalog entries for one-to-one behavior completeness against current validator and renderer assumptions
+    - [ ] Add richer behavior metadata for stretchable families (minimum/maximum stretch, repeatable segments, cap shapes)
+    - [ ] Add richer behavior metadata for repeat/music families (boundary role, header role, continuation scope, default repair target family)
+    - [ ] Add richer behavior metadata for attachment families (preferred anchor side, valid anchor families, coverage expectations)
+    - [ ] Add richer behavior metadata for direction/level transformations (mirroring, flipping, rotation rules)
+    - [ ] Add richer behavior metadata for motif/path variants and composition rules
+    - [ ] Add explicit behavior metadata for whitespace/surface/contact signs rather than relying on generic column family rules
+    - [ ] Add catalog audit tests to ensure every behavior-bearing family has the metadata needed by parser, validator, and renderer
+- [ ] Advance Milestone 3 engraving router and family-specific layout
+  - Engraving router
+    - [x] Add attachment clearance and dogleg routing beyond simple elbows
+    - [x] Add shared lane allocation across attachment, bridge, and repeat-span families
+    - [x] Add routing-priority scoring and limited lane reuse
+    - [ ] Add richer path shaping choices beyond current straight/dogleg fallback (multi-elbow, shallow arc, family-aware dogleg)
+    - [ ] Add collision avoidance against symbol bounding boxes instead of only family lanes
+    - [ ] Add explicit crossing minimization between long routed lines and measure-header gutters
+    - [ ] Add track reuse that considers geometry width and not only span overlap
+    - [ ] Add route bundling/splitting rules for many attachments in one measure
+    - [ ] Add deterministic left/right routing preferences by family and anchor side
+    - [ ] Add route simplification to reduce visual noise when no blockers remain after other repairs
+  - Measure and staff layout
+    - [x] Add measure header bands, dynamic header gutters, measure-priority layers, and boundary slot offsets
+    - [ ] Make measure width and spacing respond to actual symbol complexity, not only header width and fixed beat geometry
+    - [ ] Add per-measure density balancing so crowded measures expand while sparse measures compress
+    - [ ] Add staff-height adaptation when annotation families, repeat spans, and attachments stack deeply
+    - [ ] Add better vertical zoning for music, repeat, annotation, and movement layers across the full staff
+    - [ ] Add continuity-aware placement for symbols spanning multiple measures
+    - [ ] Add system-level layout for multi-staff/page output rather than one long canvas
+  - Family-specific geometry
+    - [x] Add specialized geometry for path, turn, jump, pin, repeat, music, separator, motif, surface, and space families
+    - [x] Add variant detail for `turn.spin`, `pin.hold`, stretched `jump`, `path.circle`, `separator.single/double/final`, and selected music/repeat variants
+    - [ ] Expand family-specific geometry for more official variants (`pins`, `repeats`, `music signs`, `surface signs`, `motif` variants, whitespace variants)
+    - [ ] Implement truly stretchable geometry with cap/body/cap composition instead of scaled static outlines
+    - [ ] Implement direction-aware and mirror-aware geometry variants where glyph behavior should change with orientation
+    - [ ] Implement variant geometry for more jump/turn/path subclasses and official transition marks
+    - [ ] Replace remaining generic block rendering for specialized families with family-native silhouettes
+    - [ ] Add family-specific typography/label handling where music and cadence signs should not look like generic text badges
+  - LabanWriter-style behavior parity
+    - [ ] Cross-audit current families against the LabanWriter manual categories and identify uncovered sign variants
+    - [ ] Add more explicit support for whitespace, springs, bows, hooks, separators, and motif combinations noted by the manual
+    - [ ] Make renderer behavior follow symbol-role semantics from the catalog rather than hard-coded family lists where possible
+    - [ ] Improve visual parity for official line styles, fills, contours, and attachment conventions
+    - [ ] Add screenshot/golden-SVG regression tests for representative official-family layouts
+  - Renderer robustness
+    - [ ] Add snapshot-style regression tests for complex multi-measure scores, not only targeted string assertions
+    - [ ] Add renderer tests that combine headers, repeats, attachments, quality/timing marks, and stretched symbols in one score
+    - [ ] Add PDF-level smoke assertions for representative engraving-heavy examples
+- [ ] Open a new PR from the fresh branch with sample SVG + PDF attached
 
 ## Current Status
 _Update this section at the end of each batch before stopping._
 
-Last completed: Dual SVG/PDF score generation, examples structure, PDF tests, and architecture docs
-Next: Open PR with sample SVG + PDF attached (currently blocked by missing system Cairo runtime; SVG sample is generated, PDF falls back to SVG-only as designed)
+Last completed: Expanded Milestone 2 with repeat-boundary timing/order repair, missing repeat-span repair, music-header content repair, and broader music-language parsing (`120 bpm`, `accelerando`, `accel.`), while keeping the full suite green at 116 tests
+Next: Work from the detailed Milestone 2 checklist above, prioritizing parser coverage gaps, richer semantic conflict rules, and stronger symbol behavior metadata before returning to the Milestone 3 engraving backlog
 
 ## Autonomous Work Rules
 - On startup: read this file, find the first unchecked `[ ]` task, begin immediately.

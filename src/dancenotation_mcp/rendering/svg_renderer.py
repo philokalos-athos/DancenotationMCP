@@ -320,7 +320,7 @@ def _render_path_symbol(symbol_id: str, left: float, top: float, width: float, h
     )
 
 
-def _render_turn_symbol(left: float, top: float, width: float, height: float, modifiers: dict) -> str:
+def _render_turn_symbol(symbol_id: str, left: float, top: float, width: float, height: float, modifiers: dict) -> str:
     center_x = left + width / 2
     center_y = top + height / 2
     stretch = max(float(modifiers.get("stretch", 1.0)), 0.6)
@@ -328,44 +328,73 @@ def _render_turn_symbol(left: float, top: float, width: float, height: float, mo
     radius_y = max(height / 2 - 4, 6)
     sweep = 1 if modifiers.get("turn_direction", "cw") != "ccw" else 0
     rotation = float(modifiers.get("rotation", 0))
+    degree = float(modifiers.get("degree", 0) or 0)
+    spin_variant = symbol_id.endswith("spin") or degree >= 360
+    echo_arc = ""
+    if spin_variant:
+        echo_arc = (
+            f'<path d="M {center_x - (radius_x - 5):.1f} {center_y + 6:.1f} '
+            f'A {max(radius_x - 5, 4):.1f} {max(radius_y - 5, 4):.1f} 0 1 {sweep} {center_x + (radius_x - 5):.1f} {center_y + 6:.1f}" '
+            'fill="none" stroke="#64748b" stroke-width="1.2" stroke-dasharray="3 2"/>'
+        )
     return (
-        f'<g class="specialized-turn" transform="rotate({rotation:.1f} {center_x:.1f} {center_y:.1f})">'
+        f'<g class="specialized-turn" data-variant="{"spin" if spin_variant else "pivot"}" transform="rotate({rotation:.1f} {center_x:.1f} {center_y:.1f})">'
         f'<path d="M {center_x - radius_x:.1f} {center_y:.1f} A {radius_x:.1f} {radius_y:.1f} 0 1 {sweep} {center_x + radius_x:.1f} {center_y:.1f}" '
         'fill="none" stroke="#111827" stroke-width="1.8"/>'
+        f'{echo_arc}'
         f'<polygon points="{center_x + radius_x + 7:.1f},{center_y:.1f} {center_x + radius_x - 1:.1f},{center_y - 5:.1f} {center_x + radius_x - 1:.1f},{center_y + 5:.1f}" fill="#111827"/>'
         "</g>"
     )
 
 
-def _render_jump_symbol(left: float, top: float, width: float, height: float, modifiers: dict) -> str:
+def _render_jump_symbol(symbol_id: str, left: float, top: float, width: float, height: float, modifiers: dict) -> str:
     mid_x = left + width / 2
     bottom = top + height - 4
     stretch = max(float(modifiers.get("stretch", 1.0)), 0.6)
     apex = top - 8 - (height * 0.15 * (stretch - 1))
     left_x = mid_x - (width * stretch / 2) + 2
     right_x = mid_x + (width * stretch / 2) - 2
+    inner_arc = ""
+    landing_mark = ""
+    if stretch >= 1.35 or symbol_id.endswith("small"):
+        inner_arc = (
+            f'<path d="M {left_x + 4:.1f} {bottom - 8:.1f} Q {mid_x:.1f} {apex + 10:.1f} {right_x - 4:.1f} {bottom - 8:.1f}" '
+            'fill="none" stroke="#64748b" stroke-width="1.1" stroke-dasharray="4 3"/>'
+        )
+        landing_mark = (
+            f'<line x1="{right_x - 3:.1f}" y1="{bottom - 3:.1f}" x2="{right_x + 5:.1f}" y2="{bottom - 9:.1f}" stroke="#111827" stroke-width="1.2"/>'
+        )
     return (
-        f'<g class="specialized-jump">'
+        f'<g class="specialized-jump" data-variant="{"stretched" if stretch >= 1.35 else "compact"}">'
         f'<path d="M {left_x:.1f} {bottom:.1f} Q {mid_x:.1f} {apex:.1f} {right_x:.1f} {bottom:.1f}" '
         'fill="none" stroke="#111827" stroke-width="1.8"/>'
+        f'{inner_arc}'
         f'<line x1="{mid_x:.1f}" y1="{top + 6:.1f}" x2="{mid_x:.1f}" y2="{bottom - 8:.1f}" stroke="#111827" stroke-width="1.2"/>'
+        f'{landing_mark}'
         "</g>"
     )
 
 
-def _render_pin_symbol(left: float, top: float, width: float, height: float, modifiers: dict) -> str:
+def _render_pin_symbol(symbol_id: str, left: float, top: float, width: float, height: float, modifiers: dict) -> str:
     mid_x = left + width / 2
     pin_scale = max(float(modifiers.get("pin_length", 1.0)), 0.6)
     pin_bottom = top + min(height * pin_scale, height + 8)
     head_style = modifiers.get("pin_head", "circle")
+    hold_bar = ""
+    if symbol_id.endswith("hold"):
+        hold_y = top + max(height * 0.34, 12)
+        hold_bar = (
+            f'<line x1="{mid_x - 7:.1f}" y1="{hold_y:.1f}" x2="{mid_x + 7:.1f}" y2="{hold_y:.1f}" stroke="#64748b" stroke-width="1.6"/>'
+        )
     head = (
         f'<circle cx="{mid_x:.1f}" cy="{top + 5:.1f}" r="3.2" fill="#111827"/>'
         if head_style != "diamond"
         else f'<polygon points="{mid_x:.1f},{top + 1:.1f} {mid_x - 4:.1f},{top + 5:.1f} {mid_x:.1f},{top + 9:.1f} {mid_x + 4:.1f},{top + 5:.1f}" fill="#111827"/>'
     )
     return (
-        f'<g class="specialized-pin">'
+        f'<g class="specialized-pin" data-variant="{"hold" if symbol_id.endswith("hold") else "standard"}">'
         f'<line x1="{mid_x:.1f}" y1="{top + 2:.1f}" x2="{mid_x:.1f}" y2="{pin_bottom - 9:.1f}" stroke="#111827" stroke-width="1.8"/>'
+        f'{hold_bar}'
         f'{head}'
         f'<polygon points="{mid_x:.1f},{pin_bottom + 2:.1f} {mid_x - 5:.1f},{pin_bottom - 8:.1f} {mid_x + 5:.1f},{pin_bottom - 8:.1f}" fill="#111827"/>'
         "</g>"
@@ -521,13 +550,13 @@ def _render_specialized_symbol(symbol: dict, spec: dict, left: float, top: float
     if column == "path":
         return _render_path_symbol(symbol_id, left, top, width, height, modifiers)
     if column == "turn":
-        return _render_turn_symbol(left, top, width, height, modifiers)
+        return _render_turn_symbol(symbol_id, left, top, width, height, modifiers)
     if column == "jump":
-        return _render_jump_symbol(left, top, width, height, modifiers)
+        return _render_jump_symbol(symbol_id, left, top, width, height, modifiers)
     if column == "pin":
         if symbol_id.endswith("entry"):
             modifiers = {**modifiers, "pin_head": "diamond"}
-        return _render_pin_symbol(left, top, width, height, modifiers)
+        return _render_pin_symbol(symbol_id, left, top, width, height, modifiers)
     if column == "repeat":
         if symbol_id.endswith("end"):
             modifiers = {**modifiers, "repeat_end": True}
@@ -847,6 +876,15 @@ def _render_attachment_line(source: dict, target: dict, entries: list[dict], rou
             routed_lines,
             "attachment",
         )
+        if abs(source["start"] - target["start"]) >= 1.0:
+            jog_x = target_x + 18.0 if target_x < source_x else target_x - 18.0
+            jog_y = target_y + 12.0 if routed_y < target_y else target_y - 12.0
+            return (
+                f'<path class="attachment-line" d="M {source_x:.1f} {source_y:.1f} '
+                f'L {source_x:.1f} {routed_y:.1f} L {jog_x:.1f} {routed_y:.1f} '
+                f'L {jog_x:.1f} {jog_y:.1f} L {target_x:.1f} {jog_y:.1f} L {target_x:.1f} {target_y:.1f}" '
+                'fill="none" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="3 3"/>'
+            )
         return (
             f'<path class="attachment-line" d="M {source_x:.1f} {source_y:.1f} '
             f'L {source_x:.1f} {routed_y:.1f} L {target_x:.1f} {routed_y:.1f} L {target_x:.1f} {target_y:.1f}" '
