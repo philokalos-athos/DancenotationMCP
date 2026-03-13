@@ -37,7 +37,53 @@
               "duration_beats": {"type": "number", "exclusiveMinimum": 0}
             }
           },
-          "modifiers": {"type": "object"}
+          "modifiers": {
+            "type": "object",
+            "properties": {
+              "degree": {"type": ["number", "integer"]},
+              "stretch": {"type": ["number", "integer"]},
+              "rotation": {"type": ["number", "integer"]},
+              "pin_length": {"type": ["number", "integer"]},
+              "rest_height": {"type": ["number", "integer"]},
+              "repeat_count": {"type": "integer", "minimum": 1},
+              "attach_to": {"type": "string"},
+              "attach_side": {"type": "string", "enum": ["auto", "left", "right", "top", "bottom"]},
+              "measure_header": {"type": "boolean"},
+              "repeat_span_to": {"type": "string"},
+              "pin_head": {"type": "string", "enum": ["circle", "diamond"]},
+              "separator_mode": {"type": "string", "enum": ["single", "double", "hooked"]},
+              "line_style": {"type": "string", "enum": ["single", "double", "dotted", "double_dotted"]},
+              "level_fill_top": {"type": "string", "enum": ["high", "middle", "low", "blank"]},
+              "level_fill_bottom": {"type": "string", "enum": ["high", "middle", "low", "blank"]},
+              "whitespace": {"type": "boolean"},
+              "surface_marks": {
+                "type": "array",
+                "items": {"type": "string", "enum": ["left", "right", "forward", "backward"]}
+              },
+              "joint_area": {"type": "string"},
+              "oscillations": {"type": "integer", "minimum": 0},
+              "arrowheads": {
+                "type": "object",
+                "properties": {
+                  "head": {"type": "string", "enum": ["single", "double", "open"]},
+                  "tail": {"type": "string", "enum": ["single", "double", "open"]}
+                }
+              },
+              "spring_jump": {
+                "type": "object",
+                "properties": {
+                  "takeoff": {
+                    "type": "array",
+                    "items": {"type": "string", "enum": ["left", "right"]}
+                  },
+                  "landing": {
+                    "type": "array",
+                    "items": {"type": "string", "enum": ["left", "right"]}
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },

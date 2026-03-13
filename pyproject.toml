@@ -8,6 +8,7 @@ version = "0.1.0"
 description = "Headless-first dance notation MCP server"
 readme = "README.md"
 requires-python = ">=3.10"
+dependencies = ["cairosvg>=2.7"]
 
 [tool.setuptools]
 package-dir = {"" = "src"}

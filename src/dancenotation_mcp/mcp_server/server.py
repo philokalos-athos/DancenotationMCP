@@ -2,11 +2,18 @@ from __future__ import annotations
 
 import json
 import sys
+from pathlib import Path
 
 from dancenotation_mcp.planning.phrase_parser import parse_phrase
 from dancenotation_mcp.planning.phrase_to_ir import phrase_plan_to_ir
+from dancenotation_mcp.rendering.pdf_renderer import svg_to_pdf
 from dancenotation_mcp.rendering.svg_renderer import render_svg
 from dancenotation_mcp.validation.validator import validate_ir
+
+
+REPO_ROOT = Path(__file__).resolve().parents[3]
+SVG_EXAMPLES_DIR = REPO_ROOT / "examples" / "svg"
+PDF_EXAMPLES_DIR = REPO_ROOT / "examples" / "pdf"
 
 
 def repair_ir(ir: dict, diagnostics: dict) -> dict:
@@ -23,12 +30,47 @@ def repair_ir(ir: dict, diagnostics: dict) -> dict:
     return patched
 
 
+def _slugify_score_name(value: str) -> str:
+    lowered = "".join(ch.lower() if ch.isalnum() else "-" for ch in value)
+    slug = "-".join(part for part in lowered.split("-") if part)
+    return slug or "score"
+
+
+def generate_score(args: dict) -> dict:
+    ir = args["ir"]
+    requested_name = args.get("name") or ir.get("metadata", {}).get("title") or "score"
+    score_name = _slugify_score_name(requested_name)
+    svg_path = SVG_EXAMPLES_DIR / f"{score_name}.svg"
+    pdf_path = PDF_EXAMPLES_DIR / f"{score_name}.pdf"
+
+    svg_content = render_svg(ir)
+    svg_path.parent.mkdir(parents=True, exist_ok=True)
+    svg_path.write_text(svg_content, encoding="utf-8")
+
+    pdf_created = svg_to_pdf(svg_content, pdf_path)
+    relative_svg_path = svg_path.relative_to(REPO_ROOT).as_posix()
+    relative_pdf_path = pdf_path.relative_to(REPO_ROOT).as_posix()
+    preview_html = (
+        '<div class="score-preview">'
+        f'<object data="{relative_svg_path}" type="image/svg+xml" aria-label="{score_name}"></object>'
+        "</div>"
+    )
+    result = {
+        "svg_path": relative_svg_path,
+        "pdf_path": relative_pdf_path if pdf_created else None,
+        "latex": f"\\includegraphics{{{relative_pdf_path[:-4]}}}" if pdf_created else None,
+        "preview_html": preview_html,
+    }
+    return result
+
+
 TOOLS = {
     "plan_phrase": lambda args: parse_phrase(args["prompt"]),
     "build_ir": lambda args: phrase_plan_to_ir(args["phrase_plan"], args.get("source_prompt", "")),
     "validate_ir": lambda args: validate_ir(args["ir"]),
     "repair_ir": lambda args: repair_ir(args["ir"], args["diagnostics"]),
-    "render_svg": lambda args: {"svg": render_svg(args["ir"])} ,
+    "render_svg": lambda args: {"svg": render_svg(args["ir"])},
+    "generate_score": generate_score,
 }
 
 

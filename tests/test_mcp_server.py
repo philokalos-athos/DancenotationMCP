@@ -9,6 +9,7 @@ class MCPServerTests(unittest.TestCase):
         self.assertIn("result", resp)
         names = [t["name"] for t in resp["result"]["tools"]]
         self.assertIn("plan_phrase", names)
+        self.assertIn("generate_score", names)
 
     def test_plan_call(self):
         resp = handle(
