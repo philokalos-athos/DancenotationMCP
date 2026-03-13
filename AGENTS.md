@@ -45,13 +45,29 @@ Work through this list in order. Mark each item `[x]` immediately upon completio
   - Verify PDF file is created alongside SVG
   - Verify `cairosvg` unavailable path returns SVG-only without crash
 - [x] Update `docs/architecture.md` to document dual-output rendering pipeline
-- [ ] Open PR with sample SVG + PDF attached
+- [x] Install system Cairo runtime and verify real PDF export
+  - Ensure `generate_score` returns a non-null `pdf_path` on this machine
+  - Generate a real sample PDF in `examples/pdf/`
+  - Keep SVG-only fallback behavior covered by tests
+- [ ] Create a fresh development branch from latest `origin/main`
+  - Do not continue development on a branch that has already been merged
+  - Preserve current worktree state before branching
+- [ ] Advance Milestone 3 engraving router and family-specific layout
+  - Improve routed attachment path shaping beyond simple elbows
+  - Refine multi-line crossing priority across bridge/span/attachment families
+  - Add more realistic stretchable and family-specific geometry rules
+  - Move closer to LabanWriter-style variant-specific engraving behavior
+- [ ] Advance Milestone 2 parsing and semantic behavior model
+  - Expand phrase parsing coverage and richer language mapping
+  - Strengthen multi-symbol semantic validation and repair hints
+  - Increase symbol behavior modeling beyond current catalog constraints
+- [ ] Open a new PR from the fresh branch with sample SVG + PDF attached
 
 ## Current Status
 _Update this section at the end of each batch before stopping._
 
-Last completed: Dual SVG/PDF score generation, examples structure, PDF tests, and architecture docs
-Next: Open PR with sample SVG + PDF attached (currently blocked by missing system Cairo runtime; SVG sample is generated, PDF falls back to SVG-only as designed)
+Last completed: Installed GTK/Cairo runtime, restored real PDF export, and generated `examples/pdf/sample-render.pdf`
+Next: Create a fresh development branch from latest `origin/main`, then continue Milestone 3 engraving and Milestone 2 parsing/semantics work
 
 ## Autonomous Work Rules
 - On startup: read this file, find the first unchecked `[ ]` task, begin immediately.
