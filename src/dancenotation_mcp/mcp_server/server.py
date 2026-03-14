@@ -46,6 +46,8 @@ def repair_ir(ir: dict, diagnostics: dict) -> dict:
     symbols_to_remove: set[int] = set()
     reorder_header_measures: set[int] = set()
     reorder_repeat_measures: set[int] = set()
+    split_duration_hints: list[dict] = []
+    continuation_insert_hints: list[dict] = []
     for hint in diagnostics.get("repair_hints", []):
         if hint["action"] == "remove_symbol":
             sym_idx = _symbol_index_from_path(hint.get("path", ""))
@@ -69,6 +71,10 @@ def repair_ir(ir: dict, diagnostics: dict) -> dict:
                 for sym in patched.get("symbols", []):
                     if sym.get("timing", {}).get("duration_beats", 0) <= 0:
                         sym["timing"]["duration_beats"] = float(hint.get("value", 1.0))
+        if hint["action"] == "split_duration":
+            split_duration_hints.append(hint)
+        if hint["action"] == "insert_continuation_symbol":
+            continuation_insert_hints.append(hint)
         if hint["action"] == "replace_symbol":
             for sym in patched.get("symbols", []):
                 if sym.get("symbol_id", "").startswith("unknown"):
@@ -151,6 +157,69 @@ def repair_ir(ir: dict, diagnostics: dict) -> dict:
     for sym_idx in sorted(symbols_to_remove, reverse=True):
         if 0 <= sym_idx < len(patched.get("symbols", [])):
             patched["symbols"].pop(sym_idx)
+    for hint in split_duration_hints:
+        sym_idx = _symbol_index_from_path(hint.get("path", ""))
+        if sym_idx is None:
+            continue
+        removed_before = sum(1 for removed_idx in symbols_to_remove if removed_idx < sym_idx)
+        adjusted_idx = sym_idx - removed_before
+        if adjusted_idx in symbols_to_remove or not (0 <= adjusted_idx < len(patched.get("symbols", []))):
+            continue
+        current = patched["symbols"][adjusted_idx]
+        current_timing = current.setdefault("timing", {})
+        current_timing["duration_beats"] = float(hint.get("value", current_timing.get("duration_beats", 1.0)))
+        carry_duration = float(hint.get("carry_duration", 0.0))
+        next_measure = int(hint.get("next_measure") or (int(current_timing.get("measure", 1)) + 1))
+        if carry_duration > 0.0:
+            continuation = json.loads(json.dumps(current))
+            continuation["timing"]["measure"] = next_measure
+            continuation["timing"]["beat"] = 1.0
+            continuation["timing"]["duration_beats"] = carry_duration
+            patched["symbols"].insert(adjusted_idx + 1, continuation)
+    for hint in continuation_insert_hints:
+        sym_idx = _symbol_index_from_path(hint.get("path", ""))
+        if sym_idx is None:
+            continue
+        removed_before = sum(1 for removed_idx in symbols_to_remove if removed_idx < sym_idx)
+        adjusted_idx = sym_idx - removed_before
+        if adjusted_idx in symbols_to_remove or not (0 <= adjusted_idx < len(patched.get("symbols", []))):
+            continue
+        current = patched["symbols"][adjusted_idx]
+        attach_to = current.get("modifiers", {}).get("attach_to")
+        if not isinstance(attach_to, str):
+            continue
+        target = next((sym for sym in patched.get("symbols", []) if sym.get("symbol_id") == attach_to), None)
+        if not target:
+            continue
+        target_body = target.get("body_part")
+        target_measure = int(target.get("timing", {}).get("measure", 1))
+        next_target = next(
+            (
+                sym
+                for sym in patched.get("symbols", [])
+                if sym.get("body_part") == target_body
+                and int(sym.get("timing", {}).get("measure", 1)) == target_measure + 1
+                and abs(float(sym.get("timing", {}).get("beat", 0)) - 1.0) <= 0.01
+                and str(sym.get("symbol_id", "")).startswith(("support.", "direction.", "path.", "body.", "gesture.", "turn.", "jump."))
+            ),
+            None,
+        )
+        if not next_target:
+            continue
+        already_present = any(
+            sym.get("symbol_id") == current.get("symbol_id")
+            and sym.get("modifiers", {}).get("attach_to") == next_target.get("symbol_id")
+            and int(sym.get("timing", {}).get("measure", 1)) == target_measure + 1
+            for sym in patched.get("symbols", [])
+        )
+        if already_present:
+            continue
+        continuation = json.loads(json.dumps(current))
+        continuation["timing"]["measure"] = target_measure + 1
+        continuation["timing"]["beat"] = 1.0
+        continuation["timing"]["duration_beats"] = 1.0
+        continuation.setdefault("modifiers", {})["attach_to"] = next_target.get("symbol_id")
+        patched["symbols"].insert(adjusted_idx + 1, continuation)
     if reorder_header_measures:
         for measure in sorted(reorder_header_measures):
             measure_indices = [

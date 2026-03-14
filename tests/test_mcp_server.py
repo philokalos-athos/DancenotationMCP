@@ -125,6 +125,194 @@ class MCPServerTests(unittest.TestCase):
         self.assertEqual(jump["timing"]["beat"], 3.0)
         self.assertEqual(tempo["timing"]["beat"], 1.0)
 
+    def test_repair_ir_can_shift_beats_for_direction_level_conflicts(self):
+        ir = {
+            "metadata": {"ir_version": "0.1.0", "schema_version": "0.1.0"},
+            "symbols": [
+                {
+                    "symbol_id": "support.step.forward",
+                    "body_part": "left_leg",
+                    "direction": "forward",
+                    "level": "high",
+                    "timing": {"measure": 1, "beat": 1, "duration_beats": 2},
+                    "modifiers": {},
+                },
+                {
+                    "symbol_id": "support.step.backward",
+                    "body_part": "left_leg",
+                    "direction": "backward",
+                    "level": "low",
+                    "timing": {"measure": 1, "beat": 1.5, "duration_beats": 1},
+                    "modifiers": {},
+                },
+            ],
+        }
+        diagnostics = validate_ir(ir)
+        repaired = repair_ir(ir, diagnostics)
+        conflicting = next(sym for sym in repaired["symbols"] if sym["symbol_id"] == "support.step.backward")
+        self.assertEqual(conflicting["timing"]["beat"], 3.0)
+
+    def test_repair_ir_removes_conflicting_companion_symbols(self):
+        ir = {
+            "metadata": {"ir_version": "0.1.0", "schema_version": "0.1.0"},
+            "symbols": [
+                {
+                    "symbol_id": "support.step.forward",
+                    "body_part": "left_leg",
+                    "direction": "forward",
+                    "level": "middle",
+                    "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+                    "modifiers": {},
+                },
+                {
+                    "symbol_id": "timing.hold",
+                    "body_part": "left_leg",
+                    "direction": "forward",
+                    "level": "middle",
+                    "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+                    "modifiers": {"attach_to": "support.step.forward"},
+                },
+                {
+                    "symbol_id": "timing.staccato",
+                    "body_part": "left_leg",
+                    "direction": "forward",
+                    "level": "middle",
+                    "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+                    "modifiers": {"attach_to": "support.step.forward"},
+                },
+                {
+                    "symbol_id": "quality.bound",
+                    "body_part": "left_leg",
+                    "direction": "forward",
+                    "level": "middle",
+                    "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+                    "modifiers": {"attach_to": "support.step.forward"},
+                },
+                {
+                    "symbol_id": "quality.free",
+                    "body_part": "left_leg",
+                    "direction": "forward",
+                    "level": "middle",
+                    "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+                    "modifiers": {"attach_to": "support.step.forward"},
+                },
+            ],
+        }
+        diagnostics = validate_ir(ir)
+        repaired = repair_ir(ir, diagnostics)
+        remaining_ids = [sym["symbol_id"] for sym in repaired["symbols"]]
+        self.assertEqual(remaining_ids, ["support.step.forward", "timing.hold", "quality.bound"])
+
+    def test_repair_ir_removes_rest_when_it_overlaps_active_content(self):
+        ir = {
+            "metadata": {"ir_version": "0.1.0", "schema_version": "0.1.0"},
+            "symbols": [
+                {
+                    "symbol_id": "music.rest.quarter",
+                    "body_part": "torso",
+                    "direction": "forward",
+                    "level": "middle",
+                    "timing": {"measure": 1, "beat": 1, "duration_beats": 2},
+                    "modifiers": {},
+                },
+                {
+                    "symbol_id": "support.step.forward",
+                    "body_part": "left_leg",
+                    "direction": "forward",
+                    "level": "middle",
+                    "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+                    "modifiers": {},
+                },
+            ],
+        }
+        diagnostics = validate_ir(ir)
+        repaired = repair_ir(ir, diagnostics)
+        self.assertEqual([symbol["symbol_id"] for symbol in repaired["symbols"]], ["support.step.forward"])
+
+    def test_repair_ir_removes_repeat_boundaries_from_header_only_and_rest_only_measures(self):
+        ir = {
+            "metadata": {"ir_version": "0.1.0", "schema_version": "0.1.0"},
+            "symbols": [
+                {
+                    "symbol_id": "music.time.3_4",
+                    "body_part": "torso",
+                    "direction": "forward",
+                    "level": "middle",
+                    "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+                    "modifiers": {"measure_header": True},
+                },
+                {
+                    "symbol_id": "repeat.start",
+                    "body_part": "torso",
+                    "direction": "forward",
+                    "level": "middle",
+                    "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+                    "modifiers": {},
+                },
+                {
+                    "symbol_id": "repeat.end",
+                    "body_part": "torso",
+                    "direction": "forward",
+                    "level": "middle",
+                    "timing": {"measure": 1, "beat": 3, "duration_beats": 1},
+                    "modifiers": {},
+                },
+                {
+                    "symbol_id": "music.rest.quarter",
+                    "body_part": "torso",
+                    "direction": "forward",
+                    "level": "middle",
+                    "timing": {"measure": 2, "beat": 1, "duration_beats": 1},
+                    "modifiers": {},
+                },
+                {
+                    "symbol_id": "repeat.start",
+                    "body_part": "torso",
+                    "direction": "forward",
+                    "level": "middle",
+                    "timing": {"measure": 2, "beat": 1, "duration_beats": 1},
+                    "modifiers": {},
+                },
+                {
+                    "symbol_id": "repeat.end",
+                    "body_part": "torso",
+                    "direction": "forward",
+                    "level": "middle",
+                    "timing": {"measure": 2, "beat": 4, "duration_beats": 1},
+                    "modifiers": {},
+                },
+            ],
+        }
+        diagnostics = validate_ir(ir)
+        repaired = repair_ir(ir, diagnostics)
+        self.assertEqual([symbol["symbol_id"] for symbol in repaired["symbols"]], ["music.time.3_4", "music.rest.quarter"])
+
+    def test_repair_ir_removes_repeat_boundaries_from_empty_measures(self):
+        ir = {
+            "metadata": {"ir_version": "0.1.0", "schema_version": "0.1.0"},
+            "symbols": [
+                {
+                    "symbol_id": "repeat.start",
+                    "body_part": "torso",
+                    "direction": "forward",
+                    "level": "middle",
+                    "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+                    "modifiers": {},
+                },
+                {
+                    "symbol_id": "repeat.end",
+                    "body_part": "torso",
+                    "direction": "forward",
+                    "level": "middle",
+                    "timing": {"measure": 1, "beat": 4, "duration_beats": 1},
+                    "modifiers": {},
+                },
+            ],
+        }
+        diagnostics = validate_ir(ir)
+        repaired = repair_ir(ir, diagnostics)
+        self.assertEqual(repaired["symbols"], [])
+
     def test_repair_ir_retargets_invalid_target_roles(self):
         ir = {
             "metadata": {"ir_version": "0.1.0", "schema_version": "0.1.0"},
@@ -237,6 +425,85 @@ class MCPServerTests(unittest.TestCase):
         diagnostics = validate_ir(ir)
         repaired = repair_ir(ir, diagnostics)
         self.assertEqual(repaired["symbols"][1]["modifiers"]["attach_to"], "support.step.backward")
+
+    def test_repair_ir_removes_incompatible_music_and_repeat_attachments(self):
+        ir = {
+            "metadata": {"ir_version": "0.1.0", "schema_version": "0.1.0"},
+            "symbols": [
+                {
+                    "symbol_id": "music.rest.quarter",
+                    "body_part": "torso",
+                    "direction": "forward",
+                    "level": "middle",
+                    "timing": {"measure": 1, "beat": 2, "duration_beats": 1},
+                    "modifiers": {"attach_to": "support.step.forward"},
+                },
+                {
+                    "symbol_id": "repeat.start",
+                    "body_part": "torso",
+                    "direction": "forward",
+                    "level": "middle",
+                    "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+                    "modifiers": {"attach_to": "support.step.forward"},
+                },
+                {
+                    "symbol_id": "support.step.forward",
+                    "body_part": "left_leg",
+                    "direction": "forward",
+                    "level": "middle",
+                    "timing": {"measure": 1, "beat": 1, "duration_beats": 2},
+                    "modifiers": {},
+                },
+                {
+                    "symbol_id": "repeat.end",
+                    "body_part": "torso",
+                    "direction": "forward",
+                    "level": "middle",
+                    "timing": {"measure": 1, "beat": 4, "duration_beats": 1},
+                    "modifiers": {},
+                },
+            ],
+        }
+        diagnostics = validate_ir(ir)
+        repaired = repair_ir(ir, diagnostics)
+        self.assertNotIn("attach_to", repaired["symbols"][0]["modifiers"])
+        self.assertNotIn("attach_to", repaired["symbols"][1]["modifiers"])
+
+    def test_repair_ir_uses_attachment_behavior_metadata(self):
+        ir = {
+            "metadata": {"ir_version": "0.1.0", "schema_version": "0.1.0"},
+            "symbols": [
+                {
+                    "symbol_id": "pin.hold",
+                    "body_part": "left_arm",
+                    "direction": "forward",
+                    "level": "middle",
+                    "timing": {"measure": 1, "beat": 2, "duration_beats": 1},
+                    "modifiers": {"attach_to": "flexion.knee", "attach_side": "left"},
+                },
+                {
+                    "symbol_id": "flexion.knee",
+                    "body_part": "left_leg",
+                    "direction": "forward",
+                    "level": "middle",
+                    "timing": {"measure": 1, "beat": 1, "duration_beats": 2},
+                    "modifiers": {},
+                },
+                {
+                    "symbol_id": "support.step.forward",
+                    "body_part": "left_leg",
+                    "direction": "forward",
+                    "level": "middle",
+                    "timing": {"measure": 1, "beat": 1, "duration_beats": 2},
+                    "modifiers": {},
+                },
+            ],
+        }
+        diagnostics = validate_ir(ir)
+        repaired = repair_ir(ir, diagnostics)
+        pin_hold = repaired["symbols"][0]
+        self.assertEqual(pin_hold["modifiers"]["attach_to"], "support.step.forward")
+        self.assertEqual(pin_hold["modifiers"]["attach_side"], "top")
 
     def test_repair_ir_prefers_motion_that_still_covers_annotation_beat(self):
         ir = {
@@ -389,6 +656,9 @@ class MCPServerTests(unittest.TestCase):
         kept_headers = [sym for sym in repaired["symbols"] if sym.get("modifiers", {}).get("measure_header")]
         self.assertEqual(len(kept_headers), 2)
         self.assertEqual(repaired["symbols"][2]["timing"]["duration_beats"], 1.0)
+        self.assertEqual(repaired["symbols"][3]["timing"]["measure"], 2)
+        self.assertEqual(repaired["symbols"][3]["timing"]["beat"], 1.0)
+        self.assertEqual(repaired["symbols"][3]["timing"]["duration_beats"], 1.0)
 
     def test_repair_ir_trims_measure_overflow_using_active_time_signature(self):
         ir = {
@@ -415,6 +685,9 @@ class MCPServerTests(unittest.TestCase):
         diagnostics = validate_ir(ir)
         repaired = repair_ir(ir, diagnostics)
         self.assertEqual(repaired["symbols"][1]["timing"]["duration_beats"], 1.0)
+        self.assertEqual(repaired["symbols"][2]["timing"]["measure"], 2)
+        self.assertEqual(repaired["symbols"][2]["timing"]["beat"], 1.0)
+        self.assertEqual(repaired["symbols"][2]["timing"]["duration_beats"], 1.0)
 
     def test_repair_ir_prefers_same_body_part_attachment_targets(self):
         ir = {
@@ -494,6 +767,14 @@ class MCPServerTests(unittest.TestCase):
                     "direction": "forward",
                     "level": "middle",
                     "timing": {"measure": 1, "beat": 3, "duration_beats": 1},
+                    "modifiers": {},
+                },
+                {
+                    "symbol_id": "support.step.forward",
+                    "body_part": "left_leg",
+                    "direction": "forward",
+                    "level": "middle",
+                    "timing": {"measure": 1, "beat": 2, "duration_beats": 1},
                     "modifiers": {},
                 },
                 {
@@ -774,6 +1055,127 @@ class MCPServerTests(unittest.TestCase):
         cadence_header = next(sym for sym in repaired["symbols"] if sym["symbol_id"] == "music.cadence.mark")
         self.assertEqual(tempo_header["modifiers"]["tempo"], 120)
         self.assertEqual(cadence_header["modifiers"]["label"], "rit.")
+
+    def test_repair_ir_carries_score_scoped_tempo_and_cadence_content(self):
+        ir = {
+            "metadata": {"ir_version": "0.1.0", "schema_version": "0.1.0"},
+            "symbols": [
+                {
+                    "symbol_id": "music.tempo.mark",
+                    "body_part": "torso",
+                    "direction": "forward",
+                    "level": "middle",
+                    "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+                    "modifiers": {"measure_header": True, "tempo": 108},
+                },
+                {
+                    "symbol_id": "music.tempo.mark",
+                    "body_part": "torso",
+                    "direction": "forward",
+                    "level": "middle",
+                    "timing": {"measure": 2, "beat": 1, "duration_beats": 1},
+                    "modifiers": {"measure_header": True},
+                },
+                {
+                    "symbol_id": "music.cadence.mark",
+                    "body_part": "torso",
+                    "direction": "forward",
+                    "level": "middle",
+                    "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+                    "modifiers": {"measure_header": True, "label": "rit."},
+                },
+                {
+                    "symbol_id": "music.cadence.mark",
+                    "body_part": "torso",
+                    "direction": "forward",
+                    "level": "middle",
+                    "timing": {"measure": 2, "beat": 1, "duration_beats": 1},
+                    "modifiers": {"measure_header": True},
+                },
+            ],
+        }
+        diagnostics = validate_ir(ir)
+        repaired = repair_ir(ir, diagnostics)
+        tempo_headers = [sym for sym in repaired["symbols"] if sym["symbol_id"] == "music.tempo.mark"]
+        cadence_headers = [sym for sym in repaired["symbols"] if sym["symbol_id"] == "music.cadence.mark"]
+        self.assertEqual(tempo_headers[1]["modifiers"]["tempo"], 108)
+        self.assertEqual(cadence_headers[1]["modifiers"]["label"], "rit.")
+
+    def test_repair_ir_inserts_missing_hold_continuation_symbol(self):
+        ir = {
+            "metadata": {"ir_version": "0.1.0", "schema_version": "0.1.0"},
+            "symbols": [
+                {
+                    "symbol_id": "music.time.3_4",
+                    "body_part": "torso",
+                    "direction": "forward",
+                    "level": "middle",
+                    "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+                    "modifiers": {"measure_header": True},
+                },
+                {
+                    "symbol_id": "support.step.forward",
+                    "body_part": "left_leg",
+                    "direction": "forward",
+                    "level": "middle",
+                    "timing": {"measure": 1, "beat": 2, "duration_beats": 2},
+                    "modifiers": {},
+                },
+                {
+                    "symbol_id": "timing.hold",
+                    "body_part": "left_leg",
+                    "direction": "forward",
+                    "level": "middle",
+                    "timing": {"measure": 1, "beat": 3, "duration_beats": 1},
+                    "modifiers": {"attach_to": "support.step.forward"},
+                },
+                {
+                    "symbol_id": "support.step.backward",
+                    "body_part": "left_leg",
+                    "direction": "backward",
+                    "level": "middle",
+                    "timing": {"measure": 2, "beat": 1, "duration_beats": 1},
+                    "modifiers": {},
+                },
+            ],
+        }
+        diagnostics = validate_ir(ir)
+        repaired = repair_ir(ir, diagnostics)
+        continuations = [
+            sym for sym in repaired["symbols"]
+            if sym["symbol_id"] == "timing.hold"
+        ]
+        self.assertGreaterEqual(len(continuations), 2)
+        inserted = next(sym for sym in continuations if sym["timing"]["measure"] == 2)
+        self.assertEqual(inserted["timing"]["beat"], 1.0)
+        self.assertEqual(inserted["modifiers"]["attach_to"], "support.step.backward")
+
+    def test_repair_ir_sets_required_variant_modifiers(self):
+        ir = {
+            "metadata": {"ir_version": "0.1.0", "schema_version": "0.1.0"},
+            "symbols": [
+                {
+                    "symbol_id": "pin.entry",
+                    "body_part": "torso",
+                    "direction": "forward",
+                    "level": "middle",
+                    "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+                    "modifiers": {"pin_head": "circle"},
+                },
+                {
+                    "symbol_id": "separator.double",
+                    "body_part": "torso",
+                    "direction": "forward",
+                    "level": "middle",
+                    "timing": {"measure": 1, "beat": 4, "duration_beats": 1},
+                    "modifiers": {"separator_mode": "single"},
+                },
+            ],
+        }
+        diagnostics = validate_ir(ir)
+        repaired = repair_ir(ir, diagnostics)
+        self.assertEqual(repaired["symbols"][0]["modifiers"]["pin_head"], "diamond")
+        self.assertEqual(repaired["symbols"][1]["modifiers"]["separator_mode"], "double")
 
     def test_repair_ir_removes_redundant_consecutive_cadence_headers(self):
         ir = {

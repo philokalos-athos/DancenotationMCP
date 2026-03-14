@@ -35,7 +35,7 @@
       "height": 14,
       "anchor": "adjacent",
       "staff_column": "quality"
-    }
+      }
   },
   {
     "id": "quality.sustained",
@@ -73,7 +73,7 @@
       "height": 14,
       "anchor": "adjacent",
       "staff_column": "quality"
-    }
+      }
   },
   {
     "id": "quality.strong",
@@ -111,7 +111,7 @@
       "height": 14,
       "anchor": "adjacent",
       "staff_column": "quality"
-    }
+      }
   },
   {
     "id": "quality.light",
@@ -338,8 +338,11 @@
       "width": 14,
       "height": 14,
       "anchor": "adjacent",
-      "staff_column": "level"
-    }
+        "staff_column": "level"
+      },
+      "behavior": {
+        "level_fill_mode": "outline"
+      }
   },
   {
     "id": "level.middle",
@@ -376,8 +379,11 @@
       "width": 14,
       "height": 14,
       "anchor": "adjacent",
-      "staff_column": "level"
-    }
+        "staff_column": "level"
+      },
+      "behavior": {
+        "level_fill_mode": "half_fill"
+      }
   },
   {
     "id": "level.low",
@@ -414,7 +420,10 @@
       "width": 14,
       "height": 14,
       "anchor": "adjacent",
-      "staff_column": "level"
-    }
+        "staff_column": "level"
+      },
+      "behavior": {
+        "level_fill_mode": "solid"
+      }
   }
 ]

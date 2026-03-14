@@ -7,6 +7,7 @@ from uuid import uuid4
 
 from dancenotation_mcp.mcp_server import server
 from dancenotation_mcp.rendering import pdf_renderer
+from dancenotation_mcp.rendering.svg_renderer import render_svg
 
 
 class PDFRendererTests(unittest.TestCase):
@@ -77,6 +78,17 @@ class PDFRendererTests(unittest.TestCase):
             created = pdf_renderer.svg_to_pdf("<svg xmlns='http://www.w3.org/2000/svg'></svg>", target)
         self.assertFalse(created)
         self.assertFalse(target.exists())
+
+    def test_svg_to_pdf_smoke_for_engraving_heavy_fixture(self):
+        fixture = Path(__file__).resolve().parents[1] / "fixtures" / "golden_official_family_score.json"
+        ir = __import__("json").loads(fixture.read_text(encoding="utf-8"))
+        svg = render_svg(ir)
+        target = self.temp_root / f"dancenotation-pdf-{uuid4().hex[:8]}.pdf"
+        self.addCleanup(lambda: target.unlink(missing_ok=True))
+        created = pdf_renderer.svg_to_pdf(svg, target)
+        self.assertTrue(created)
+        self.assertTrue(target.exists())
+        self.assertTrue(target.read_bytes().startswith(b"%PDF"))
 
 
 if __name__ == "__main__":
