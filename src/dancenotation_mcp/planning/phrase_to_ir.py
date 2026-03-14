@@ -7,6 +7,18 @@ PRIMARY_MOTION_COLUMNS = {"support", "direction", "path", "gesture", "body", "fl
 AUTO_ATTACH_COLUMNS = {"pin", "surface", "quality", "level", "timing"}
 
 
+def _behavior(spec: dict) -> dict:
+    return spec.get("behavior", {}) or {}
+
+
+def _is_repeat_opening(spec: dict, symbol_id: str) -> bool:
+    return _behavior(spec).get("boundary_role") == "opening" or symbol_id == "repeat.start"
+
+
+def _is_repeat_closing(spec: dict, symbol_id: str) -> bool:
+    return _behavior(spec).get("boundary_role") == "closing" or symbol_id in {"repeat.end", "repeat.double"}
+
+
 def phrase_plan_to_ir(phrase_plan: dict, source_prompt: str = "") -> dict:
     catalog = load_symbol_catalog()
     symbols: list[SymbolInstance] = []
@@ -29,12 +41,14 @@ def phrase_plan_to_ir(phrase_plan: dict, source_prompt: str = "") -> dict:
             )
         )
     for idx, symbol in enumerate(symbols):
-        if symbol.symbol_id != "repeat.start":
+        spec = catalog.get(symbol.symbol_id, {})
+        if not _is_repeat_opening(spec, symbol.symbol_id):
             continue
         if symbol.modifiers.get("repeat_span_to"):
             continue
         for candidate in symbols[idx + 1 :]:
-            if candidate.symbol_id in {"repeat.end", "repeat.double"}:
+            candidate_spec = catalog.get(candidate.symbol_id, {})
+            if _is_repeat_closing(candidate_spec, candidate.symbol_id):
                 symbol.modifiers["repeat_span_to"] = candidate.symbol_id
                 break
     for idx, symbol in enumerate(symbols):

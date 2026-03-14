@@ -26,6 +26,86 @@ HEADER_FAMILY_BY_SYMBOL = {
     "music.cadence.mark": "cadence",
 }
 HEADER_FAMILY_ORDER = {"time_signature": 0, "tempo": 1, "cadence": 2}
+CONFLICTING_TIMING_SYMBOLS = {
+    frozenset({"timing.hold", "timing.staccato"}),
+    frozenset({"timing.hold", "timing.accent"}),
+}
+CONFLICTING_QUALITY_SYMBOLS = {
+    frozenset({"quality.bound", "quality.free"}),
+    frozenset({"quality.direct", "quality.flexible"}),
+}
+SEMANTIC_ERROR_CODES = {
+    "UNKNOWN_SYMBOL",
+    "TIMING_DURATION",
+    "TIMING_BEAT_RANGE",
+    "MODIFIER_ATTACH_SOURCE_ROLE",
+    "MODIFIER_ATTACH_TARGET_MISSING",
+    "MODIFIER_ATTACH_TARGET_ROLE",
+    "MODIFIER_REPEAT_SPAN_SOURCE_ROLE",
+    "MODIFIER_REPEAT_SPAN_TARGET_MISSING",
+    "MODIFIER_REPEAT_SPAN_TARGET_ROLE",
+    "MODIFIER_REPEAT_SPAN_TARGET_ORDER",
+    "MODIFIER_MEASURE_HEADER_UNSUPPORTED",
+}
+REPAIR_ACTION_PRIORITY = {
+    "remove_symbol": 0,
+    "remove_modifier": 1,
+    "replace_symbol": 2,
+    "set_body_part": 3,
+    "set_direction": 4,
+    "set_level": 5,
+    "set_modifier": 6,
+    "retarget_attachment": 7,
+    "retarget_repeat_span": 8,
+    "set_beat": 9,
+    "set_duration": 10,
+    "split_duration": 11,
+    "insert_continuation_symbol": 12,
+    "reorder_measure_headers": 13,
+    "reorder_repeat_boundaries": 14,
+}
+
+
+def _catalog_behavior(catalog: dict[str, dict], symbol_id: str) -> dict:
+    return catalog.get(symbol_id, {}).get("behavior", {}) or {}
+
+
+def _header_family(catalog: dict[str, dict], symbol_id: str) -> str | None:
+    return _catalog_behavior(catalog, symbol_id).get("header_role") or HEADER_FAMILY_BY_SYMBOL.get(symbol_id)
+
+
+def _repeat_boundary_role(catalog: dict[str, dict], symbol_id: str) -> str | None:
+    return _catalog_behavior(catalog, symbol_id).get("boundary_role")
+
+
+def _is_measure_header_symbol(catalog: dict[str, dict], symbol_id: str) -> bool:
+    return _header_family(catalog, symbol_id) in HEADER_FAMILY_ORDER
+
+
+def _is_repeat_span_source(catalog: dict[str, dict], symbol_id: str) -> bool:
+    role = _repeat_boundary_role(catalog, symbol_id)
+    return symbol_id in REPEAT_SPAN_SOURCE_SYMBOLS or role == "opening"
+
+
+def _is_repeat_span_target(catalog: dict[str, dict], symbol_id: str) -> bool:
+    role = _repeat_boundary_role(catalog, symbol_id)
+    return symbol_id in REPEAT_SPAN_TARGET_SYMBOLS or role == "closing"
+
+
+def _is_repeat_opening(catalog: dict[str, dict], symbol_id: str) -> bool:
+    return _repeat_boundary_role(catalog, symbol_id) == "opening" or symbol_id == "repeat.start"
+
+
+def _is_repeat_closing(catalog: dict[str, dict], symbol_id: str) -> bool:
+    return _repeat_boundary_role(catalog, symbol_id) == "closing" or symbol_id in {"repeat.end", "repeat.double"}
+
+
+def _continuation_scope(catalog: dict[str, dict], symbol_id: str) -> str | None:
+    return _catalog_behavior(catalog, symbol_id).get("continuation_scope")
+
+
+def _attachment_coverage_expectation(catalog: dict[str, dict], symbol_id: str) -> str | None:
+    return _catalog_behavior(catalog, symbol_id).get("coverage_expectation")
 
 
 @dataclass
@@ -256,6 +336,31 @@ def _validate_symbol_constraints(sym: dict, catalog_entry: dict, path: str) -> l
                 )
             )
 
+        behavior = catalog_entry.get("behavior", {}) or {}
+        preferred_pin_head = behavior.get("preferred_pin_head")
+        if preferred_pin_head and modifiers.get("pin_head") != preferred_pin_head:
+            issues.append(
+                ValidationIssue(
+                    "PIN_VARIANT_HEAD_REQUIRED",
+                    f"symbol '{catalog_entry['id']}' should use pin_head '{preferred_pin_head}'",
+                    f"{path}/modifiers/pin_head",
+                    "warning",
+                    {"suggested_pin_head": preferred_pin_head, "symbol_id": catalog_entry["id"]},
+                )
+            )
+
+        preferred_separator_mode = behavior.get("preferred_separator_mode")
+        if preferred_separator_mode and modifiers.get("separator_mode") != preferred_separator_mode:
+            issues.append(
+                ValidationIssue(
+                    "SEPARATOR_VARIANT_MODE_REQUIRED",
+                    f"symbol '{catalog_entry['id']}' should use separator_mode '{preferred_separator_mode}'",
+                    f"{path}/modifiers/separator_mode",
+                    "warning",
+                    {"suggested_separator_mode": preferred_separator_mode, "symbol_id": catalog_entry["id"]},
+                )
+            )
+
         for key in ("level_fill_top", "level_fill_bottom"):
             if modifiers.get(key) and modifiers[key] not in {"high", "middle", "low", "blank"}:
                 issues.append(
@@ -336,6 +441,12 @@ def _measure_beats_by_measure(symbols: list[dict]) -> dict[int, float]:
     return derived
 
 
+def _normalize_semantic_issue_severities(issues: list[ValidationIssue]) -> list[ValidationIssue]:
+    for issue in issues:
+        issue.severity = "error" if issue.code in SEMANTIC_ERROR_CODES else "warning"
+    return issues
+
+
 def validate_semantic(data: dict) -> list[ValidationIssue]:
     issues: list[ValidationIssue] = []
     symbols = data.get("symbols", [])
@@ -368,13 +479,21 @@ def validate_semantic(data: dict) -> list[ValidationIssue]:
         if beat < 1.0:
             issues.append(ValidationIssue("TIMING_BEAT_RANGE", "beat must be >= 1 within the measure", f"{p}/timing/beat", "error", {}))
         if beat + dur - 1.0 > measure_beats + 0.01:
+            max_duration = max(0.0, measure_beats - beat + 1.0)
+            carry_duration = max(0.0, dur - max_duration)
             issues.append(
                 ValidationIssue(
                     "TIMING_MEASURE_OVERFLOW",
                     "symbol duration extends past the end of the measure",
                     f"{p}/timing/duration_beats",
                     "warning",
-                    {"measure": measure, "measure_beats": measure_beats, "max_duration": max(0.0, measure_beats - beat + 1.0)},
+                    {
+                        "measure": measure,
+                        "measure_beats": measure_beats,
+                        "max_duration": max_duration,
+                        "carry_duration": carry_duration,
+                        "next_measure": measure + 1,
+                    },
                 )
             )
         if staff_column in PRIMARY_MOTION_COLUMNS:
@@ -446,6 +565,47 @@ def validate_semantic(data: dict) -> list[ValidationIssue]:
                             {"attach_to": attach_to, "target_staff_column": target_column},
                         )
                     )
+                source_behavior = _catalog_behavior(catalog, sid)
+                valid_anchor_families = source_behavior.get("valid_anchor_families")
+                if (
+                    isinstance(valid_anchor_families, list)
+                    and target_column in PRIMARY_MOTION_COLUMNS
+                    and target_column not in valid_anchor_families
+                ):
+                    issues.append(
+                        ValidationIssue(
+                            "MODIFIER_ATTACH_TARGET_FAMILY_INCOMPATIBLE",
+                            f"attach_to target '{attach_to}' uses primary family '{target_column}' which is incompatible with '{sid}'",
+                            f"{p}/modifiers/attach_to",
+                            "warning",
+                            {"attach_to": attach_to, "target_staff_column": target_column, "allowed_families": valid_anchor_families},
+                        )
+                    )
+                preferred_anchor_side = source_behavior.get("preferred_anchor_side")
+                if (
+                    attach_side in {"left", "right", "top", "bottom"}
+                    and preferred_anchor_side in {"left", "right", "top", "bottom"}
+                    and attach_side != preferred_anchor_side
+                ):
+                    issues.append(
+                        ValidationIssue(
+                            "MODIFIER_ATTACH_SIDE_PREFERRED_MISMATCH",
+                            f"symbol '{sid}' prefers attach_side '{preferred_anchor_side}'",
+                            f"{p}/modifiers/attach_side",
+                            "warning",
+                            {"suggested_attach_side": preferred_anchor_side, "symbol_id": sid},
+                        )
+                    )
+                elif source_column in {"music", "repeat"}:
+                    issues.append(
+                        ValidationIssue(
+                            "MODIFIER_ATTACH_FAMILY_INCOMPATIBLE",
+                            f"symbol '{sid}' should not attach across movement lanes from the {source_column} family",
+                            f"{p}/modifiers/attach_to",
+                            "warning",
+                            {"symbol_id": sid, "source_staff_column": source_column, "attach_to": attach_to},
+                        )
+                    )
                 source_body = sym.get("body_part")
                 target_body = target.get("body_part")
                 if (
@@ -491,16 +651,21 @@ def validate_semantic(data: dict) -> list[ValidationIssue]:
                             {"attach_to": attach_to, "source_measure": int(timing.get("measure", 1)), "target_measure": target_measure},
                         )
                     )
-                elif target_end + 0.01 < beat:
-                    issues.append(
-                        ValidationIssue(
-                            "MODIFIER_ATTACH_TARGET_OUTSIDE_COVERAGE",
-                            f"attach_to target '{attach_to}' ends before the attached symbol occurs",
-                            f"{p}/modifiers/attach_to",
-                            "warning",
-                            {"attach_to": attach_to, "target_end": target_end, "source_beat": beat},
+                else:
+                    coverage_expectation = _attachment_coverage_expectation(catalog, sid)
+                    enforce_covering_motion = coverage_expectation in {"covering_motion", "must_cover_annotation_beat"}
+                    if coverage_expectation is None and source_column in ANNOTATION_ATTACHMENT_COLUMNS:
+                        enforce_covering_motion = True
+                    if enforce_covering_motion and target_end + 0.01 < beat:
+                        issues.append(
+                            ValidationIssue(
+                                "MODIFIER_ATTACH_TARGET_OUTSIDE_COVERAGE",
+                                f"attach_to target '{attach_to}' ends before the attached symbol occurs",
+                                f"{p}/modifiers/attach_to",
+                                "warning",
+                                {"attach_to": attach_to, "target_end": target_end, "source_beat": beat},
+                            )
                         )
-                    )
 
         source_column = staff_column
         if source_column in ANNOTATION_ATTACHMENT_COLUMNS and not isinstance(attach_to, str) and measure_header is not True:
@@ -515,7 +680,7 @@ def validate_semantic(data: dict) -> list[ValidationIssue]:
             )
 
         repeat_span_to = modifiers.get("repeat_span_to")
-        if sid.startswith("repeat.") and sym.get("body_part") != "torso":
+        if _repeat_boundary_role(catalog, sid) and sym.get("body_part") != "torso":
             issues.append(
                 ValidationIssue(
                     "REPEAT_BODY_PART_INVALID",
@@ -525,7 +690,7 @@ def validate_semantic(data: dict) -> list[ValidationIssue]:
                     {"symbol_id": sid, "suggested_body_part": "torso"},
                 )
             )
-        if sid == "repeat.start" and abs(beat - 1.0) > 0.01:
+        if _is_repeat_opening(catalog, sid) and abs(beat - 1.0) > 0.01:
             issues.append(
                 ValidationIssue(
                     "REPEAT_START_TIMING",
@@ -535,7 +700,7 @@ def validate_semantic(data: dict) -> list[ValidationIssue]:
                     {"suggested_beat": 1.0, "measure": measure},
                 )
             )
-        if sid in {"repeat.end", "repeat.double"} and abs(beat - measure_beats) > 0.01:
+        if _is_repeat_closing(catalog, sid) and abs(beat - measure_beats) > 0.01:
             issues.append(
                 ValidationIssue(
                     "REPEAT_END_TIMING",
@@ -547,7 +712,7 @@ def validate_semantic(data: dict) -> list[ValidationIssue]:
             )
         if isinstance(repeat_span_to, str):
             source_role_valid = True
-            if sid not in REPEAT_SPAN_SOURCE_SYMBOLS:
+            if not _is_repeat_span_source(catalog, sid):
                 source_role_valid = False
                 issues.append(
                     ValidationIssue(
@@ -584,7 +749,7 @@ def validate_semantic(data: dict) -> list[ValidationIssue]:
                             {"repeat_span_to": repeat_span_to, "target_staff_column": target_column},
                         )
                     )
-                if target_sid not in REPEAT_SPAN_TARGET_SYMBOLS:
+                if not _is_repeat_span_target(catalog, target_sid):
                     issues.append(
                         ValidationIssue(
                             "MODIFIER_REPEAT_SPAN_TARGET_VARIANT",
@@ -623,7 +788,7 @@ def validate_semantic(data: dict) -> list[ValidationIssue]:
                         {"symbol_id": sid},
                     )
                 )
-            elif sid not in MEASURE_HEADER_SYMBOLS:
+            elif not _is_measure_header_symbol(catalog, sid):
                 issues.append(
                     ValidationIssue(
                         "MODIFIER_MEASURE_HEADER_SYMBOL_ROLE",
@@ -653,7 +818,7 @@ def validate_semantic(data: dict) -> list[ValidationIssue]:
                         {"measure": measure, "suggested_beat": 1.0},
                     )
                 )
-        if sid == "music.tempo.mark":
+        if _header_family(catalog, sid) == "tempo":
             tempo_value = modifiers.get("tempo")
             if not isinstance(tempo_value, int) or tempo_value <= 0:
                 issues.append(
@@ -665,7 +830,7 @@ def validate_semantic(data: dict) -> list[ValidationIssue]:
                         {"suggested_tempo": 120},
                     )
                 )
-        if sid == "music.cadence.mark":
+        if _header_family(catalog, sid) == "cadence":
             label = modifiers.get("label")
             if not isinstance(label, str) or not label.strip():
                 issues.append(
@@ -681,7 +846,7 @@ def validate_semantic(data: dict) -> list[ValidationIssue]:
     for measure, headers in measure_headers_by_measure.items():
         family_seen: dict[str, int] = {}
         for idx, sym in sorted(headers, key=lambda item: item[0]):
-            family = HEADER_FAMILY_BY_SYMBOL.get(sym.get("symbol_id", ""))
+            family = _header_family(catalog, sym.get("symbol_id", ""))
             if not family:
                 continue
             if family in family_seen:
@@ -696,7 +861,7 @@ def validate_semantic(data: dict) -> list[ValidationIssue]:
                 )
             else:
                 family_seen[family] = idx
-        ordered_headers = [(idx, sym, HEADER_FAMILY_BY_SYMBOL.get(sym.get("symbol_id", ""))) for idx, sym in sorted(headers, key=lambda item: item[0])]
+        ordered_headers = [(idx, sym, _header_family(catalog, sym.get("symbol_id", ""))) for idx, sym in sorted(headers, key=lambda item: item[0])]
         filtered_order = [(idx, family) for idx, _sym, family in ordered_headers if family in HEADER_FAMILY_ORDER]
         expected_order = sorted(filtered_order, key=lambda item: (HEADER_FAMILY_ORDER[item[1]], item[0]))
         if [family for _, family in filtered_order] != [family for _, family in expected_order]:
@@ -735,7 +900,7 @@ def validate_semantic(data: dict) -> list[ValidationIssue]:
 
     time_signature_headers: list[tuple[int, dict]] = []
     for idx, sym in enumerate(symbols):
-        if sym.get("symbol_id") in {"music.time.2_4", "music.time.3_4", "music.time.4_4"} and sym.get("modifiers", {}).get("measure_header"):
+        if _header_family(catalog, sym.get("symbol_id", "")) == "time_signature" and sym.get("modifiers", {}).get("measure_header"):
             time_signature_headers.append((idx, sym))
     time_signature_headers.sort(key=lambda item: int(item[1].get("timing", {}).get("measure", 1)))
     for pos in range(1, len(time_signature_headers)):
@@ -755,8 +920,9 @@ def validate_semantic(data: dict) -> list[ValidationIssue]:
             )
 
     tempo_headers: list[tuple[int, dict]] = []
+    tempo_headers: list[tuple[int, dict]] = []
     for idx, sym in enumerate(symbols):
-        if sym.get("symbol_id") == "music.tempo.mark" and sym.get("modifiers", {}).get("measure_header"):
+        if _header_family(catalog, sym.get("symbol_id", "")) == "tempo" and sym.get("modifiers", {}).get("measure_header"):
             tempo_headers.append((idx, sym))
     tempo_headers.sort(key=lambda item: int(item[1].get("timing", {}).get("measure", 1)))
     for pos in range(1, len(tempo_headers)):
@@ -779,7 +945,7 @@ def validate_semantic(data: dict) -> list[ValidationIssue]:
 
     cadence_headers: list[tuple[int, dict]] = []
     for idx, sym in enumerate(symbols):
-        if sym.get("symbol_id") == "music.cadence.mark" and sym.get("modifiers", {}).get("measure_header"):
+        if _header_family(catalog, sym.get("symbol_id", "")) == "cadence" and sym.get("modifiers", {}).get("measure_header"):
             cadence_headers.append((idx, sym))
     cadence_headers.sort(key=lambda item: int(item[1].get("timing", {}).get("measure", 1)))
     for pos in range(1, len(cadence_headers)):
@@ -800,13 +966,54 @@ def validate_semantic(data: dict) -> list[ValidationIssue]:
                 )
             )
 
+    previous_score_tempo: int | None = None
+    for idx, sym in tempo_headers:
+        if _continuation_scope(catalog, sym.get("symbol_id", "")) != "score":
+            continue
+        tempo = sym.get("modifiers", {}).get("tempo")
+        if isinstance(tempo, int) and tempo > 0:
+            previous_score_tempo = tempo
+            continue
+        if previous_score_tempo is not None:
+            issues.append(
+                ValidationIssue(
+                    "MUSIC_TEMPO_CONTINUATION_VALUE_MISSING",
+                    "music.tempo.mark omits tempo even though a previous score-scoped tempo can be carried forward",
+                    f"/symbols/{idx}/modifiers/tempo",
+                    "warning",
+                    {"suggested_tempo": previous_score_tempo},
+                )
+            )
+
+    previous_score_cadence: str | None = None
+    for idx, sym in cadence_headers:
+        if _continuation_scope(catalog, sym.get("symbol_id", "")) != "score":
+            continue
+        label = sym.get("modifiers", {}).get("label")
+        if isinstance(label, str) and label.strip():
+            previous_score_cadence = label
+            continue
+        if previous_score_cadence is not None:
+            issues.append(
+                ValidationIssue(
+                    "MUSIC_CADENCE_CONTINUATION_LABEL_MISSING",
+                    "music.cadence.mark omits its label even though a previous score-scoped cadence can be carried forward",
+                    f"/symbols/{idx}/modifiers/label",
+                    "warning",
+                    {"suggested_label": previous_score_cadence},
+                )
+            )
+
     repeat_starts: list[tuple[int, dict]] = []
     repeat_ends: list[tuple[int, dict]] = []
+    symbols_by_measure: dict[int, list[tuple[int, dict]]] = {}
     for idx, sym in enumerate(symbols):
         sid = sym.get("symbol_id")
-        if sid == "repeat.start":
+        measure = int(sym.get("timing", {}).get("measure", 1))
+        symbols_by_measure.setdefault(measure, []).append((idx, sym))
+        if _is_repeat_opening(catalog, sid):
             repeat_starts.append((idx, sym))
-        elif sid in {"repeat.end", "repeat.double"}:
+        elif _is_repeat_closing(catalog, sid):
             repeat_ends.append((idx, sym))
 
     repeat_start_slots_seen: set[tuple[int, float]] = set()
@@ -893,7 +1100,7 @@ def validate_semantic(data: dict) -> list[ValidationIssue]:
     open_repeat_start: tuple[int, dict] | None = None
     for _measure, _beat, idx, sym in ordered_repeat_events:
         sid = sym.get("symbol_id")
-        if sid == "repeat.start":
+        if _is_repeat_opening(catalog, sid):
             if open_repeat_start is not None:
                 open_idx, open_sym = open_repeat_start
                 issues.append(
@@ -907,7 +1114,7 @@ def validate_semantic(data: dict) -> list[ValidationIssue]:
                 )
             else:
                 open_repeat_start = (idx, sym)
-        elif sid in {"repeat.end", "repeat.double"} and open_repeat_start is not None:
+        elif _is_repeat_closing(catalog, sid) and open_repeat_start is not None:
             open_repeat_start = None
 
     for idx, sym in repeat_starts:
@@ -1035,6 +1242,60 @@ def validate_semantic(data: dict) -> list[ValidationIssue]:
                 )
             )
 
+    for measure, entries in symbols_by_measure.items():
+        repeat_entries = [(idx, sym) for idx, sym in entries if str(sym.get("symbol_id", "")).startswith("repeat.")]
+        if not repeat_entries:
+            continue
+        has_repeat_start = any(_is_repeat_opening(catalog, sym.get("symbol_id", "")) for _idx, sym in repeat_entries)
+        has_repeat_end = any(_is_repeat_closing(catalog, sym.get("symbol_id", "")) for _idx, sym in repeat_entries)
+        if not (has_repeat_start and has_repeat_end):
+            continue
+        has_headers = any(sym.get("modifiers", {}).get("measure_header") for _idx, sym in entries)
+        content_entries = [
+            (idx, sym)
+            for idx, sym in entries
+            if not sym.get("modifiers", {}).get("measure_header") and not str(sym.get("symbol_id", "")).startswith("repeat.")
+        ]
+        non_rest_content = [
+            (idx, sym) for idx, sym in content_entries if not str(sym.get("symbol_id", "")).startswith("music.rest.")
+        ]
+        rest_content = [
+            (idx, sym) for idx, sym in content_entries if str(sym.get("symbol_id", "")).startswith("music.rest.")
+        ]
+        if not has_headers and not content_entries:
+            for idx, _sym in repeat_entries:
+                issues.append(
+                    ValidationIssue(
+                        "REPEAT_BOUNDARY_EMPTY_MEASURE",
+                        "repeat boundaries should not wrap an otherwise empty measure",
+                        f"/symbols/{idx}/symbol_id",
+                        "warning",
+                        {"measure": measure},
+                    )
+                )
+        elif has_headers and not content_entries:
+            for idx, _sym in repeat_entries:
+                issues.append(
+                    ValidationIssue(
+                        "REPEAT_BOUNDARY_HEADER_ONLY_MEASURE",
+                        "repeat boundaries should not wrap a measure that contains only headers and boundary signs",
+                        f"/symbols/{idx}/symbol_id",
+                        "warning",
+                        {"measure": measure},
+                    )
+                )
+        elif rest_content and not non_rest_content:
+            for idx, _sym in repeat_entries:
+                issues.append(
+                    ValidationIssue(
+                        "REPEAT_BOUNDARY_REST_ONLY_MEASURE",
+                        "repeat boundaries should not wrap a measure that contains only rests",
+                        f"/symbols/{idx}/symbol_id",
+                        "warning",
+                        {"measure": measure},
+                    )
+                )
+
     for idx, sym, spec in primary_body_entries:
         timing = sym.get("timing", {})
         measure = int(timing.get("measure", 1))
@@ -1071,8 +1332,174 @@ def validate_semantic(data: dict) -> list[ValidationIssue]:
                     },
                 )
             )
+            if sym.get("direction") != other_sym.get("direction") or sym.get("level") != other_sym.get("level"):
+                issues.append(
+                    ValidationIssue(
+                        "BODY_PART_DIRECTION_LEVEL_CONFLICT",
+                        f"body_part '{body_part}' carries conflicting simultaneous direction/level semantics between '{sym.get('symbol_id')}' and '{other_sym.get('symbol_id')}'",
+                        f"/symbols/{other_idx}/timing/beat",
+                        "warning",
+                        {
+                            "body_part": body_part,
+                            "conflicts_with": sym.get("symbol_id"),
+                            "suggested_beat": end,
+                            "left_direction": sym.get("direction"),
+                            "right_direction": other_sym.get("direction"),
+                            "left_level": sym.get("level"),
+                            "right_level": other_sym.get("level"),
+                        },
+                    )
+                )
 
-    return issues
+    annotation_entries: list[tuple[int, dict, str]] = []
+    for idx, sym in enumerate(symbols):
+        spec = catalog.get(sym.get("symbol_id", ""), {})
+        column = spec.get("geometry", {}).get("staff_column")
+        if column in {"timing", "quality"}:
+            annotation_entries.append((idx, sym, column))
+    for idx, sym, column in annotation_entries:
+        modifiers = sym.get("modifiers", {})
+        attach_to = modifiers.get("attach_to")
+        if not isinstance(attach_to, str):
+            continue
+        timing = sym.get("timing", {})
+        measure = int(timing.get("measure", 1))
+        beat = float(timing.get("beat", 0))
+        for other_idx, other_sym, other_column in annotation_entries:
+            if other_idx <= idx or other_column != column:
+                continue
+            other_modifiers = other_sym.get("modifiers", {})
+            if other_modifiers.get("attach_to") != attach_to:
+                continue
+            other_timing = other_sym.get("timing", {})
+            if int(other_timing.get("measure", 1)) != measure or float(other_timing.get("beat", 0)) != beat:
+                continue
+            pair = frozenset({sym.get("symbol_id", ""), other_sym.get("symbol_id", "")})
+            if column == "timing" and pair in CONFLICTING_TIMING_SYMBOLS:
+                issues.append(
+                    ValidationIssue(
+                        "TIMING_COMPANION_CONFLICT",
+                        f"timing companions '{sym.get('symbol_id')}' and '{other_sym.get('symbol_id')}' conflict on the same anchor and beat",
+                        f"/symbols/{other_idx}/symbol_id",
+                        "warning",
+                        {"attach_to": attach_to, "conflicts_with": sym.get("symbol_id"), "measure": measure, "beat": beat},
+                    )
+                )
+            if column == "quality" and pair in CONFLICTING_QUALITY_SYMBOLS:
+                issues.append(
+                    ValidationIssue(
+                        "QUALITY_COMPANION_CONFLICT",
+                        f"quality companions '{sym.get('symbol_id')}' and '{other_sym.get('symbol_id')}' conflict on the same anchor and beat",
+                        f"/symbols/{other_idx}/symbol_id",
+                        "warning",
+                        {"attach_to": attach_to, "conflicts_with": sym.get("symbol_id"), "measure": measure, "beat": beat},
+                    )
+                )
+
+    for idx, sym in enumerate(symbols):
+        sid = str(sym.get("symbol_id", ""))
+        if not sid.startswith("music.rest."):
+            continue
+        if sym.get("modifiers", {}).get("measure_header"):
+            continue
+        timing = sym.get("timing", {})
+        measure = int(timing.get("measure", 1))
+        beat = float(timing.get("beat", 0))
+        end = beat + float(timing.get("duration_beats", 0))
+        for other_idx, other_sym in enumerate(symbols):
+            if other_idx == idx:
+                continue
+            other_sid = str(other_sym.get("symbol_id", ""))
+            if other_sid.startswith("music.rest."):
+                continue
+            if other_sym.get("modifiers", {}).get("measure_header"):
+                continue
+            if other_sid.startswith("repeat."):
+                continue
+            other_timing = other_sym.get("timing", {})
+            if int(other_timing.get("measure", 1)) != measure:
+                continue
+            other_beat = float(other_timing.get("beat", 0))
+            other_end = other_beat + float(other_timing.get("duration_beats", 0))
+            if other_beat >= end or beat >= other_end:
+                continue
+            issues.append(
+                ValidationIssue(
+                    "REST_CONTENT_CONFLICT",
+                    f"rest symbol '{sid}' overlaps active content '{other_sid}' in the same measure window",
+                    f"/symbols/{idx}/symbol_id",
+                    "warning",
+                    {"conflicts_with": other_sid, "measure": measure, "beat": beat},
+                )
+            )
+            break
+
+    for idx, sym in enumerate(symbols):
+        sid = str(sym.get("symbol_id", ""))
+        if sid not in {"timing.hold", "quality.sustained"}:
+            continue
+        modifiers = sym.get("modifiers", {})
+        attach_to = modifiers.get("attach_to")
+        if not isinstance(attach_to, str):
+            continue
+        target_entry = symbol_index.get(attach_to)
+        if not target_entry:
+            continue
+        _target_idx, target_sym = target_entry
+        target_timing = target_sym.get("timing", {})
+        target_measure = int(target_timing.get("measure", 1))
+        target_beat = float(target_timing.get("beat", 0))
+        target_duration = float(target_timing.get("duration_beats", 0))
+        target_end = target_beat + target_duration - 1.0
+        target_measure_beats = measure_beats_by_measure.get(target_measure, MEASURE_BEATS)
+        if target_end + 0.01 < target_measure_beats:
+            continue
+        target_body = target_sym.get("body_part")
+        next_candidates = []
+        for candidate in symbols:
+            candidate_sid = str(candidate.get("symbol_id", ""))
+            candidate_column = catalog.get(candidate_sid, {}).get("geometry", {}).get("staff_column")
+            if candidate_column not in PRIMARY_MOTION_COLUMNS:
+                continue
+            candidate_timing = candidate.get("timing", {})
+            if int(candidate_timing.get("measure", 1)) != target_measure + 1:
+                continue
+            if abs(float(candidate_timing.get("beat", 0)) - 1.0) > 0.01:
+                continue
+            if candidate.get("body_part") != target_body:
+                continue
+            next_candidates.append(candidate)
+        if not next_candidates:
+            continue
+        continued = any(
+            other.get("symbol_id") == sid and other.get("modifiers", {}).get("attach_to") == candidate.get("symbol_id")
+            for candidate in next_candidates
+            for other in symbols
+        )
+        if continued:
+            continue
+        if sid == "timing.hold":
+            issues.append(
+                ValidationIssue(
+                    "HOLD_CONTINUATION_MISSING",
+                    "timing.hold reaches the end of a measure but is not continued onto the next measure's matching motion",
+                    f"/symbols/{idx}/symbol_id",
+                    "warning",
+                    {"attach_to": attach_to, "measure": target_measure, "body_part": target_body},
+                )
+            )
+        elif sid == "quality.sustained":
+            issues.append(
+                ValidationIssue(
+                    "SUSTAINED_QUALITY_CONTINUATION_MISSING",
+                    "quality.sustained reaches the end of a measure but is not continued onto the next measure's matching motion",
+                    f"/symbols/{idx}/symbol_id",
+                    "warning",
+                    {"attach_to": attach_to, "measure": target_measure, "body_part": target_body},
+                )
+            )
+
+    return _normalize_semantic_issue_severities(issues)
 
 
 def validate_ir(data: dict) -> dict:
@@ -1092,6 +1519,16 @@ def build_repair_hints(issues: list[ValidationIssue]) -> list[dict]:
         elif issue.code == "TIMING_DURATION":
             hints.append({"action": "set_duration", "path": issue.path, "value": 1.0})
         elif issue.code == "TIMING_MEASURE_OVERFLOW":
+            if issue.details.get("carry_duration", 0.0) > 0:
+                hints.append(
+                    {
+                        "action": "split_duration",
+                        "path": issue.path,
+                        "value": issue.details.get("max_duration", 1.0) or 1.0,
+                        "carry_duration": issue.details.get("carry_duration", 0.0),
+                        "next_measure": issue.details.get("next_measure"),
+                    }
+                )
             hints.append({"action": "set_duration", "path": issue.path, "value": issue.details.get("max_duration", 1.0) or 1.0})
         elif issue.code in {"REPEAT_START_UNCLOSED", "REPEAT_END_ORPHANED"}:
             hints.append({"action": "remove_symbol", "path": issue.path, "message": "Remove the orphaned repeat sign or add its matching counterpart"})
@@ -1115,8 +1552,16 @@ def build_repair_hints(issues: list[ValidationIssue]) -> list[dict]:
             hints.append({"action": "remove_symbol", "path": issue.path, "message": "Remove redundant consecutive cadence headers when the cadence label does not change"})
         elif issue.code == "MUSIC_TEMPO_VALUE_MISSING":
             hints.append({"action": "set_modifier", "path": issue.path, "key": "tempo", "value": issue.details.get("suggested_tempo", 120)})
+        elif issue.code == "MUSIC_TEMPO_CONTINUATION_VALUE_MISSING":
+            hints.append({"action": "set_modifier", "path": issue.path, "key": "tempo", "value": issue.details.get("suggested_tempo", 120)})
         elif issue.code == "MUSIC_CADENCE_LABEL_MISSING":
             hints.append({"action": "set_modifier", "path": issue.path, "key": "label", "value": issue.details.get("suggested_label", "rit.")})
+        elif issue.code == "MUSIC_CADENCE_CONTINUATION_LABEL_MISSING":
+            hints.append({"action": "set_modifier", "path": issue.path, "key": "label", "value": issue.details.get("suggested_label", "rit.")})
+        elif issue.code == "PIN_VARIANT_HEAD_REQUIRED":
+            hints.append({"action": "set_modifier", "path": issue.path, "key": "pin_head", "value": issue.details.get("suggested_pin_head", "diamond")})
+        elif issue.code == "SEPARATOR_VARIANT_MODE_REQUIRED":
+            hints.append({"action": "set_modifier", "path": issue.path, "key": "separator_mode", "value": issue.details.get("suggested_separator_mode", "single")})
         elif issue.code == "SYMBOL_DIRECTION_REQUIRED":
             hints.append({"action": "set_direction", "path": issue.path, "value": "forward"})
         elif issue.code == "SYMBOL_LEVEL_REQUIRED":
@@ -1139,6 +1584,12 @@ def build_repair_hints(issues: list[ValidationIssue]) -> list[dict]:
             hints.append({"action": "retarget_attachment", "path": issue.path, "message": "Retarget attach_to to a primary motion symbol on the same body_part"})
         elif issue.code == "MODIFIER_ATTACH_TARGET_ROLE":
             hints.append({"action": "retarget_attachment", "path": issue.path, "message": "Retarget attach_to to a primary motion symbol"})
+        elif issue.code == "MODIFIER_ATTACH_FAMILY_INCOMPATIBLE":
+            hints.append({"action": "remove_modifier", "path": issue.path, "message": "Remove attach_to from music/repeat families until family-specific anchor semantics are modeled"})
+        elif issue.code == "MODIFIER_ATTACH_TARGET_FAMILY_INCOMPATIBLE":
+            hints.append({"action": "retarget_attachment", "path": issue.path, "message": "Retarget attach_to to a primary family allowed by the source symbol behavior metadata"})
+        elif issue.code == "MODIFIER_ATTACH_SIDE_PREFERRED_MISMATCH":
+            hints.append({"action": "set_modifier", "path": issue.path, "key": "attach_side", "value": issue.details.get("suggested_attach_side", "auto")})
         elif issue.code == "MODIFIER_REPEAT_SPAN_TARGET_MISSING":
             hints.append({"action": "remove_modifier", "path": issue.path, "message": "Remove repeat_span_to or set it to an existing later repeat symbol id"})
         elif issue.code == "MODIFIER_REPEAT_SPAN_SOURCE_ROLE":
@@ -1173,4 +1624,30 @@ def build_repair_hints(issues: list[ValidationIssue]) -> list[dict]:
             hints.append({"action": "set_beat", "path": issue.path, "value": 1.0})
         elif issue.code == "BODY_PART_SIMULTANEITY_CONFLICT":
             hints.append({"action": "set_beat", "path": issue.path, "value": issue.details.get("suggested_beat", 1.0)})
-    return hints
+        elif issue.code == "BODY_PART_DIRECTION_LEVEL_CONFLICT":
+            hints.append({"action": "set_beat", "path": issue.path, "value": issue.details.get("suggested_beat", 1.0)})
+        elif issue.code in {"TIMING_COMPANION_CONFLICT", "QUALITY_COMPANION_CONFLICT"}:
+            hints.append({"action": "remove_symbol", "path": issue.path, "message": "Remove the later conflicting companion symbol on the same anchor and beat"})
+        elif issue.code == "REST_CONTENT_CONFLICT":
+            hints.append({"action": "remove_symbol", "path": issue.path, "message": "Remove the rest symbol because active content already occupies the same measure window"})
+        elif issue.code in {"REPEAT_BOUNDARY_EMPTY_MEASURE", "REPEAT_BOUNDARY_HEADER_ONLY_MEASURE", "REPEAT_BOUNDARY_REST_ONLY_MEASURE"}:
+            hints.append({"action": "remove_symbol", "path": issue.path, "message": "Remove repeat boundaries from measures that contain no repeatable movement content"})
+        elif issue.code in {"HOLD_CONTINUATION_MISSING", "SUSTAINED_QUALITY_CONTINUATION_MISSING"}:
+            hints.append({"action": "insert_continuation_symbol", "path": issue.path, "message": "Insert the missing continuation companion on the next measure's matching motion"})
+    hints.sort(
+        key=lambda hint: (
+            REPAIR_ACTION_PRIORITY.get(hint.get("action", ""), 99),
+            hint.get("path", ""),
+            str(hint.get("key", "")),
+            str(hint.get("value", "")),
+        )
+    )
+    deduped: list[dict] = []
+    seen: set[tuple[str, str, str]] = set()
+    for hint in hints:
+        signature = (hint.get("action", ""), hint.get("path", ""), str(hint.get("key", "")))
+        if signature in seen:
+            continue
+        seen.add(signature)
+        deduped.append(hint)
+    return deduped

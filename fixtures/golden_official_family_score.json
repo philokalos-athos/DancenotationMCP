@@ -1,0 +1,105 @@
+{
+  "metadata": {
+    "title": "Golden Official Families",
+    "ir_version": "0.1.0",
+    "schema_version": "0.1.0"
+  },
+  "symbols": [
+    {
+      "symbol_id": "music.time.3_4",
+      "body_part": "torso",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+      "modifiers": {"measure_header": true}
+    },
+    {
+      "symbol_id": "music.tempo.mark",
+      "body_part": "torso",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+      "modifiers": {"measure_header": true, "tempo": 126}
+    },
+    {
+      "symbol_id": "repeat.start",
+      "body_part": "torso",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+      "modifiers": {"repeat_span_to": "repeat.end"}
+    },
+    {
+      "symbol_id": "path.spiral",
+      "body_part": "torso",
+      "direction": "left",
+      "level": "middle",
+      "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+      "modifiers": {"line_style": "double"}
+    },
+    {
+      "symbol_id": "jump.spring",
+      "body_part": "left_leg",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {"measure": 1, "beat": 2, "duration_beats": 1},
+      "modifiers": {}
+    },
+    {
+      "symbol_id": "surface.glide",
+      "body_part": "right_arm",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {"measure": 1, "beat": 2, "duration_beats": 1},
+      "modifiers": {"attach_to": "path.spiral"}
+    },
+    {
+      "symbol_id": "motif.rise_fall",
+      "body_part": "right_arm",
+      "direction": "left",
+      "level": "high",
+      "timing": {"measure": 1, "beat": 3, "duration_beats": 1},
+      "modifiers": {}
+    },
+    {
+      "symbol_id": "space.whitespace",
+      "body_part": "torso",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {"measure": 2, "beat": 1, "duration_beats": 1},
+      "modifiers": {"stretch": 1.4}
+    },
+    {
+      "symbol_id": "separator.hook",
+      "body_part": "torso",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {"measure": 2, "beat": 2, "duration_beats": 1},
+      "modifiers": {}
+    },
+    {
+      "symbol_id": "bow.hook",
+      "body_part": "torso",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {"measure": 2, "beat": 3, "duration_beats": 1},
+      "modifiers": {}
+    },
+    {
+      "symbol_id": "music.cadence.mark",
+      "body_part": "torso",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {"measure": 2, "beat": 1, "duration_beats": 1},
+      "modifiers": {"measure_header": true, "label": "rit."}
+    },
+    {
+      "symbol_id": "repeat.end",
+      "body_part": "torso",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {"measure": 2, "beat": 3, "duration_beats": 1},
+      "modifiers": {"repeat_count": 2}
+    }
+  ]
+}

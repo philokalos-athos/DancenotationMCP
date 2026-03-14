@@ -8,7 +8,8 @@
     "allowed_directions": ["forward", "backward", "left", "right", "diagonal_forward_left", "diagonal_forward_right", "diagonal_backward_left", "diagonal_backward_right", "place"],
     "requires_level": false,
     "allowed_levels": ["high", "middle", "low"],
-    "geometry": {"glyph": "|", "width": 16, "height": 24, "anchor": "center", "staff_column": "path"}
+    "geometry": {"glyph": "|", "width": 16, "height": 24, "anchor": "center", "staff_column": "path"},
+      "behavior": {"direction_transform": "axial", "rotation_rule": "none", "composition_role": "trajectory", "path_shape": "straight", "repeatable_segment": "shaft", "supports_arrowheads": true, "min_stretch": 0.5, "max_stretch": 2.5, "cap_shape": "flat"}
   },
   {
     "id": "path.curved",
@@ -19,7 +20,8 @@
     "allowed_directions": ["forward", "backward", "left", "right", "diagonal_forward_left", "diagonal_forward_right", "diagonal_backward_left", "diagonal_backward_right", "place"],
     "requires_level": false,
     "allowed_levels": ["high", "middle", "low"],
-    "geometry": {"glyph": "⌒", "width": 18, "height": 24, "anchor": "center", "staff_column": "path"}
+    "geometry": {"glyph": "⌒", "width": 18, "height": 24, "anchor": "center", "staff_column": "path"},
+      "behavior": {"direction_transform": "mirror_by_direction", "rotation_rule": "none", "composition_role": "trajectory", "path_shape": "curved", "repeatable_segment": "curve_body", "supports_arrowheads": true, "min_stretch": 0.6, "max_stretch": 2.4, "cap_shape": "tapered"}
   },
   {
     "id": "path.spiral",
@@ -30,7 +32,8 @@
     "allowed_directions": ["forward", "backward", "left", "right", "diagonal_forward_left", "diagonal_forward_right", "diagonal_backward_left", "diagonal_backward_right", "place"],
     "requires_level": false,
     "allowed_levels": ["high", "middle", "low"],
-    "geometry": {"glyph": "↺", "width": 18, "height": 24, "anchor": "center", "staff_column": "path"}
+    "geometry": {"glyph": "↺", "width": 18, "height": 24, "anchor": "center", "staff_column": "path"},
+      "behavior": {"direction_transform": "mirror_by_direction", "rotation_rule": "modifier", "composition_role": "trajectory", "path_shape": "spiral", "repeatable_segment": "spiral_body", "supports_arrowheads": false, "min_stretch": 0.6, "max_stretch": 2.0, "cap_shape": "spiral"}
   },
   {
     "id": "path.circle",
@@ -41,7 +44,20 @@
     "allowed_directions": ["forward", "backward", "left", "right", "diagonal_forward_left", "diagonal_forward_right", "diagonal_backward_left", "diagonal_backward_right", "place"],
     "requires_level": false,
     "allowed_levels": ["high", "middle", "low"],
-    "geometry": {"glyph": "○", "width": 18, "height": 24, "anchor": "center", "staff_column": "path"}
+    "geometry": {"glyph": "○", "width": 18, "height": 24, "anchor": "center", "staff_column": "path"},
+      "behavior": {"direction_transform": "mirror_by_direction", "rotation_rule": "modifier", "composition_role": "trajectory", "path_shape": "circle", "repeatable_segment": "closed_loop", "supports_arrowheads": false, "min_stretch": 0.8, "max_stretch": 1.8, "cap_shape": "closed"}
+  },
+  {
+    "id": "jump.spring",
+    "category": "jump",
+    "name": "Spring Jump",
+    "allowed_body_parts": ["left_leg", "right_leg", "torso"],
+    "requires_direction": true,
+    "allowed_directions": ["forward", "backward", "left", "right", "diagonal_forward_left", "diagonal_forward_right", "diagonal_backward_left", "diagonal_backward_right", "place"],
+    "requires_level": false,
+    "allowed_levels": ["high", "middle", "low"],
+    "geometry": {"glyph": "⇅", "width": 18, "height": 24, "anchor": "center", "staff_column": "jump"},
+    "behavior": {"direction_transform": "mirror_by_direction", "rotation_rule": "modifier", "composition_role": "spring", "jump_variant": "spring", "min_stretch": 0.8, "max_stretch": 2.4, "cap_shape": "coil"}
   },
   {
     "id": "bow.horizontal",
@@ -77,6 +93,17 @@
     "geometry": {"glyph": "˘", "width": 14, "height": 14, "anchor": "adjacent", "staff_column": "bow"}
   },
   {
+    "id": "bow.hook",
+    "category": "bow",
+    "name": "Hook Bow",
+    "allowed_body_parts": ["torso", "head"],
+    "requires_direction": false,
+    "allowed_directions": ["forward", "backward", "left", "right", "diagonal_forward_left", "diagonal_forward_right", "diagonal_backward_left", "diagonal_backward_right", "place"],
+    "requires_level": false,
+    "allowed_levels": ["high", "middle", "low"],
+    "geometry": {"glyph": "⤶", "width": 16, "height": 18, "anchor": "adjacent", "staff_column": "bow"}
+  },
+  {
     "id": "pin.generic",
     "category": "pin",
     "name": "Pin",
@@ -85,7 +112,8 @@
     "allowed_directions": ["forward", "backward", "left", "right", "diagonal_forward_left", "diagonal_forward_right", "diagonal_backward_left", "diagonal_backward_right", "place"],
     "requires_level": false,
     "allowed_levels": ["high", "middle", "low"],
-    "geometry": {"glyph": "⌖", "width": 12, "height": 18, "anchor": "adjacent", "staff_column": "pin"}
+    "geometry": {"glyph": "⌖", "width": 12, "height": 18, "anchor": "adjacent", "staff_column": "pin"},
+      "behavior": {"preferred_anchor_side": "auto", "valid_anchor_families": ["support", "direction", "path", "gesture", "body", "turn", "jump", "travel"], "coverage_expectation": "covering_motion", "min_stretch": 0.6, "max_stretch": 2.0, "cap_shape": "round_head"}
   },
   {
     "id": "pin.floorplan_exit",
@@ -107,7 +135,8 @@
     "allowed_directions": ["forward", "backward", "left", "right", "diagonal_forward_left", "diagonal_forward_right", "diagonal_backward_left", "diagonal_backward_right", "place"],
     "requires_level": false,
     "allowed_levels": ["high", "middle", "low"],
-    "geometry": {"glyph": "⇲", "width": 14, "height": 18, "anchor": "adjacent", "staff_column": "pin"}
+    "geometry": {"glyph": "⇲", "width": 14, "height": 18, "anchor": "adjacent", "staff_column": "pin"},
+      "behavior": {"preferred_pin_head": "diamond", "preferred_anchor_side": "right", "valid_anchor_families": ["support", "direction", "path", "gesture", "body", "turn", "jump", "travel"], "coverage_expectation": "covering_motion", "min_stretch": 0.7, "max_stretch": 2.0, "cap_shape": "diamond_head"}
   },
   {
     "id": "pin.hold",
@@ -118,7 +147,8 @@
     "allowed_directions": ["forward", "backward", "left", "right", "diagonal_forward_left", "diagonal_forward_right", "diagonal_backward_left", "diagonal_backward_right", "place"],
     "requires_level": false,
     "allowed_levels": ["high", "middle", "low"],
-    "geometry": {"glyph": "⌑", "width": 12, "height": 18, "anchor": "adjacent", "staff_column": "pin"}
+    "geometry": {"glyph": "⌑", "width": 12, "height": 18, "anchor": "adjacent", "staff_column": "pin"},
+      "behavior": {"preferred_anchor_side": "top", "valid_anchor_families": ["support", "direction", "path", "gesture", "body", "turn", "jump", "travel"], "coverage_expectation": "covering_motion", "min_stretch": 0.7, "max_stretch": 2.2, "cap_shape": "hold_bar"}
   },
   {
     "id": "repeat.single",
@@ -140,7 +170,8 @@
     "allowed_directions": ["forward", "backward", "left", "right", "diagonal_forward_left", "diagonal_forward_right", "diagonal_backward_left", "diagonal_backward_right", "place"],
     "requires_level": false,
     "allowed_levels": ["high", "middle", "low"],
-    "geometry": {"glyph": ":", "width": 16, "height": 20, "anchor": "center", "staff_column": "repeat"}
+    "geometry": {"glyph": ":", "width": 16, "height": 20, "anchor": "center", "staff_column": "repeat"},
+    "behavior": {"boundary_role": "closing", "default_repair_target_family": "repeat", "continuation_scope": "measure"}
   },
   {
     "id": "repeat.start",
@@ -151,7 +182,8 @@
     "allowed_directions": ["forward", "backward", "left", "right", "diagonal_forward_left", "diagonal_forward_right", "diagonal_backward_left", "diagonal_backward_right", "place"],
     "requires_level": false,
     "allowed_levels": ["high", "middle", "low"],
-    "geometry": {"glyph": "⋱", "width": 16, "height": 20, "anchor": "center", "staff_column": "repeat"}
+    "geometry": {"glyph": "⋱", "width": 16, "height": 20, "anchor": "center", "staff_column": "repeat"},
+    "behavior": {"boundary_role": "opening", "default_repair_target_family": "repeat", "continuation_scope": "measure"}
   },
   {
     "id": "repeat.end",
@@ -162,7 +194,8 @@
     "allowed_directions": ["forward", "backward", "left", "right", "diagonal_forward_left", "diagonal_forward_right", "diagonal_backward_left", "diagonal_backward_right", "place"],
     "requires_level": false,
     "allowed_levels": ["high", "middle", "low"],
-    "geometry": {"glyph": "⋰", "width": 16, "height": 20, "anchor": "center", "staff_column": "repeat"}
+    "geometry": {"glyph": "⋰", "width": 16, "height": 20, "anchor": "center", "staff_column": "repeat"},
+    "behavior": {"boundary_role": "closing", "default_repair_target_family": "repeat", "continuation_scope": "measure"}
   },
   {
     "id": "dynamic.accent",
@@ -239,7 +272,8 @@
     "allowed_directions": ["forward", "backward", "left", "right", "diagonal_forward_left", "diagonal_forward_right", "diagonal_backward_left", "diagonal_backward_right", "place"],
     "requires_level": false,
     "allowed_levels": ["high", "middle", "low"],
-    "geometry": {"glyph": "𝄽", "width": 12, "height": 16, "anchor": "adjacent", "staff_column": "music"}
+    "geometry": {"glyph": "𝄽", "width": 12, "height": 16, "anchor": "adjacent", "staff_column": "music"},
+    "behavior": {"header_role": "content", "continuation_scope": "measure", "default_repair_target_family": "music"}
   },
   {
     "id": "music.tempo.mark",
@@ -250,7 +284,8 @@
     "allowed_directions": ["forward", "backward", "left", "right", "diagonal_forward_left", "diagonal_forward_right", "diagonal_backward_left", "diagonal_backward_right", "place"],
     "requires_level": false,
     "allowed_levels": ["high", "middle", "low"],
-    "geometry": {"glyph": "♩=120", "width": 24, "height": 16, "anchor": "adjacent", "staff_column": "music"}
+    "geometry": {"glyph": "♩=120", "width": 24, "height": 16, "anchor": "adjacent", "staff_column": "music"},
+    "behavior": {"header_role": "tempo", "continuation_scope": "score", "default_repair_target_family": "music"}
   },
   {
     "id": "music.cadence.mark",
@@ -261,7 +296,8 @@
     "allowed_directions": ["forward", "backward", "left", "right", "diagonal_forward_left", "diagonal_forward_right", "diagonal_backward_left", "diagonal_backward_right", "place"],
     "requires_level": false,
     "allowed_levels": ["high", "middle", "low"],
-    "geometry": {"glyph": "cad", "width": 18, "height": 16, "anchor": "adjacent", "staff_column": "music"}
+    "geometry": {"glyph": "cad", "width": 18, "height": 16, "anchor": "adjacent", "staff_column": "music"},
+    "behavior": {"header_role": "cadence", "continuation_scope": "score", "default_repair_target_family": "music"}
   },
   {
     "id": "music.time.2_4",
@@ -272,7 +308,8 @@
     "allowed_directions": ["forward", "backward", "left", "right", "diagonal_forward_left", "diagonal_forward_right", "diagonal_backward_left", "diagonal_backward_right", "place"],
     "requires_level": false,
     "allowed_levels": ["high", "middle", "low"],
-    "geometry": {"glyph": "2/4", "width": 18, "height": 16, "anchor": "adjacent", "staff_column": "music"}
+    "geometry": {"glyph": "2/4", "width": 18, "height": 16, "anchor": "adjacent", "staff_column": "music"},
+    "behavior": {"header_role": "time_signature", "continuation_scope": "score", "default_repair_target_family": "music"}
   },
   {
     "id": "music.time.3_4",
@@ -283,7 +320,8 @@
     "allowed_directions": ["forward", "backward", "left", "right", "diagonal_forward_left", "diagonal_forward_right", "diagonal_backward_left", "diagonal_backward_right", "place"],
     "requires_level": false,
     "allowed_levels": ["high", "middle", "low"],
-    "geometry": {"glyph": "3/4", "width": 18, "height": 16, "anchor": "adjacent", "staff_column": "music"}
+    "geometry": {"glyph": "3/4", "width": 18, "height": 16, "anchor": "adjacent", "staff_column": "music"},
+    "behavior": {"header_role": "time_signature", "continuation_scope": "score", "default_repair_target_family": "music"}
   },
   {
     "id": "music.time.4_4",
@@ -294,7 +332,8 @@
     "allowed_directions": ["forward", "backward", "left", "right", "diagonal_forward_left", "diagonal_forward_right", "diagonal_backward_left", "diagonal_backward_right", "place"],
     "requires_level": false,
     "allowed_levels": ["high", "middle", "low"],
-    "geometry": {"glyph": "4/4", "width": 18, "height": 16, "anchor": "adjacent", "staff_column": "music"}
+    "geometry": {"glyph": "4/4", "width": 18, "height": 16, "anchor": "adjacent", "staff_column": "music"},
+    "behavior": {"header_role": "time_signature", "continuation_scope": "score", "default_repair_target_family": "music"}
   },
   {
     "id": "motif.rise",
@@ -305,7 +344,8 @@
     "allowed_directions": ["forward", "backward", "left", "right", "diagonal_forward_left", "diagonal_forward_right", "diagonal_backward_left", "diagonal_backward_right", "place"],
     "requires_level": true,
     "allowed_levels": ["high", "middle", "low"],
-    "geometry": {"glyph": "⤒", "width": 16, "height": 18, "anchor": "center", "staff_column": "motif"}
+    "geometry": {"glyph": "⤒", "width": 16, "height": 18, "anchor": "center", "staff_column": "motif"},
+    "behavior": {"direction_transform": "mirror_by_direction", "rotation_rule": "modifier", "composition_role": "motif", "motif_variant": "rise"}
   },
   {
     "id": "motif.fall",
@@ -316,7 +356,8 @@
     "allowed_directions": ["forward", "backward", "left", "right", "diagonal_forward_left", "diagonal_forward_right", "diagonal_backward_left", "diagonal_backward_right", "place"],
     "requires_level": true,
     "allowed_levels": ["high", "middle", "low"],
-    "geometry": {"glyph": "⤓", "width": 16, "height": 18, "anchor": "center", "staff_column": "motif"}
+    "geometry": {"glyph": "⤓", "width": 16, "height": 18, "anchor": "center", "staff_column": "motif"},
+    "behavior": {"direction_transform": "mirror_by_direction", "rotation_rule": "modifier", "composition_role": "motif", "motif_variant": "fall"}
   },
   {
     "id": "motif.arc",
@@ -327,7 +368,20 @@
     "allowed_directions": ["forward", "backward", "left", "right", "diagonal_forward_left", "diagonal_forward_right", "diagonal_backward_left", "diagonal_backward_right", "place"],
     "requires_level": true,
     "allowed_levels": ["high", "middle", "low"],
-    "geometry": {"glyph": "⤿", "width": 18, "height": 18, "anchor": "center", "staff_column": "motif"}
+    "geometry": {"glyph": "⤿", "width": 18, "height": 18, "anchor": "center", "staff_column": "motif"},
+    "behavior": {"direction_transform": "mirror_by_direction", "rotation_rule": "modifier", "composition_role": "motif", "motif_variant": "arc"}
+  },
+  {
+    "id": "motif.rise_fall",
+    "category": "motif",
+    "name": "Motif Rise-Fall",
+    "allowed_body_parts": ["torso", "left_arm", "right_arm", "left_leg", "right_leg"],
+    "requires_direction": true,
+    "allowed_directions": ["forward", "backward", "left", "right", "diagonal_forward_left", "diagonal_forward_right", "diagonal_backward_left", "diagonal_backward_right", "place"],
+    "requires_level": true,
+    "allowed_levels": ["high", "middle", "low"],
+    "geometry": {"glyph": "⥮", "width": 18, "height": 18, "anchor": "center", "staff_column": "motif"},
+    "behavior": {"direction_transform": "mirror_by_direction", "rotation_rule": "modifier", "composition_role": "motif_combo", "motif_variant": "rise_fall"}
   },
   {
     "id": "surface.contact",
@@ -338,7 +392,8 @@
     "allowed_directions": ["forward", "backward", "left", "right", "diagonal_forward_left", "diagonal_forward_right", "diagonal_backward_left", "diagonal_backward_right", "place"],
     "requires_level": false,
     "allowed_levels": ["high", "middle", "low"],
-    "geometry": {"glyph": "◍", "width": 14, "height": 14, "anchor": "adjacent", "staff_column": "surface"}
+    "geometry": {"glyph": "◍", "width": 14, "height": 14, "anchor": "adjacent", "staff_column": "surface"},
+    "behavior": {"preferred_anchor_side": "bottom", "valid_anchor_families": ["support", "direction", "path", "gesture", "body", "turn", "jump", "travel"], "coverage_expectation": "covering_motion", "surface_role": "contact", "anchor_mode": "contact_point"}
   },
   {
     "id": "surface.brush",
@@ -349,7 +404,8 @@
     "allowed_directions": ["forward", "backward", "left", "right", "diagonal_forward_left", "diagonal_forward_right", "diagonal_backward_left", "diagonal_backward_right", "place"],
     "requires_level": false,
     "allowed_levels": ["high", "middle", "low"],
-    "geometry": {"glyph": "≋", "width": 16, "height": 14, "anchor": "adjacent", "staff_column": "surface"}
+    "geometry": {"glyph": "≋", "width": 16, "height": 14, "anchor": "adjacent", "staff_column": "surface"},
+    "behavior": {"preferred_anchor_side": "bottom", "valid_anchor_families": ["support", "direction", "path", "gesture", "body", "turn", "jump", "travel"], "coverage_expectation": "covering_motion", "surface_role": "brush", "anchor_mode": "contact_trail"}
   },
   {
     "id": "surface.glide",
@@ -360,7 +416,8 @@
     "allowed_directions": ["forward", "backward", "left", "right", "diagonal_forward_left", "diagonal_forward_right", "diagonal_backward_left", "diagonal_backward_right", "place"],
     "requires_level": false,
     "allowed_levels": ["high", "middle", "low"],
-    "geometry": {"glyph": "≈", "width": 16, "height": 14, "anchor": "adjacent", "staff_column": "surface"}
+    "geometry": {"glyph": "≈", "width": 16, "height": 14, "anchor": "adjacent", "staff_column": "surface"},
+    "behavior": {"preferred_anchor_side": "bottom", "valid_anchor_families": ["support", "direction", "path", "gesture", "body", "turn", "jump", "travel"], "coverage_expectation": "covering_motion", "surface_role": "glide", "anchor_mode": "underslung_trail"}
   },
   {
     "id": "space.hold",
@@ -371,7 +428,8 @@
     "allowed_directions": ["forward", "backward", "left", "right", "diagonal_forward_left", "diagonal_forward_right", "diagonal_backward_left", "diagonal_backward_right", "place"],
     "requires_level": false,
     "allowed_levels": ["high", "middle", "low"],
-    "geometry": {"glyph": "□", "width": 16, "height": 16, "anchor": "center", "staff_column": "space"}
+    "geometry": {"glyph": "□", "width": 16, "height": 16, "anchor": "center", "staff_column": "space"},
+      "behavior": {"whitespace_role": "hold", "layout_effect": "reserve_band", "min_stretch": 0.6, "max_stretch": 2.0, "cap_shape": "boxed"}
   },
   {
     "id": "space.transition",
@@ -382,7 +440,20 @@
     "allowed_directions": ["forward", "backward", "left", "right", "diagonal_forward_left", "diagonal_forward_right", "diagonal_backward_left", "diagonal_backward_right", "place"],
     "requires_level": false,
     "allowed_levels": ["high", "middle", "low"],
-    "geometry": {"glyph": "╌", "width": 18, "height": 14, "anchor": "center", "staff_column": "space"}
+    "geometry": {"glyph": "╌", "width": 18, "height": 14, "anchor": "center", "staff_column": "space"},
+      "behavior": {"whitespace_role": "transition", "layout_effect": "reserve_transition", "min_stretch": 0.6, "max_stretch": 2.4, "cap_shape": "dashed"}
+  },
+  {
+    "id": "space.whitespace",
+    "category": "space",
+    "name": "Whitespace Band",
+    "allowed_body_parts": ["torso"],
+    "requires_direction": false,
+    "allowed_directions": ["forward", "backward", "left", "right", "diagonal_forward_left", "diagonal_forward_right", "diagonal_backward_left", "diagonal_backward_right", "place"],
+    "requires_level": false,
+    "allowed_levels": ["high", "middle", "low"],
+    "geometry": {"glyph": "␠", "width": 18, "height": 14, "anchor": "center", "staff_column": "space"},
+    "behavior": {"whitespace_role": "band", "layout_effect": "reserve_band", "min_stretch": 0.8, "max_stretch": 2.6, "cap_shape": "open_band"}
   },
   {
     "id": "separator.staff",
@@ -393,7 +464,8 @@
     "allowed_directions": ["forward", "backward", "left", "right", "diagonal_forward_left", "diagonal_forward_right", "diagonal_backward_left", "diagonal_backward_right", "place"],
     "requires_level": false,
     "allowed_levels": ["high", "middle", "low"],
-    "geometry": {"glyph": "║", "width": 10, "height": 20, "anchor": "center", "staff_column": "separator"}
+      "geometry": {"glyph": "║", "width": 10, "height": 20, "anchor": "center", "staff_column": "separator"},
+      "behavior": {"min_stretch": 0.6, "max_stretch": 2.0, "cap_shape": "hooked"}
   },
   {
     "id": "separator.staff.flipped",
@@ -404,7 +476,8 @@
     "allowed_directions": ["forward", "backward", "left", "right", "diagonal_forward_left", "diagonal_forward_right", "diagonal_backward_left", "diagonal_backward_right", "place"],
     "requires_level": false,
     "allowed_levels": ["high", "middle", "low"],
-    "geometry": {"glyph": "╟", "width": 10, "height": 20, "anchor": "center", "staff_column": "separator"}
+    "geometry": {"glyph": "╟", "width": 10, "height": 20, "anchor": "center", "staff_column": "separator"},
+      "behavior": {"flip_variant": "horizontal", "min_stretch": 0.6, "max_stretch": 2.0, "cap_shape": "hooked"}
   },
   {
     "id": "separator.double",
@@ -415,7 +488,8 @@
     "allowed_directions": ["forward", "backward", "left", "right", "diagonal_forward_left", "diagonal_forward_right", "diagonal_backward_left", "diagonal_backward_right", "place"],
     "requires_level": false,
     "allowed_levels": ["high", "middle", "low"],
-    "geometry": {"glyph": "‖", "width": 12, "height": 20, "anchor": "center", "staff_column": "separator"}
+    "geometry": {"glyph": "‖", "width": 12, "height": 20, "anchor": "center", "staff_column": "separator"},
+      "behavior": {"preferred_separator_mode": "double", "min_stretch": 0.6, "max_stretch": 2.0, "cap_shape": "double_bar"}
   },
   {
     "id": "separator.single",
@@ -426,7 +500,8 @@
     "allowed_directions": ["forward", "backward", "left", "right", "diagonal_forward_left", "diagonal_forward_right", "diagonal_backward_left", "diagonal_backward_right", "place"],
     "requires_level": false,
     "allowed_levels": ["high", "middle", "low"],
-    "geometry": {"glyph": "|", "width": 8, "height": 20, "anchor": "center", "staff_column": "separator"}
+    "geometry": {"glyph": "|", "width": 8, "height": 20, "anchor": "center", "staff_column": "separator"},
+      "behavior": {"preferred_separator_mode": "single", "min_stretch": 0.6, "max_stretch": 2.0, "cap_shape": "single_bar"}
   },
   {
     "id": "separator.final",
@@ -438,6 +513,18 @@
     "requires_level": false,
     "allowed_levels": ["high", "middle", "low"],
     "geometry": {"glyph": "⫼", "width": 14, "height": 20, "anchor": "center", "staff_column": "separator"}
+  },
+  {
+    "id": "separator.hook",
+    "category": "separator",
+    "name": "Hook Separator",
+    "allowed_body_parts": ["torso"],
+    "requires_direction": false,
+    "allowed_directions": ["forward", "backward", "left", "right", "diagonal_forward_left", "diagonal_forward_right", "diagonal_backward_left", "diagonal_backward_right", "place"],
+    "requires_level": false,
+    "allowed_levels": ["high", "middle", "low"],
+    "geometry": {"glyph": "⌟", "width": 12, "height": 20, "anchor": "center", "staff_column": "separator"},
+    "behavior": {"preferred_separator_mode": "hook", "min_stretch": 0.6, "max_stretch": 2.1, "cap_shape": "single_hook"}
   },
   {
     "id": "flexion.knee",
