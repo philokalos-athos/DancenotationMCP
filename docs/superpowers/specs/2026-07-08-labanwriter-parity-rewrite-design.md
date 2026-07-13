@@ -199,6 +199,44 @@ actual La Vivandière scan pages (scan resolution makes reliable readback
 risky — an honest representative fixture beats mis-transcribed "ground
 truth").
 
+## POST-CHECKPOINT PASS (committed `70386bf`, 555 tests passing)
+
+The full M1–M4 working tree was first committed as checkpoint `52e560a`
+(it had been entirely uncommitted). Then four independent threads advanced:
+
+- **jump/turn level fills** — `_render_turn_annotation` and
+  `_render_jump_annotation` now honor the `level` input their catalog
+  entries universally require (all 112 turn + 113 jump entries are
+  `requires_level`), applying the standard `LEVEL_FILLS` convention
+  (low=solid, middle=blank, high=striped hatch) so the three levels render
+  visually distinct — composing with, not replacing, the existing
+  spring/stretch/compact variants. `golden_laban_parity_score.svg`
+  regenerated (diff confirmed isolated to turn/jump elements). Resolves the
+  first "flagged as follow-up" item.
+- **collapse example data** — fixed all 18 `body_part` values in
+  `examples/collapse_of_symmetry_full.ir.json` that violated their symbol's
+  `allowed_body_parts` (effort/repeat `whole_body`→`torso`,
+  `right_hand`→`right_arm`, mis-assigned steps→legs). Zero
+  `allowed_body_parts` violations remain. The unrelated pre-existing
+  simultaneity warnings and `BEAT_EXCEEDS_MEASURE` errors were left in scope.
+- **catalog geometry guard** — audited all 1122 catalog symbols; every entry
+  already carries valid `glyph`/`width`/`height`/`anchor`/`staff_column`
+  (nothing to fix), so the value delivered is a regression test
+  (`test_every_symbol_geometry_is_complete_and_valid`) locking that contract
+  against future additions shipping incomplete/degenerate geometry.
+- **music engraver resilience (bonus, found via a flaky test)** — `lilypond`
+  crashes non-deterministically under parallel load (Windows access
+  violation, exit `0xC0000005`); because the paired renderer invokes it once
+  per measure, a single crash silently dropped a measure of music. Added a
+  bounded retry (`_MAX_ENGRAVE_ATTEMPTS = 5`) in `render_music_svg` and
+  relaxed the over-specified partial-coverage test to assert the real
+  contract (`1 ≤ strips ≤ 2`, no fabrication) rather than coupling CI to an
+  external binary's crash rate. Verified 5/5 consecutive full-suite runs green.
+
+Still deferred (unchanged): the ~800-symbol deep geometry audit beyond the
+routing/dispatch/completeness sweeps, and pixel-exact La Vivandière
+transcription.
+
 ## CORRECTION (found during M1 implementation)
 
 `src/dancenotation_mcp/rendering/svg_renderer.py` + `layout.py` (`render_svg`)
