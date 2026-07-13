@@ -3,7 +3,12 @@ import re
 import unittest
 from pathlib import Path
 
-from dancenotation_mcp.rendering.laban_renderer import render_laban_svg
+from dancenotation_mcp.rendering.laban_renderer import (
+    render_laban_svg,
+    _render_turn_annotation,
+    _render_jump_annotation,
+    LEVEL_FILLS,
+)
 from dancenotation_mcp.rendering.laban_layout import (
     compute_laban_layout,
     build_column_positions,
@@ -838,6 +843,71 @@ class CatalogFamilyRoutingTests(unittest.TestCase):
             "fallthrough allowlist with a comment justifying why main-staff "
             "placement is correct.",
         )
+
+
+class TurnJumpLevelFillTest(unittest.TestCase):
+    """Turn and jump signs are universally ``requires_level`` in the catalog;
+    the renderer must show level via the standard fill convention
+    (low = solid black, middle = blank/white, high = striped hatch) so the
+    three levels are visually distinct."""
+
+    def _entry(self, symbol_id, level, **modifiers):
+        symbol = {"symbol_id": symbol_id, "level": level}
+        if symbol_id.startswith("turn"):
+            symbol["direction"] = "right"
+        if modifiers:
+            symbol["modifiers"] = modifiers
+        return {
+            "symbol": symbol,
+            "x": 10.0,
+            "y_top": 0.0,
+            "y_bottom": 40.0,
+            "width": 20.0,
+        }
+
+    def _turn(self, level, **mods):
+        return _render_turn_annotation(self._entry("turn.pivot", level, **mods))
+
+    def _jump(self, level, **mods):
+        return _render_jump_annotation(self._entry("jump.small", level, **mods))
+
+    def test_turn_levels_are_distinct(self):
+        low, mid, high = self._turn("low"), self._turn("middle"), self._turn("high")
+        self.assertNotEqual(low, mid)
+        self.assertNotEqual(mid, high)
+        self.assertNotEqual(low, high)
+
+    def test_turn_fill_matches_convention(self):
+        self.assertIn(LEVEL_FILLS["low"]["fill"], self._turn("low"))       # solid black
+        self.assertIn(LEVEL_FILLS["middle"]["fill"], self._turn("middle"))  # blank/white
+        self.assertIn(LEVEL_FILLS["high"]["fill"], self._turn("high"))     # striped hatch
+
+    def test_turn_records_level_attribute(self):
+        self.assertIn('data-level="high"', self._turn("high"))
+
+    def test_jump_levels_are_distinct(self):
+        low, mid, high = self._jump("low"), self._jump("middle"), self._jump("high")
+        self.assertNotEqual(low, mid)
+        self.assertNotEqual(mid, high)
+        self.assertNotEqual(low, high)
+
+    def test_jump_fill_matches_convention(self):
+        self.assertIn(LEVEL_FILLS["low"]["fill"], self._jump("low"))
+        self.assertIn(LEVEL_FILLS["high"]["fill"], self._jump("high"))
+
+    def test_jump_level_composes_with_variants(self):
+        # Level fill must survive alongside the existing spring/stretch variants.
+        for mods in ({"spring_jump": True}, {"stretch": 2}):
+            low = self._jump("low", **mods)
+            high = self._jump("high", **mods)
+            self.assertNotEqual(low, high)
+            self.assertIn('class="laban-annotation jump"', low)
+
+    def test_jump_missing_level_defaults_to_middle(self):
+        entry = self._entry("jump.small", None)
+        entry["symbol"].pop("level")
+        out = _render_jump_annotation(entry)
+        self.assertIn('data-level="middle"', out)
 
 
 if __name__ == "__main__":

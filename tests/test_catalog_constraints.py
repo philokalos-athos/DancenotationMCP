@@ -55,6 +55,49 @@ class CatalogConstraintTests(unittest.TestCase):
             self.assertIn("geometry", spec, sid)
             self.assertIn("glyph", spec["geometry"], sid)
 
+    def test_every_symbol_geometry_is_complete_and_valid(self):
+        """Guard produced by the LabanWriter-parity geometry audit.
+
+        The prior test only checked that ``geometry`` and ``glyph`` exist. The
+        audit swept all catalog entries and confirmed every one carries the
+        full geometry contract the layout/renderer consume — ``glyph``,
+        ``width``, ``height``, ``anchor``, ``staff_column`` — with valid
+        values (positive dimensions, an anchor from the known set, a routed
+        staff_column). This locks that invariant so a future catalog addition
+        can't silently ship an entry missing a field or holding a degenerate
+        value (which previously fell through to a generic misrender).
+
+        ``VALID_ANCHORS`` / ``ROUTED_STAFF_COLUMNS`` are the exact value sets
+        observed across the catalog at audit time; extend them deliberately
+        (and wire the renderer to match) when a genuinely new class is added.
+        """
+        VALID_ANCHORS = {"center", "adjacent", "foot"}
+        ROUTED_STAFF_COLUMNS = {
+            "support", "body", "jump", "gesture", "turn", "travel", "floor",
+            "quality", "surface", "timing", "foothook", "floor_plan", "music",
+            "direction", "separator", "path", "bow", "pin", "repeat", "motif",
+            "space", "level", "dynamic", "adlib", "flexion", "digit",
+        }
+        catalog = load_symbol_catalog()
+        for sid, spec in catalog.items():
+            geom = spec.get("geometry")
+            self.assertIsInstance(geom, dict, sid)
+            for field in ("glyph", "width", "height", "anchor", "staff_column"):
+                self.assertIn(field, geom, f"{sid} missing geometry.{field}")
+                self.assertNotIn(geom[field], (None, ""), f"{sid} empty geometry.{field}")
+            for dim in ("width", "height"):
+                self.assertIsInstance(geom[dim], (int, float), f"{sid} geometry.{dim} not numeric")
+                self.assertGreater(geom[dim], 0, f"{sid} geometry.{dim} must be positive")
+            self.assertIn(
+                geom["anchor"], VALID_ANCHORS,
+                f"{sid} geometry.anchor {geom['anchor']!r} not in {sorted(VALID_ANCHORS)}",
+            )
+            self.assertIn(
+                geom["staff_column"], ROUTED_STAFF_COLUMNS,
+                f"{sid} geometry.staff_column {geom['staff_column']!r} is not a routed "
+                "column — add a renderer/layout route and list it here, or fix the value.",
+            )
+
     def test_semantic_constraints_applied(self):
         ir = {
             "metadata": {"ir_version": "0.1.0", "schema_version": "0.1.0"},

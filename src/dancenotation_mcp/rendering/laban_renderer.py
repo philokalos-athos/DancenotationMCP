@@ -456,10 +456,18 @@ def _render_staff_symbol(entry: dict, ctx: _RenderContext,
 
 
 def _render_turn_annotation(entry: dict) -> str:
-    """Render a turn sign in the annotation area."""
+    """Render a turn sign in the annotation area.
+
+    The turn family is universally ``requires_level`` in the catalog. Level is
+    shown by shading the turn glyph per the standard Labanotation fill
+    convention (see ``LEVEL_FILLS``): low = solid black, middle = blank
+    outline, high = striped hatch. A hollow center disc carries the fill so
+    the three levels read as visually distinct without obscuring the arc.
+    """
     symbol = entry["symbol"]
     symbol_id = symbol.get("symbol_id", "")
     direction = symbol.get("direction")
+    level = symbol.get("level") or "middle"
     x = entry["x"]
     y_top = entry["y_top"]
     y_bottom = entry["y_bottom"]
@@ -471,11 +479,17 @@ def _render_turn_annotation(entry: dict) -> str:
     # Arc direction
     sweep = 1 if direction not in ("left", "counterclockwise") else 0
 
+    style = LEVEL_FILLS.get(level, LEVEL_FILLS["middle"])
+    disc_r = max(r - 3, 2)
+
     rotation_degrees = symbol.get("rotation_degrees") or symbol.get("modifiers", {}).get("rotation_degrees")
     rotate_attr = f' transform="rotate({rotation_degrees}, {cx:.1f}, {cy:.1f})"' if rotation_degrees else ""
 
     return (
-        f'<g class="laban-annotation turn" data-symbol-id="{escape(symbol_id)}"{rotate_attr}>'
+        f'<g class="laban-annotation turn" data-level="{escape(level)}" '
+        f'data-symbol-id="{escape(symbol_id)}"{rotate_attr}>'
+        f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{disc_r:.1f}" '
+        f'fill="{style["fill"]}" stroke="{style["stroke"]}" stroke-width="1"/>'
         f'<path d="M {cx - r:.1f} {cy:.1f} A {r:.1f} {r:.1f} 0 1 {sweep} {cx + r:.1f} {cy:.1f}" '
         f'fill="none" stroke="#111827" stroke-width="1.5"/>'
         f'<polygon points="{cx + r + 4:.1f},{cy:.1f} {cx + r - 2:.1f},{cy - 3:.1f} {cx + r - 2:.1f},{cy + 3:.1f}" '
@@ -508,7 +522,14 @@ def _render_jump_annotation(entry: dict) -> str:
     stretch = modifiers.get("stretch", 0)
     duration = symbol.get("timing", {}).get("duration_beats", 1.0) if isinstance(symbol.get("timing"), dict) else 1.0
 
-    svg = f'<g class="laban-annotation jump" data-symbol-id="{escape(symbol_id)}">'
+    # The jump family is universally ``requires_level``; show level by filling
+    # the bow per the standard convention (low = solid, middle = blank,
+    # high = striped hatch). Spring jumps are an open zigzag line with no
+    # enclosed area, so they carry the level on a small fill disc instead.
+    level = symbol.get("level") or "middle"
+    style = LEVEL_FILLS.get(level, LEVEL_FILLS["middle"])
+
+    svg = f'<g class="laban-annotation jump" data-level="{escape(level)}" data-symbol-id="{escape(symbol_id)}">'
 
     if is_spring:
         # Zigzag/coil line: 4 zigzag segments between endpoints
@@ -520,6 +541,11 @@ def _render_jump_annotation(entry: dict) -> str:
             zx = cx + (zag_w if i % 2 == 0 else -zag_w)
             svg += f'L {zx:.1f} {zy:.1f} '
         svg += f'L {cx:.1f} {bow_top:.1f}" fill="none" stroke="#111827" stroke-width="1.5"/>'
+        # Level carried on a small disc at the base (spring has no enclosed area)
+        svg += (
+            f'<circle cx="{cx:.1f}" cy="{bow_bottom:.1f}" r="2.5" '
+            f'fill="{style["fill"]}" stroke="{style["stroke"]}" stroke-width="1"/>'
+        )
     elif stretch > 0:
         # Stretched jump: wider bow with extended horizontal endpoints
         ext = min(stretch * 3, 8)
@@ -528,8 +554,8 @@ def _render_jump_annotation(entry: dict) -> str:
             f'x2="{cx - 6:.1f}" y2="{bow_bottom:.1f}" stroke="#111827" stroke-width="1.5"/>'
             f'<path d="M {cx - 6:.1f} {bow_bottom:.1f} '
             f'C {cx - 6:.1f} {bow_top - 4:.1f} {cx + 6:.1f} {bow_top - 4:.1f} '
-            f'{cx + 6:.1f} {bow_bottom:.1f}" '
-            f'fill="none" stroke="#111827" stroke-width="1.5"/>'
+            f'{cx + 6:.1f} {bow_bottom:.1f} Z" '
+            f'fill="{style["fill"]}" stroke="#111827" stroke-width="1.5"/>'
             f'<line x1="{cx + 6:.1f}" y1="{bow_bottom:.1f}" '
             f'x2="{cx + 6 + ext:.1f}" y2="{bow_bottom:.1f}" stroke="#111827" stroke-width="1.5"/>'
         )
@@ -538,16 +564,16 @@ def _render_jump_annotation(entry: dict) -> str:
         svg += (
             f'<path d="M {cx - 4:.1f} {bow_bottom:.1f} '
             f'C {cx - 4:.1f} {bow_top + 2:.1f} {cx + 4:.1f} {bow_top + 2:.1f} '
-            f'{cx + 4:.1f} {bow_bottom:.1f}" '
-            f'fill="none" stroke="#111827" stroke-width="1.5"/>'
+            f'{cx + 4:.1f} {bow_bottom:.1f} Z" '
+            f'fill="{style["fill"]}" stroke="#111827" stroke-width="1.5"/>'
         )
     else:
         # Normal jump: smooth cubic bezier bow
         svg += (
             f'<path d="M {cx - 6:.1f} {bow_bottom:.1f} '
             f'C {cx - 6:.1f} {bow_top - 6:.1f} {cx + 6:.1f} {bow_top - 6:.1f} '
-            f'{cx + 6:.1f} {bow_bottom:.1f}" '
-            f'fill="none" stroke="#111827" stroke-width="1.5"/>'
+            f'{cx + 6:.1f} {bow_bottom:.1f} Z" '
+            f'fill="{style["fill"]}" stroke="#111827" stroke-width="1.5"/>'
         )
 
     # Center vertical stem

@@ -20,6 +20,12 @@ from pathlib import Path
 
 LOGGER = logging.getLogger(__name__)
 
+# LilyPond occasionally crashes non-deterministically with no useful output
+# (e.g. Windows access violation, exit 0xC0000005). Retrying a small number of
+# times recovers transient crashes without meaningfully slowing the failure
+# path for genuinely broken input (which fails on every attempt anyway).
+_MAX_ENGRAVE_ATTEMPTS = 5
+
 # Forces the whole piece onto a single continuous horizontal line instead of
 # LilyPond's automatic multi-system page wrapping — matching the reference
 # score's melody-line style (a continuous strip running alongside the dance
@@ -74,30 +80,58 @@ def render_music_svg(score, timeout_seconds: float = 60.0) -> str | None:
             LOGGER.warning("music21 failed to write LilyPond source: %s", exc)
             return None
 
-        try:
-            result = subprocess.run(
-                [lilypond_bin, "--svg", "-o", str(tmp_path / "score"), str(ly_path)],
-                capture_output=True,
-                text=True,
-                timeout=timeout_seconds,
-            )
-        except (OSError, subprocess.TimeoutExpired) as exc:
-            LOGGER.warning("lilypond invocation failed: %s", exc)
-            return None
+        # LilyPond occasionally crashes non-deterministically (observed on
+        # Windows as exit 0xC0000005 / access violation, ~8% of invocations)
+        # with no diagnostic output. Because the paired renderer calls this
+        # once per measure, a single transient crash silently drops a measure
+        # of music from the score — so retry a few times. A genuinely broken
+        # .ly source fails deterministically and just exhausts the attempts
+        # (same outcome, only slower on an already-rare error path).
+        last_error = ""
+        for attempt in range(_MAX_ENGRAVE_ATTEMPTS):
+            try:
+                result = subprocess.run(
+                    [lilypond_bin, "--svg", "-o", str(tmp_path / "score"), str(ly_path)],
+                    capture_output=True,
+                    text=True,
+                    timeout=timeout_seconds,
+                )
+            except (OSError, subprocess.TimeoutExpired) as exc:
+                last_error = str(exc)
+                LOGGER.warning(
+                    "lilypond invocation failed (attempt %d/%d): %s",
+                    attempt + 1, _MAX_ENGRAVE_ATTEMPTS, exc,
+                )
+                continue
 
-        if result.returncode != 0:
-            LOGGER.warning("lilypond engraving failed (exit %s): %s", result.returncode, result.stderr[-2000:])
-            return None
+            if result.returncode != 0:
+                last_error = result.stderr[-2000:]
+                LOGGER.warning(
+                    "lilypond engraving failed (attempt %d/%d, exit %s): %s",
+                    attempt + 1, _MAX_ENGRAVE_ATTEMPTS, result.returncode, last_error,
+                )
+                continue
 
-        svg_path = tmp_path / "score.svg"
-        if not svg_path.exists():
-            # Defensive fallback: some inputs still produce numbered pages
-            # (e.g. multi-movement scores forcing a page break). Take the
-            # last page — title/front matter sorts first, music last.
-            numbered = sorted(tmp_path.glob("score-*.svg"))
-            if numbered:
-                svg_path = numbered[-1]
-        if not svg_path.exists():
-            LOGGER.warning("lilypond did not produce an SVG output in %s", tmp_path)
-            return None
-        return svg_path.read_text(encoding="utf-8")
+            svg_path = tmp_path / "score.svg"
+            if not svg_path.exists():
+                # Defensive fallback: some inputs still produce numbered pages
+                # (e.g. multi-movement scores forcing a page break). Take the
+                # last page — title/front matter sorts first, music last.
+                numbered = sorted(tmp_path.glob("score-*.svg"))
+                if numbered:
+                    svg_path = numbered[-1]
+            if not svg_path.exists():
+                last_error = f"no SVG output in {tmp_path}"
+                LOGGER.warning(
+                    "lilypond produced no SVG output (attempt %d/%d) in %s",
+                    attempt + 1, _MAX_ENGRAVE_ATTEMPTS, tmp_path,
+                )
+                continue
+
+            return svg_path.read_text(encoding="utf-8")
+
+        LOGGER.warning(
+            "lilypond engraving failed after %d attempts: %s",
+            _MAX_ENGRAVE_ATTEMPTS, last_error,
+        )
+        return None
