@@ -1,0 +1,112 @@
+[
+  {
+    "id": "sequential.successive.upward",
+    "category": "sequential",
+    "name": "Successive Movement Upward",
+    "allowed_body_parts": ["torso", "left_arm", "right_arm", "left_leg", "right_leg"],
+    "requires_direction": false,
+    "allowed_directions": ["forward", "backward", "left", "right", "place"],
+    "requires_level": false,
+    "allowed_levels": ["high", "middle", "low"],
+    "geometry": {"glyph": "⤊", "width": 14, "height": 18, "anchor": "adjacent", "staff_column": "quality"}
+  },
+  {
+    "id": "sequential.successive.downward",
+    "category": "sequential",
+    "name": "Successive Movement Downward",
+    "allowed_body_parts": ["torso", "left_arm", "right_arm", "left_leg", "right_leg"],
+    "requires_direction": false,
+    "allowed_directions": ["forward", "backward", "left", "right", "place"],
+    "requires_level": false,
+    "allowed_levels": ["high", "middle", "low"],
+    "geometry": {"glyph": "⤋", "width": 14, "height": 18, "anchor": "adjacent", "staff_column": "quality"}
+  },
+  {
+    "id": "sequential.simultaneous",
+    "category": "sequential",
+    "name": "Simultaneous Movement",
+    "allowed_body_parts": ["torso", "left_arm", "right_arm", "left_leg", "right_leg", "head"],
+    "requires_direction": false,
+    "allowed_directions": ["forward", "backward", "left", "right", "place"],
+    "requires_level": false,
+    "allowed_levels": ["high", "middle", "low"],
+    "geometry": {"glyph": "⇕", "width": 14, "height": 18, "anchor": "adjacent", "staff_column": "quality"}
+  },
+  {
+    "id": "sequential.sequential.proximal_to_distal",
+    "category": "sequential",
+    "name": "Sequential Proximal to Distal",
+    "allowed_body_parts": ["torso", "left_arm", "right_arm", "left_leg", "right_leg"],
+    "requires_direction": false,
+    "allowed_directions": ["forward", "backward", "left", "right", "place"],
+    "requires_level": false,
+    "allowed_levels": ["high", "middle", "low"],
+    "geometry": {"glyph": "⇉", "width": 16, "height": 16, "anchor": "adjacent", "staff_column": "quality"}
+  },
+  {
+    "id": "sequential.sequential.distal_to_proximal",
+    "category": "sequential",
+    "name": "Sequential Distal to Proximal",
+    "allowed_body_parts": ["torso", "left_arm", "right_arm", "left_leg", "right_leg"],
+    "requires_direction": false,
+    "allowed_directions": ["forward", "backward", "left", "right", "place"],
+    "requires_level": false,
+    "allowed_levels": ["high", "middle", "low"],
+    "geometry": {"glyph": "⇇", "width": 16, "height": 16, "anchor": "adjacent", "staff_column": "quality"}
+  },
+  {
+    "id": "sequential.wave.body",
+    "category": "sequential",
+    "name": "Body Wave",
+    "allowed_body_parts": ["torso"],
+    "requires_direction": false,
+    "allowed_directions": ["forward", "backward", "left", "right", "place"],
+    "requires_level": false,
+    "allowed_levels": ["high", "middle", "low"],
+    "geometry": {"glyph": "∿", "width": 14, "height": 18, "anchor": "adjacent", "staff_column": "quality"}
+  },
+  {
+    "id": "sequential.wave.arm",
+    "category": "sequential",
+    "name": "Arm Wave",
+    "allowed_body_parts": ["left_arm", "right_arm"],
+    "requires_direction": false,
+    "allowed_directions": ["forward", "backward", "left", "right", "place"],
+    "requires_level": false,
+    "allowed_levels": ["high", "middle", "low"],
+    "geometry": {"glyph": "∿", "width": 14, "height": 18, "anchor": "adjacent", "staff_column": "quality"}
+  },
+  {
+    "id": "sequential.wave.leg",
+    "category": "sequential",
+    "name": "Leg Wave",
+    "allowed_body_parts": ["left_leg", "right_leg"],
+    "requires_direction": false,
+    "allowed_directions": ["forward", "backward", "left", "right", "place"],
+    "requires_level": false,
+    "allowed_levels": ["high", "middle", "low"],
+    "geometry": {"glyph": "∿", "width": 14, "height": 18, "anchor": "adjacent", "staff_column": "quality"}
+  },
+  {
+    "id": "sequential.successive.lateral",
+    "category": "sequential",
+    "name": "Successive Lateral Movement",
+    "allowed_body_parts": ["torso", "left_arm", "right_arm", "left_leg", "right_leg"],
+    "requires_direction": false,
+    "allowed_directions": ["forward", "backward", "left", "right", "place"],
+    "requires_level": false,
+    "allowed_levels": ["high", "middle", "low"],
+    "geometry": {"glyph": "⇄", "width": 16, "height": 16, "anchor": "adjacent", "staff_column": "quality"}
+  },
+  {
+    "id": "sequential.ripple",
+    "category": "sequential",
+    "name": "Ripple Movement",
+    "allowed_body_parts": ["torso", "left_arm", "right_arm", "left_leg", "right_leg"],
+    "requires_direction": false,
+    "allowed_directions": ["forward", "backward", "left", "right", "place"],
+    "requires_level": false,
+    "allowed_levels": ["high", "middle", "low"],
+    "geometry": {"glyph": "≋", "width": 16, "height": 16, "anchor": "adjacent", "staff_column": "quality"}
+  }
+]

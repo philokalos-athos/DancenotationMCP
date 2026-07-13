@@ -46,7 +46,8 @@ class PDFRendererTests(unittest.TestCase):
         svg_path = server.REPO_ROOT / result["svg_path"]
         self.assertTrue(svg_path.exists())
         self.assertEqual(result["pdf_path"], f"examples/pdf/{score_name}.pdf")
-        self.assertEqual(result["latex"], rf"\includegraphics{{examples/pdf/{score_name}}}")
+        self.assertEqual(result["latex"], rf"\input{{examples/tex/{score_name}.tex}}")
+        self.assertIn("tikz_path", result)
         if result["pdf_path"] is not None:
             self.assertTrue((server.REPO_ROOT / result["pdf_path"]).exists())
 

@@ -19,6 +19,30 @@ def _is_repeat_closing(spec: dict, symbol_id: str) -> bool:
     return _behavior(spec).get("boundary_role") == "closing" or symbol_id in {"repeat.end", "repeat.double"}
 
 
+def _resolve_symbol_id(symbol_id: str, direction: str | None, catalog: dict[str, dict]) -> str:
+    """Expand a bare action hint to its directional catalog entry when the
+    bare form doesn't exist on its own.
+
+    phrase_parser.py is intentionally catalog-agnostic (pure NLP parsing),
+    so its ACTION_PATTERNS table maps phrases like "plie"/"releve"/"stamp"/
+    "heel"/"toe" to a bare base like "support.plie". Some families (e.g.
+    support.step, support.lower) do have a standalone non-directional
+    catalog entry, so the bare form is already valid. Others (support.plie,
+    support.releve, support.stamp, support.heel, support.toe) only exist as
+    "support.{type}.{direction}" — every one of their variants requires a
+    direction — so the bare form fails validation with "Unknown symbol id"
+    entirely. Expanding here (once we know the resolved direction) fixes it
+    generally, for this and any future family with the same shape, rather
+    than hardcoding a one-off list of affected action words.
+    """
+    if symbol_id in catalog:
+        return symbol_id
+    expanded = f"{symbol_id}.{direction or 'place'}"
+    if expanded in catalog:
+        return expanded
+    return symbol_id
+
+
 def phrase_plan_to_ir(phrase_plan: dict, source_prompt: str = "") -> dict:
     catalog = load_symbol_catalog()
     symbols: list[SymbolInstance] = []
@@ -26,11 +50,12 @@ def phrase_plan_to_ir(phrase_plan: dict, source_prompt: str = "") -> dict:
         t = step["timing"]
         modifiers = dict(step.get("modifiers", {}))
         modifiers["source_text"] = step.get("source_text", "")
+        direction = step.get("direction")
         symbols.append(
             SymbolInstance(
-                symbol_id=step["symbol_id"],
+                symbol_id=_resolve_symbol_id(step["symbol_id"], direction, catalog),
                 body_part=step["body_part"],
-                direction=step.get("direction"),
+                direction=direction,
                 level=step.get("level"),
                 timing=Timing(
                     measure=t["measure"],

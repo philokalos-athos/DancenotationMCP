@@ -1,13 +1,50 @@
+import json
 import unittest
+from pathlib import Path
 
 from dancenotation_mcp.ir.catalog import load_symbol_catalog
+from dancenotation_mcp.ir.models import DIRECTIONS
 from dancenotation_mcp.validation.validator import REPAIR_ACTION_PRIORITY, validate_ir
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
 class CatalogConstraintTests(unittest.TestCase):
     def test_catalog_is_large(self):
         catalog = load_symbol_catalog()
         self.assertGreaterEqual(len(catalog), 850)
+
+    def test_direction_naming_is_consistent_across_catalog_schema_and_models(self):
+        """Guards against a real inconsistency found during the LabanWriter-
+        parity audit: the catalog's allowed_directions used
+        "diagonal_forward_left" etc. (1360 declarations) while the schema's
+        direction enum and models.DIRECTIONS both used the short
+        "forward_left" form instead — silently unenforced (validate_schema()
+        is a hand-rolled check, not real jsonschema validation) but wrong
+        documentation that would break the moment someone wired up real
+        schema enforcement. All three must agree on one spelling.
+        """
+        catalog = load_symbol_catalog()
+        catalog_directions: set[str] = set()
+        for spec in catalog.values():
+            catalog_directions.update(spec.get("allowed_directions", []))
+
+        schema = json.loads((ROOT / "schemas" / "notation-ir.schema.json").read_text(encoding="utf-8"))
+        schema_directions = set(
+            schema["properties"]["symbols"]["items"]["properties"]["direction"]["enum"]
+        ) - {None}
+
+        self.assertEqual(
+            catalog_directions, schema_directions,
+            "Catalog allowed_directions and the schema's direction enum have "
+            "diverged — pick one spelling (diagonal_forward_left, not "
+            "forward_left) and update whichever side is behind.",
+        )
+        self.assertEqual(
+            catalog_directions, set(DIRECTIONS),
+            "Catalog allowed_directions and ir.models.DIRECTIONS have "
+            "diverged the same way.",
+        )
 
     def test_every_symbol_has_geometry_and_constraints(self):
         catalog = load_symbol_catalog()

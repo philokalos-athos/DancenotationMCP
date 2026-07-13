@@ -1,0 +1,18 @@
+{
+  "metadata": {
+    "title": "Floor Plan Multi-Dancer Fixture",
+    "ir_version": "0.1.0",
+    "schema_version": "0.1.0"
+  },
+  "symbols": [],
+  "extensions": {
+    "floor_plan": [
+      {"performer_id": "G1", "measure": 1, "beat": 1, "position": {"zone": "upstage_left"}, "facing": "downstage", "path_to_next": "curved"},
+      {"performer_id": "G1", "measure": 2, "beat": 1, "position": {"zone": "center_left"}, "facing": "diagonal_downstage_right", "path_to_next": null},
+      {"performer_id": "G2", "measure": 1, "beat": 1, "position": {"zone": "upstage_center"}, "facing": "downstage", "path_to_next": "straight"},
+      {"performer_id": "G2", "measure": 2, "beat": 1, "position": {"zone": "center"}, "facing": "downstage", "path_to_next": null},
+      {"performer_id": "G3", "measure": 1, "beat": 1, "position": {"zone": "upstage_right"}, "facing": "downstage", "path_to_next": "curved"},
+      {"performer_id": "G3", "measure": 2, "beat": 1, "position": {"zone": "center_right"}, "facing": "diagonal_downstage_left", "path_to_next": null}
+    ]
+  }
+}

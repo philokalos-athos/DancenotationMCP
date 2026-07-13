@@ -159,9 +159,11 @@ Next: All tracked tasks in this file are complete
 
 ## Autonomous Work Rules
 - On startup: read this file, find the first unchecked `[ ]` task, begin immediately.
-- On task completion: mark `[x]`, update **Current Status**, proceed to next task.
-- Pause and ask only when: a dependency conflict arises, a design decision has multiple valid approaches, or a test fails in an unexpected way.
+- On task completion: mark `[x]`, update
 - Do not pause to say "I've finished X, shall I continue?" — just continue.
+ **Current Status**, proceed to next task.
+- Pause and ask only when: a dependency conflict arises, a design decision has multiple valid approaches, or a test fails in an unexpected way.
+
 
 ## Testing Guidelines
 Tests use `unittest` and live in `tests/test_*.py`. Add targeted fixture-based tests when changing validation rules, renderer behavior, or MCP tool responses. Prefer assertions against visible contract data such as issue codes, SVG markers, IR fields, and PDF file existence. Run the full suite before opening a PR.

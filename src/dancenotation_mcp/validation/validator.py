@@ -5,23 +5,41 @@ from pathlib import Path
 import json
 
 from dancenotation_mcp.ir.catalog import load_symbol_catalog
+from dancenotation_mcp.ir.models import BODY_PARTS, STAGE_FACINGS, STAGE_ZONES
 
 PRIMARY_MOTION_COLUMNS = {"support", "direction", "path", "gesture", "body", "flexion", "foothook", "digit", "turn", "travel", "jump", "floor"}
 ATTACHABLE_SOURCE_COLUMNS = {"pin", "surface", "music", "repeat", "quality", "level", "timing"}
 ANNOTATION_ATTACHMENT_COLUMNS = {"pin", "surface", "quality", "level", "timing"}
 REPEAT_SPAN_SOURCE_SYMBOLS = {"repeat.start", "repeat.generic"}
 REPEAT_SPAN_TARGET_SYMBOLS = {"repeat.end", "repeat.double", "repeat.generic"}
-MEASURE_HEADER_SYMBOLS = {"music.tempo.mark", "music.cadence.mark", "music.time.2_4", "music.time.3_4", "music.time.4_4"}
+MEASURE_HEADER_SYMBOLS = {
+    "music.tempo.mark", "music.cadence.mark",
+    "music.time.2_4", "music.time.3_4", "music.time.4_4",
+    "music.time.5_4", "music.time.5_8", "music.time.6_8",
+    "music.time.7_8", "music.time.9_8", "music.time.12_8",
+}
 MEASURE_BEATS = 4.0
 TIME_SIGNATURE_BEATS = {
     "music.time.2_4": 2.0,
     "music.time.3_4": 3.0,
     "music.time.4_4": 4.0,
+    "music.time.5_4": 5.0,
+    "music.time.5_8": 2.5,
+    "music.time.6_8": 3.0,
+    "music.time.7_8": 3.5,
+    "music.time.9_8": 4.5,
+    "music.time.12_8": 6.0,
 }
 HEADER_FAMILY_BY_SYMBOL = {
     "music.time.2_4": "time_signature",
     "music.time.3_4": "time_signature",
     "music.time.4_4": "time_signature",
+    "music.time.5_4": "time_signature",
+    "music.time.5_8": "time_signature",
+    "music.time.6_8": "time_signature",
+    "music.time.7_8": "time_signature",
+    "music.time.9_8": "time_signature",
+    "music.time.12_8": "time_signature",
     "music.tempo.mark": "tempo",
     "music.cadence.mark": "cadence",
 }
@@ -46,7 +64,40 @@ SEMANTIC_ERROR_CODES = {
     "MODIFIER_REPEAT_SPAN_TARGET_ROLE",
     "MODIFIER_REPEAT_SPAN_TARGET_ORDER",
     "MODIFIER_MEASURE_HEADER_UNSUPPORTED",
+    "ROTATION_DEGREES_OUT_OF_RANGE",
+    "FLEXION_DEGREES_OUT_OF_RANGE",
+    "INVALID_STAGE_ZONE",
+    "INVALID_FACING",
+    "INVALID_RETENTION",
+    "EFFORT_CONFLICT",
+    "BEAT_EXCEEDS_MEASURE",
+    "SUPPORT_MISSING_DIRECTION",
 }
+
+# Body-part to staff column mapping (mirrors laban_layout.BODY_TO_COLUMN).
+_BODY_TO_COLUMN = {
+    "left_leg": "left_support", "right_leg": "right_support",
+    "left_upper_leg": "left_support", "right_upper_leg": "right_support",
+    "left_lower_leg": "left_support", "right_lower_leg": "right_support",
+    "left_foot": "left_support", "right_foot": "right_support",
+    "left_toes": "left_support", "right_toes": "right_support",
+    "left_hip": "left_support", "right_hip": "right_support",
+    "left_knee": "left_support", "right_knee": "right_support",
+    "left_ankle": "left_support", "right_ankle": "right_support",
+    "left_arm": "left_arm", "right_arm": "right_arm",
+    "left_upper_arm": "left_arm", "right_upper_arm": "right_arm",
+    "left_lower_arm": "left_arm", "right_lower_arm": "right_arm",
+    "left_hand": "left_arm_gesture", "right_hand": "right_arm_gesture",
+    "left_fingers": "left_arm_gesture", "right_fingers": "right_arm_gesture",
+    "left_elbow": "left_arm_gesture", "right_elbow": "right_arm_gesture",
+    "left_wrist": "left_arm_gesture", "right_wrist": "right_arm_gesture",
+    "left_shoulder": "left_body", "right_shoulder": "right_body",
+    "torso": "center", "head": "head",
+    "upper_spine": "center", "lower_spine": "center",
+    "neck": "head",
+    "pelvis": "center", "whole_body": "center",
+}
+_ARM_GESTURE_COLUMNS = {"left_arm_gesture", "right_arm_gesture"}
 REPAIR_ACTION_PRIORITY = {
     "remove_symbol": 0,
     "remove_modifier": 1,
@@ -63,6 +114,12 @@ REPAIR_ACTION_PRIORITY = {
     "insert_continuation_symbol": 12,
     "reorder_measure_headers": 13,
     "reorder_repeat_boundaries": 14,
+    "clamp_rotation_degrees": 15,
+    "clamp_flexion_degrees": 16,
+    "fix_invalid_zone": 17,
+    "fix_invalid_facing": 18,
+    "fix_invalid_retention": 19,
+    "remove_conflicting_effort": 20,
 }
 
 
@@ -509,6 +566,132 @@ def validate_semantic(data: dict) -> list[ValidationIssue]:
                     )
                 )
             last_end_by_measure[measure] = max(last_end, beat + dur)
+
+        # ── Extended field validations ────────────────────────────────
+        rotation_degrees = sym.get("rotation_degrees")
+        if rotation_degrees is not None:
+            try:
+                rot_val = float(rotation_degrees)
+                if rot_val < 0 or rot_val > 720:
+                    issues.append(
+                        ValidationIssue(
+                            "ROTATION_DEGREES_OUT_OF_RANGE",
+                            f"rotation_degrees {rot_val} must be between 0 and 720",
+                            f"{p}/rotation_degrees",
+                            "error",
+                            {"value": rot_val, "min": 0, "max": 720},
+                        )
+                    )
+            except (TypeError, ValueError):
+                issues.append(
+                    ValidationIssue(
+                        "ROTATION_DEGREES_OUT_OF_RANGE",
+                        "rotation_degrees must be numeric",
+                        f"{p}/rotation_degrees",
+                        "error",
+                        {},
+                    )
+                )
+
+        flexion_degrees = sym.get("flexion_degrees")
+        if flexion_degrees is not None:
+            try:
+                flex_val = float(flexion_degrees)
+                if flex_val < 0 or flex_val > 180:
+                    issues.append(
+                        ValidationIssue(
+                            "FLEXION_DEGREES_OUT_OF_RANGE",
+                            f"flexion_degrees {flex_val} must be between 0 and 180",
+                            f"{p}/flexion_degrees",
+                            "error",
+                            {"value": flex_val, "min": 0, "max": 180},
+                        )
+                    )
+            except (TypeError, ValueError):
+                issues.append(
+                    ValidationIssue(
+                        "FLEXION_DEGREES_OUT_OF_RANGE",
+                        "flexion_degrees must be numeric",
+                        f"{p}/flexion_degrees",
+                        "error",
+                        {},
+                    )
+                )
+
+        stage_position = sym.get("stage_position")
+        if isinstance(stage_position, dict) and stage_position.get("zone"):
+            zone = stage_position["zone"]
+            if zone not in STAGE_ZONES:
+                issues.append(
+                    ValidationIssue(
+                        "INVALID_STAGE_ZONE",
+                        f"stage_position zone '{zone}' is not a valid stage zone",
+                        f"{p}/stage_position/zone",
+                        "error",
+                        {"value": zone, "allowed": STAGE_ZONES},
+                    )
+                )
+
+        facing = sym.get("facing")
+        if facing is not None and facing not in STAGE_FACINGS:
+            issues.append(
+                ValidationIssue(
+                    "INVALID_FACING",
+                    f"facing '{facing}' is not a valid stage facing",
+                    f"{p}/facing",
+                    "error",
+                    {"value": facing, "allowed": STAGE_FACINGS},
+                )
+            )
+
+        retention = sym.get("retention")
+        if retention is not None and retention not in ("hold", "release", "cancel"):
+            issues.append(
+                ValidationIssue(
+                    "INVALID_RETENTION",
+                    f"retention '{retention}' must be one of hold, release, cancel",
+                    f"{p}/retention",
+                    "error",
+                    {"value": retention, "allowed": ["hold", "release", "cancel"]},
+                )
+            )
+
+        # Effort modifier conflict checks
+        effort_modifiers = sym.get("modifiers", {}) if isinstance(sym.get("modifiers", {}), dict) else {}
+        effort_weight = effort_modifiers.get("effort_weight")
+        effort_time = effort_modifiers.get("effort_time")
+        effort_space = effort_modifiers.get("effort_space")
+        effort_flow = effort_modifiers.get("effort_flow")
+        EFFORT_CONFLICTS = {
+            "effort_weight": {"strong", "light"},
+            "effort_time": {"sudden", "sustained"},
+            "effort_space": {"direct", "indirect"},
+            "effort_flow": {"bound", "free"},
+        }
+        for effort_key, conflict_pair in EFFORT_CONFLICTS.items():
+            val = effort_modifiers.get(effort_key)
+            if isinstance(val, list) and len(set(val) & conflict_pair) > 1:
+                issues.append(
+                    ValidationIssue(
+                        "EFFORT_CONFLICT",
+                        f"conflicting effort values in '{effort_key}': {val}",
+                        f"{p}/modifiers/{effort_key}",
+                        "error",
+                        {"key": effort_key, "values": val, "conflicts": sorted(conflict_pair)},
+                    )
+                )
+
+        # Beat exceeds beats-per-measure check
+        if beat > measure_beats + 0.01:
+            issues.append(
+                ValidationIssue(
+                    "BEAT_EXCEEDS_MEASURE",
+                    f"beat {beat} exceeds the beats-per-measure ({measure_beats}) for measure {measure}",
+                    f"{p}/timing/beat",
+                    "error",
+                    {"beat": beat, "measure_beats": measure_beats, "measure": measure},
+                )
+            )
 
         modifiers = sym.get("modifiers", {}) if isinstance(sym.get("modifiers", {}), dict) else {}
         attach_to = modifiers.get("attach_to")
@@ -1499,6 +1682,141 @@ def validate_semantic(data: dict) -> list[ValidationIssue]:
                 )
             )
 
+    # ── COLUMN_CONFLICT: overlapping symbols in the same staff column ───
+    column_entries: dict[str, list[tuple[int, dict]]] = {}
+    for idx, sym in enumerate(symbols):
+        sid = sym.get("symbol_id", "")
+        spec = catalog.get(sid, {})
+        staff_col = spec.get("geometry", {}).get("staff_column")
+        if staff_col not in PRIMARY_MOTION_COLUMNS:
+            body_part = sym.get("body_part")
+            if body_part:
+                staff_col = _BODY_TO_COLUMN.get(body_part)
+        if staff_col and staff_col in PRIMARY_MOTION_COLUMNS:
+            column_entries.setdefault(staff_col, []).append((idx, sym))
+    for col, entries in column_entries.items():
+        for i, (idx_a, sym_a) in enumerate(entries):
+            ta = sym_a.get("timing", {})
+            ma, ba = int(ta.get("measure", 1)), float(ta.get("beat", 0))
+            da = float(ta.get("duration_beats", 0))
+            for idx_b, sym_b in entries[i + 1:]:
+                tb = sym_b.get("timing", {})
+                mb, bb = int(tb.get("measure", 1)), float(tb.get("beat", 0))
+                db = float(tb.get("duration_beats", 0))
+                if ma != mb:
+                    continue
+                if bb >= ba + da or ba >= bb + db:
+                    continue
+                issues.append(
+                    ValidationIssue(
+                        "COLUMN_CONFLICT",
+                        f"overlapping symbols in column '{col}': '{sym_a.get('symbol_id')}' and '{sym_b.get('symbol_id')}'",
+                        f"/symbols/{idx_b}/timing/beat",
+                        "warning",
+                        {"column": col, "conflicts_with_index": idx_a},
+                    )
+                )
+
+    # ── SUPPORT_REQUIRED: warn if a measure has no support symbol ────
+    all_measures: set[int] = set()
+    support_measures: set[int] = set()
+    jump_measures: set[int] = set()
+    for idx, sym in enumerate(symbols):
+        timing = sym.get("timing", {})
+        measure = int(timing.get("measure", 1))
+        all_measures.add(measure)
+        sid = str(sym.get("symbol_id", ""))
+        spec = catalog.get(sid, {})
+        staff_col = spec.get("geometry", {}).get("staff_column")
+        body_part = sym.get("body_part")
+        resolved_col = staff_col or _BODY_TO_COLUMN.get(body_part or "")
+        if resolved_col in {"left_support", "right_support"}:
+            support_measures.add(measure)
+        if sid.startswith("jump.") or (staff_col == "jump"):
+            jump_measures.add(measure)
+    for measure in sorted(all_measures):
+        if measure not in support_measures and measure not in jump_measures:
+            issues.append(
+                ValidationIssue(
+                    "SUPPORT_MISSING",
+                    f"measure {measure} has no support symbol and no jump",
+                    f"/symbols",
+                    "warning",
+                    {"measure": measure},
+                )
+            )
+
+    # ── DIRECTION_REQUIRED_FOR_SUPPORT: support must have direction ───
+    for idx, sym in enumerate(symbols):
+        sid = str(sym.get("symbol_id", ""))
+        if sid.startswith("support."):
+            direction = sym.get("direction")
+            if not direction:
+                issues.append(
+                    ValidationIssue(
+                        "SUPPORT_MISSING_DIRECTION",
+                        f"support symbol '{sid}' requires a direction",
+                        f"/symbols/{idx}/direction",
+                        "error",
+                        {"symbol_index": idx},
+                    )
+                )
+
+    # ── CANCELLATION_LOGIC: implicit cancellation warning ────────────
+    for col, entries in column_entries.items():
+        if col not in _ARM_GESTURE_COLUMNS:
+            continue
+        for i, (idx, sym) in enumerate(entries):
+            timing = sym.get("timing", {})
+            measure = int(timing.get("measure", 1))
+            beat = float(timing.get("beat", 0))
+            dur = float(timing.get("duration_beats", 0))
+            end_beat = beat + dur
+            m_beats = measure_beats_by_measure.get(measure, MEASURE_BEATS)
+            if end_beat + 0.01 >= m_beats + 1.0:
+                continue  # fills the measure
+            has_retention = sym.get("retention") is not None
+            if has_retention:
+                continue
+            has_followup = False
+            for idx_b, sym_b in entries[i + 1:]:
+                tb = sym_b.get("timing", {})
+                mb = int(tb.get("measure", 1))
+                if mb == measure or mb == measure + 1:
+                    has_followup = True
+                    break
+            if not has_followup:
+                issues.append(
+                    ValidationIssue(
+                        "IMPLICIT_CANCELLATION",
+                        f"gesture in column '{col}' ends at beat {end_beat} with no followup or retention",
+                        f"/symbols/{idx}/timing/duration_beats",
+                        "warning",
+                        {"column": col, "measure": measure, "end_beat": end_beat},
+                    )
+                )
+
+    # ── Enhanced EFFORT_CONFLICT: check effort_graph field ───────────
+    for idx, sym in enumerate(symbols):
+        effort_graph = sym.get("effort_graph")
+        if not isinstance(effort_graph, dict):
+            continue
+        eg_weight = effort_graph.get("weight")
+        eg_modifiers = effort_graph.get("modifiers", {}) if isinstance(effort_graph.get("modifiers"), dict) else {}
+        mod_weight = eg_modifiers.get("weight")
+        if eg_weight and mod_weight and eg_weight != mod_weight:
+            conflict_pair = {eg_weight, mod_weight}
+            if conflict_pair == {"strong", "light"}:
+                issues.append(
+                    ValidationIssue(
+                        "EFFORT_CONFLICT",
+                        f"effort_graph has contradictory weight: '{eg_weight}' vs modifier '{mod_weight}'",
+                        f"/symbols/{idx}/effort_graph/weight",
+                        "error",
+                        {"key": "weight", "values": sorted(conflict_pair), "conflicts": sorted(conflict_pair)},
+                    )
+                )
+
     return _normalize_semantic_issue_severities(issues)
 
 
@@ -1634,6 +1952,20 @@ def build_repair_hints(issues: list[ValidationIssue]) -> list[dict]:
             hints.append({"action": "remove_symbol", "path": issue.path, "message": "Remove repeat boundaries from measures that contain no repeatable movement content"})
         elif issue.code in {"HOLD_CONTINUATION_MISSING", "SUSTAINED_QUALITY_CONTINUATION_MISSING"}:
             hints.append({"action": "insert_continuation_symbol", "path": issue.path, "message": "Insert the missing continuation companion on the next measure's matching motion"})
+        elif issue.code == "ROTATION_DEGREES_OUT_OF_RANGE":
+            hints.append({"action": "clamp_rotation_degrees", "path": issue.path, "value": issue.details.get("value", 0)})
+        elif issue.code == "FLEXION_DEGREES_OUT_OF_RANGE":
+            hints.append({"action": "clamp_flexion_degrees", "path": issue.path, "value": issue.details.get("value", 0)})
+        elif issue.code == "INVALID_STAGE_ZONE":
+            hints.append({"action": "fix_invalid_zone", "path": issue.path, "value": "center"})
+        elif issue.code == "INVALID_FACING":
+            hints.append({"action": "fix_invalid_facing", "path": issue.path, "value": "downstage"})
+        elif issue.code == "INVALID_RETENTION":
+            hints.append({"action": "fix_invalid_retention", "path": issue.path, "value": "hold"})
+        elif issue.code == "EFFORT_CONFLICT":
+            hints.append({"action": "remove_conflicting_effort", "path": issue.path, "key": issue.details.get("key", ""), "conflicts": issue.details.get("conflicts", [])})
+        elif issue.code == "SUPPORT_MISSING_DIRECTION":
+            hints.append({"action": "set_direction", "path": issue.path, "value": "forward", "symbol_index": issue.details.get("symbol_index")})
     hints.sort(
         key=lambda hint: (
             REPAIR_ACTION_PRIORITY.get(hint.get("action", ""), 99),

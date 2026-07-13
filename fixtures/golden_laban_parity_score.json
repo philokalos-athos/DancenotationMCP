@@ -1,0 +1,63 @@
+{
+  "metadata": {
+    "title": "LabanWriter Parity Golden Test",
+    "source_prompt": "Golden fixture covering all improved rendering features",
+    "ir_version": "0.2.0",
+    "schema_version": "0.2.0"
+  },
+  "symbols": [
+    {"symbol_id": "support.step.forward", "body_part": "left_leg", "direction": "forward", "level": "high", "timing": {"measure": 1, "beat": 1, "duration_beats": 2}, "modifiers": {}},
+    {"symbol_id": "support.step.forward", "body_part": "right_leg", "direction": "backward", "level": "low", "timing": {"measure": 1, "beat": 1, "duration_beats": 2}, "modifiers": {}},
+    {"symbol_id": "direction.forward", "body_part": "left_arm", "direction": "forward", "level": "middle", "timing": {"measure": 1, "beat": 3, "duration_beats": 1}, "modifiers": {}},
+    {"symbol_id": "direction.left", "body_part": "right_arm", "direction": "left", "level": "high", "timing": {"measure": 1, "beat": 3, "duration_beats": 1}, "modifiers": {}},
+
+    {"symbol_id": "support.step.forward", "body_part": "right_leg", "direction": "right", "level": "middle", "timing": {"measure": 2, "beat": 1, "duration_beats": 1}, "modifiers": {}},
+    {"symbol_id": "support.step.forward", "body_part": "left_leg", "direction": "diagonal_forward_left", "level": "low", "timing": {"measure": 2, "beat": 1, "duration_beats": 1}, "modifiers": {}},
+    {"symbol_id": "direction.forward", "body_part": "left_arm", "direction": "diagonal_forward_right", "level": "high", "timing": {"measure": 2, "beat": 2, "duration_beats": 2}, "modifiers": {}},
+    {"symbol_id": "direction.forward", "body_part": "right_arm", "direction": "diagonal_backward_left", "level": "middle", "timing": {"measure": 2, "beat": 2, "duration_beats": 2}, "modifiers": {}},
+
+    {"symbol_id": "support.step.forward", "body_part": "left_leg", "direction": "diagonal_backward_right", "level": "high", "timing": {"measure": 3, "beat": 1, "duration_beats": 2}, "modifiers": {}},
+    {"symbol_id": "support.step.forward", "body_part": "right_leg", "direction": "place", "level": "low", "timing": {"measure": 3, "beat": 1, "duration_beats": 2}, "modifiers": {}},
+
+    {"symbol_id": "support.step.forward", "body_part": "left_leg", "direction": "forward", "level": "middle", "timing": {"measure": 3, "beat": 3, "duration_beats": 1}, "modifiers": {"level_fill_top": "high", "level_fill_bottom": "low"}},
+
+    {"symbol_id": "turn.right", "body_part": "whole_body", "direction": "right", "level": null, "timing": {"measure": 4, "beat": 1, "duration_beats": 2}, "rotation_degrees": 180, "modifiers": {}},
+    {"symbol_id": "jump.basic", "body_part": "whole_body", "direction": "forward", "level": "middle", "timing": {"measure": 4, "beat": 3, "duration_beats": 1}, "modifiers": {}},
+    {"symbol_id": "jump.basic", "body_part": "whole_body", "direction": "forward", "level": "middle", "timing": {"measure": 4, "beat": 4, "duration_beats": 0.5}, "modifiers": {"spring_jump": {"takeoff": ["left"], "landing": ["right"]}}},
+
+    {"symbol_id": "effort.weight.strong", "body_part": "whole_body", "direction": null, "level": null, "timing": {"measure": 5, "beat": 1, "duration_beats": 2}, "modifiers": {"effort_weight": "strong", "effort_time": "sudden", "active_efforts": ["weight", "time"]}},
+    {"symbol_id": "contact.touch", "body_part": "left_hand", "direction": null, "level": null, "timing": {"measure": 5, "beat": 1, "duration_beats": 1}, "modifiers": {"contact_type": "touch"}},
+    {"symbol_id": "contact.grasp", "body_part": "right_hand", "direction": null, "level": null, "timing": {"measure": 5, "beat": 2, "duration_beats": 1}, "modifiers": {"contact_type": "grasp"}},
+    {"symbol_id": "contact.slide", "body_part": "left_hand", "direction": null, "level": null, "timing": {"measure": 5, "beat": 3, "duration_beats": 1}, "modifiers": {"contact_type": "slide"}},
+    {"symbol_id": "contact.strike", "body_part": "right_hand", "direction": null, "level": null, "timing": {"measure": 5, "beat": 4, "duration_beats": 1}, "modifiers": {"contact_type": "strike"}},
+
+    {"symbol_id": "flexion.knee.90", "body_part": "left_knee", "direction": null, "level": null, "timing": {"measure": 6, "beat": 1, "duration_beats": 1}, "modifiers": {"degree": 1}},
+    {"symbol_id": "flexion.knee.90", "body_part": "right_knee", "direction": null, "level": null, "timing": {"measure": 6, "beat": 2, "duration_beats": 1}, "modifiers": {"degree": 2}},
+    {"symbol_id": "flexion.hip.90", "body_part": "left_elbow", "direction": null, "level": null, "timing": {"measure": 6, "beat": 3, "duration_beats": 1}, "modifiers": {"degree": 3}},
+
+    {"symbol_id": "retention.hold.arm", "body_part": "left_arm", "direction": null, "level": null, "timing": {"measure": 6, "beat": 4, "duration_beats": 1}, "retention": "hold", "modifiers": {}},
+    {"symbol_id": "retention.hold.arm", "body_part": "right_arm", "direction": null, "level": null, "timing": {"measure": 6, "beat": 4, "duration_beats": 1}, "retention": "release", "modifiers": {}},
+
+    {"symbol_id": "support.step.forward", "body_part": "left_leg", "direction": "forward", "level": "middle", "timing": {"measure": 7, "beat": 1, "duration_beats": 4}, "modifiers": {"whitespace": true}},
+    {"symbol_id": "support.step.forward", "body_part": "right_leg", "direction": "forward", "level": "middle", "timing": {"measure": 7, "beat": 1, "duration_beats": 2}, "modifiers": {"oscillations": 3}},
+    {"symbol_id": "direction.forward", "body_part": "left_arm", "direction": "forward", "level": "high", "timing": {"measure": 7, "beat": 1, "duration_beats": 2}, "modifiers": {"surface_marks": ["forward", "left"]}},
+    {"symbol_id": "direction.forward", "body_part": "right_arm", "direction": "right", "level": "low", "timing": {"measure": 7, "beat": 1, "duration_beats": 2}, "modifiers": {"joint_area": "elbow", "degree": 2}},
+
+    {"symbol_id": "repeat.start", "body_part": "whole_body", "direction": null, "level": null, "timing": {"measure": 8, "beat": 1, "duration_beats": 1}, "modifiers": {}},
+    {"symbol_id": "support.step.forward", "body_part": "left_leg", "direction": "forward", "level": "middle", "timing": {"measure": 8, "beat": 1, "duration_beats": 2}, "modifiers": {"line_style": "dotted"}},
+    {"symbol_id": "support.step.forward", "body_part": "right_leg", "direction": "backward", "level": "high", "timing": {"measure": 8, "beat": 1, "duration_beats": 2}, "modifiers": {"line_style": "double"}},
+    {"symbol_id": "repeat.end", "body_part": "whole_body", "direction": null, "level": null, "timing": {"measure": 8, "beat": 4, "duration_beats": 1}, "modifiers": {}},
+
+    {"symbol_id": "sequential.successive", "body_part": "torso", "direction": null, "level": null, "timing": {"measure": 9, "beat": 1, "duration_beats": 4}, "modifiers": {"wave_direction": "upward"}},
+    {"symbol_id": "shape.pin", "body_part": "torso", "direction": null, "level": null, "timing": {"measure": 9, "beat": 1, "duration_beats": 1}, "modifiers": {"pin_head": "circle"}},
+    {"symbol_id": "shape.wall", "body_part": "torso", "direction": null, "level": null, "timing": {"measure": 9, "beat": 2, "duration_beats": 1}, "modifiers": {}},
+
+    {"symbol_id": "support.step.forward", "body_part": "left_leg", "direction": "forward", "level": "high", "timing": {"measure": 10, "beat": 1, "duration_beats": 2}, "modifiers": {"label": "plié"}},
+    {"symbol_id": "support.step.forward", "body_part": "right_leg", "direction": "forward", "level": "low", "timing": {"measure": 10, "beat": 1, "duration_beats": 2}, "modifiers": {"source_text": "relevé"}}
+  ],
+  "extensions": {
+    "time_signatures": [
+      {"measure": 1, "numerator": 4, "denominator": 4}
+    ]
+  }
+}

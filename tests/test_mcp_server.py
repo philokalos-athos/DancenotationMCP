@@ -1,6 +1,7 @@
 import unittest
 
-from dancenotation_mcp.mcp_server.server import handle, repair_ir
+from dancenotation_mcp.mcp_server.server import handle
+from dancenotation_mcp.validation.repair import repair_ir
 from dancenotation_mcp.validation.validator import validate_ir
 
 

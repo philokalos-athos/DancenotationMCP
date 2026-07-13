@@ -186,6 +186,6 @@
 <g class="measure-header" data-symbol-id="music.cadence.mark"><rect x="69.0" y="424.0" width="44.0" height="18" rx="4" ry="4" fill="#eef2ff" stroke="#c7d2fe" stroke-width="1"/><text x="91.0" y="437.0" text-anchor="middle" font-size="9" fill="#312e81">cad</text></g>
 <path class="repeat-span" d="M 1105.0 130.0 L 1105.0 698.0 M 1105.0 130.0 L 1114.0 130.0 M 1105.0 698.0 L 1114.0 698.0" fill="none" stroke="#475569" stroke-width="1.4"/>
 <path class="attachment-line" data-route="curve" d="M 1120.0 162.0 C 825.0 162.0, 825.0 162.0, 530.0 162.0" fill="none" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="3 3"/>
-<path class="attachment-line" data-route="dogleg" d="M 1380.0 234.0 L 1380.0 216.0 L 548.0 216.0 L 548.0 150.0 L 530.0 150.0 L 530.0 162.0" fill="none" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="3 3"/>
+<path class="attachment-line" data-route="dogleg" d="M 1380.0 234.0 L 1380.0 116.0 L 548.0 116.0 L 548.0 174.0 L 530.0 174.0 L 530.0 162.0" fill="none" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="3 3"/>
 <path class="attachment-line" data-route="curve" d="M 1120.0 594.0 C 851.0 594.0, 851.0 594.0, 582.0 594.0" fill="none" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="3 3"/>
 </svg>

@@ -3,88 +3,44 @@ from __future__ import annotations
 from xml.sax.saxutils import escape
 
 from dancenotation_mcp.ir.catalog import load_symbol_catalog
+from dancenotation_mcp.ir.time_signatures import beats_for_measure, build_measure_beats_map
+from dancenotation_mcp.rendering.layout import (
+    ANNOTATION_GAP,
+    ANNOTATION_WIDTH,
+    ATTACHABLE_COLUMNS,
+    BEAT_HEIGHT,
+    BODY_LANES,
+    BOTTOM_MARGIN,
+    BUNDLE_ATTACHMENT_FAMILIES,
+    COLLISION_OFFSET,
+    COLUMN_LANES,
+    DIRECTION_GLYPH,
+    HEADER_HEIGHT,
+    LANE_GAP,
+    LANE_WIDTH,
+    LEVEL_STYLES,
+    MARGIN_X,
+    MIN_SYMBOL_HEIGHT,
+    ROUTING_KIND_PRIORITY,
+    SPECIALIZED_COLUMNS,
+    SYSTEM_GAP_Y,
+    SYSTEM_MEASURE_CAPACITY,
+    TOP_MARGIN,
+    compute_layout,
+    header_gutter_width as header_gutter_width,
+    measure_header_corridors as measure_header_corridors,
+    reserve_routing_track as reserve_routing_track,
+    simplify_polyline as _simplify_polyline,
+)
 
 
-MARGIN_X = 28
-TOP_MARGIN = 72
-BOTTOM_MARGIN = 40
-HEADER_HEIGHT = 54
-BEAT_HEIGHT = 72
-MIN_SYMBOL_HEIGHT = 26
-LANE_GAP = 18
-LANE_WIDTH = 34
-ANNOTATION_WIDTH = 14
-ANNOTATION_GAP = 5
-COLLISION_OFFSET = 12
-SYSTEM_MEASURE_CAPACITY = 4
-SYSTEM_GAP_Y = 110
-
-BODY_LANES = [
-    "left_arm",
-    "left_leg",
-    "torso",
-    "right_leg",
-    "right_arm",
-]
-
-COLUMN_LANES = [
-    "support",
-    "direction",
-    "path",
-    "bow",
-    "pin",
-    "gesture",
-    "body",
-    "flexion",
-    "foothook",
-    "digit",
-    "turn",
-    "travel",
-    "jump",
-    "floor",
-    "repeat",
-    "dynamic",
-    "adlib",
-    "music",
-    "motif",
-    "surface",
-    "space",
-    "separator",
-    "quality",
-    "level",
-    "timing",
-]
-
-DIRECTION_GLYPH = {
-    "forward": "▲",
-    "backward": "▼",
-    "left": "◀",
-    "right": "▶",
-    "diagonal_forward_left": "◢",
-    "diagonal_forward_right": "◣",
-    "diagonal_backward_left": "◥",
-    "diagonal_backward_right": "◤",
-    "place": "●",
-}
-
-LEVEL_STYLES = {
-    "high": {"fill": "#ffffff", "label": "High"},
-    "middle": {"fill": "url(#level-middle-fill)", "label": "Middle"},
-    "low": {"fill": "#2f3542", "label": "Low"},
-}
-
-SPECIALIZED_COLUMNS = {"path", "pin", "repeat", "music", "separator", "turn", "jump", "motif", "surface", "space"}
-ATTACHABLE_COLUMNS = {"pin", "surface", "music", "repeat", "quality", "level", "timing"}
-ROUTING_KIND_PRIORITY = {"bridge": 0, "span": 1, "attachment": 2}
-BUNDLE_ATTACHMENT_FAMILIES = {"pin", "surface", "music"}
-
-
-def _symbol_time(symbol: dict) -> tuple[float, float]:
+def _symbol_time(symbol: dict, beats_map: dict[int, float] | None = None) -> tuple[float, float]:
     timing = symbol.get("timing", {})
     measure = max(int(timing.get("measure", 1)), 1)
     beat = float(timing.get("beat", 1.0))
     duration = max(float(timing.get("duration_beats", 1.0)), 0.25)
-    start = (measure - 1) * 4 + (beat - 1.0)
+    bm = beats_map or {}
+    start = sum(beats_for_measure(m, bm) for m in range(1, measure)) + (beat - 1.0)
     end = start + duration
     return start, end
 
@@ -99,15 +55,30 @@ def _build_lane_positions(staff_left: float) -> dict[str, float]:
     return positions
 
 
-def _measure_count(symbols: list[dict]) -> int:
+def _measure_count(symbols: list[dict], beats_map: dict[int, float] | None = None) -> int:
     if not symbols:
         return 1
-    last_end = max(_symbol_time(symbol)[1] for symbol in symbols)
-    return max(1, int((last_end + 3.999) // 4))
+    max_m = 1
+    for s in symbols:
+        timing = s.get("timing", {})
+        m = max(int(timing.get("measure", 1)), 1)
+        beat = float(timing.get("beat", 1.0))
+        dur = max(float(timing.get("duration_beats", 1.0)), 0.25)
+        bm = beats_map or {}
+        bpm = beats_for_measure(m, bm)
+        end_beat = beat + dur - 1.0
+        extra = 0
+        while end_beat > bpm:
+            extra += 1
+            end_beat -= beats_for_measure(m + extra, bm)
+        max_m = max(max_m, m + extra)
+    return max_m
 
 
-def _measure_top(measure: int, staff_top: float) -> float:
-    return staff_top + (measure - 1) * 4 * BEAT_HEIGHT
+def _measure_top(measure: int, staff_top: float, beats_map: dict[int, float] | None = None) -> float:
+    bm = beats_map or {}
+    offset = sum(beats_for_measure(m, bm) * BEAT_HEIGHT for m in range(1, measure))
+    return staff_top + offset
 
 
 def _measure_stack_pressure(symbols: list[dict], catalog: dict[str, dict], measure_count: int) -> dict[int, float]:
@@ -1702,10 +1673,17 @@ def _measure_priority_y_offset(entry: dict, existing_entries: list[dict]) -> flo
     return layer_offsets.get(column, 0.0)
 
 
-def _render_continuation_markers(entry: dict, measure_tops: dict[int, float]) -> list[str]:
+def _render_continuation_markers(entry: dict, measure_tops: dict[int, float],
+                                  beats_map: dict[int, float] | None = None) -> list[str]:
     markers: list[str] = []
     start_measure = entry["measure"]
-    end_measure = max(start_measure, int(((entry["end"] - 0.001) // 4) + 1))
+    # Find end measure from absolute beat position
+    abs_end = entry["end"] - 0.001
+    end_measure = start_measure
+    cumulative = sum(beats_for_measure(m, beats_map or {}) for m in range(1, start_measure))
+    while cumulative + beats_for_measure(end_measure, beats_map or {}) < abs_end:
+        cumulative += beats_for_measure(end_measure, beats_map or {})
+        end_measure += 1
     if end_measure <= start_measure:
         return markers
     left = entry["x"] - (entry["width"] / 2) + 4.0
@@ -1722,24 +1700,30 @@ def _render_continuation_markers(entry: dict, measure_tops: dict[int, float]) ->
 
 
 def render_svg(ir: dict) -> str:
-    catalog = load_symbol_catalog()
-    symbols = ir.get("symbols", [])
-    measure_count = _measure_count(symbols)
-    header_layout = _measure_header_layout(symbols, catalog)
-    measure_right_padding = _measure_right_padding(symbols, catalog)
-    header_gutter = _header_gutter_width(header_layout)
-    staff_left = MARGIN_X + header_gutter
-    lane_positions = _build_lane_positions(staff_left)
+    layout = compute_layout(ir)
+    catalog = layout["catalog"]
+    symbols = layout["symbols"]
+    mc = layout["measure_count"]
+    beats_map = layout.get("beats_map", {})
+    header_layout = layout["header_layout"]
+    m_right_padding = layout["measure_right_padding"]
+    staff_left = layout["staff_left"]
+    lane_positions = layout["lane_positions"]
+    lane_right = layout["lane_right"]
+    measure_tops = layout["measure_tops"]
+    measure_pressures = layout["measure_pressures"]
+    header_corridors = layout["header_corridors"]
+    systems = layout["systems"]
+    width = layout["width"]
+    height = layout["height"]
+    rendered_entries = layout["rendered_entries"]
+    pending_attachments = layout["pending_attachments"]
+    measure_headers = layout["measure_headers"]
+    bridge_routes = layout["bridge_routes"]
+    span_routes = layout["span_routes"]
+    attachment_routes = layout["attachment_routes"]
+
     order = BODY_LANES + COLUMN_LANES
-    lane_right = staff_left + len(order) * LANE_WIDTH + (len(order) - 1) * LANE_GAP
-    staff_top = TOP_MARGIN + HEADER_HEIGHT
-    measure_pressures = _measure_stack_pressure(symbols, catalog, measure_count)
-    measure_tops, measure_gaps = _measure_vertical_layout(symbols, catalog, staff_top, measure_count)
-    header_corridors = _measure_header_corridors(header_layout, measure_tops, staff_left)
-    systems = _system_layout(measure_count, measure_tops, measure_right_padding, staff_left, lane_right)
-    width = int(lane_right + max(measure_right_padding.values(), default=52.0) + MARGIN_X)
-    timeline_height = (measure_count * 4 * BEAT_HEIGHT) + sum(measure_gaps.values())
-    height = int(TOP_MARGIN + HEADER_HEIGHT + timeline_height + BOTTOM_MARGIN)
 
     elements: list[str] = [
         f'<rect x="0" y="0" width="{width}" height="{height}" fill="#f8fafc"/>',
@@ -1753,7 +1737,7 @@ def render_svg(ir: dict) -> str:
 """.strip(),
     ]
 
-    title = escape(ir.get("metadata", {}).get("title", "Untitled"))
+    title = escape(layout["title"])
     elements.append(
         f'<text x="{MARGIN_X}" y="34" font-size="24" font-weight="700" fill="#111827">{title}</text>'
     )
@@ -1763,7 +1747,6 @@ def render_svg(ir: dict) -> str:
         "</text>"
     )
 
-    staff_bottom = measure_tops[measure_count] + (4 * BEAT_HEIGHT)
     for system in systems:
         elements.append(f'<g class="staff-system" data-system="{system["index"]}" data-measures="{system["start_measure"]}-{system["end_measure"]}">')
         elements.append(
@@ -1772,11 +1755,12 @@ def render_svg(ir: dict) -> str:
         )
         elements.append("</g>")
 
-    for measure_index in range(measure_count):
+    for measure_index in range(mc):
         measure_number = measure_index + 1
         y = measure_tops[measure_number]
-        measure_right = lane_right + measure_right_padding.get(measure_number, 52.0)
-        measure_height = 4 * BEAT_HEIGHT
+        measure_right = lane_right + m_right_padding.get(measure_number, 52.0)
+        m_bpm = beats_for_measure(measure_number, beats_map)
+        measure_height = m_bpm * BEAT_HEIGHT
         if measure_index % 2 == 0:
             elements.append(
                 f'<rect x="{staff_left - 10:.1f}" y="{y:.1f}" width="{measure_right - staff_left + 20:.1f}" '
@@ -1790,8 +1774,8 @@ def render_svg(ir: dict) -> str:
             f'<text x="{staff_left - 6:.1f}" y="{y + 16:.1f}" text-anchor="end" font-size="10" fill="#64748b">'
             f'M{measure_index + 1}</text>'
         )
-        for beat_index in range(1, 4):
-            beat_y = y + (beat_index * (measure_height / 4.0))
+        for beat_index in range(1, int(m_bpm)):
+            beat_y = y + (beat_index * (measure_height / m_bpm))
             elements.append(
                 f'<line x1="{staff_left - 10:.1f}" y1="{beat_y:.1f}" x2="{measure_right + 10:.1f}" y2="{beat_y:.1f}" '
                 'stroke="#cbd5e1" stroke-width="1" stroke-dasharray="4 4"/>'
@@ -1819,64 +1803,26 @@ def render_svg(ir: dict) -> str:
                 f"{escape(label)}</text>"
             )
 
-    placed: list[dict] = []
-    rendered_entries: list[dict] = []
     deferred_elements: list[str] = []
-    routed_attachment_lines: list[dict] = []
-    pending_attachments: list[tuple[dict, dict]] = []
-    measure_headers: dict[int, int] = {}
     header_stack: dict[int, int] = {}
-    for symbol in sorted(symbols, key=lambda item: _symbol_time(item)[0]):
-        symbol_id = symbol.get("symbol_id", "")
-        spec = catalog.get(symbol_id, {})
-        geom = spec.get("geometry", {})
-        lane = _resolve_lane(symbol, spec)
-        x = lane_positions[lane]
-        start, end = _symbol_time(symbol)
-        measure = max(int(symbol.get("timing", {}).get("measure", 1)), 1)
-        measure_top = measure_tops[measure]
-        within_measure_start = start - ((measure - 1) * 4)
-        within_measure_end = end - ((measure - 1) * 4)
-        top = measure_top + within_measure_start * BEAT_HEIGHT + 6
-        height_span = max(MIN_SYMBOL_HEIGHT, (within_measure_end - within_measure_start) * BEAT_HEIGHT - 12)
-        if _is_measure_boundary_separator(symbol, spec):
-            top = measure_top + 2
-            height_span = (4 * BEAT_HEIGHT) - 4
-        bottom = top + height_span
-        collision_index = _compute_collision_index(placed, lane, top, bottom)
-        x += collision_index * COLLISION_OFFSET
-        placed.append({"lane": lane, "top": top, "bottom": bottom})
-        entry = {
-            "symbol": symbol,
-            "spec": spec,
-            "column": geom.get("staff_column"),
-            "x": x,
-            "top": top,
-            "height": height_span,
-            "width": max(int(geom.get("width", 20)), 18) + 16,
-            "start": start,
-            "end": end,
-            "measure": measure,
-            "measure_top": measure_top,
-            "measure_height": 4 * BEAT_HEIGHT,
-        }
-        x += _measure_special_x_offset(entry, rendered_entries)
-        top += _measure_priority_y_offset(entry, rendered_entries)
-        top += _measure_zone_y_offset(entry, measure_pressures.get(measure, 0.0))
-        entry["x"] = x
-        entry["top"] = top
-        rendered_entries.append(entry)
+    for entry in rendered_entries:
+        symbol = entry["symbol"]
+        spec = entry["spec"]
+        x = entry["x"]
+        top = entry["top"]
+        height_span = entry["height"]
+        m = entry["measure"]
 
         if _is_measure_header(symbol, spec):
-            stack_index = header_stack.get(measure, 0)
-            header_stack[measure] = stack_index + 1
-            measure_headers[measure] = header_stack[measure]
-            band_width = header_layout.get(measure, {}).get("max_text_width", 72.0) + 12.0
-            deferred_elements.append(_render_measure_header_symbol(symbol, stack_index, band_width - 12.0, measure_top, staff_left))
+            stack_index = header_stack.get(m, 0)
+            header_stack[m] = stack_index + 1
+            band_width = header_layout.get(m, {}).get("max_text_width", 72.0) + 12.0
+            deferred_elements.append(_render_measure_header_symbol(symbol, stack_index, band_width - 12.0, measure_tops[m], staff_left))
         else:
             elements.append(_render_symbol_block(symbol, spec, x, top, height_span))
-            elements.extend(_render_continuation_markers(entry, measure_tops))
+            elements.extend(_render_continuation_markers(entry, measure_tops, beats_map))
 
+        geom = spec.get("geometry", {})
         if geom.get("staff_column") in {"quality", "level", "timing"}:
             target_lane = symbol.get("body_part")
             if target_lane in lane_positions:
@@ -1886,33 +1832,44 @@ def render_svg(ir: dict) -> str:
                     'stroke="#cbd5e1" stroke-width="1"/>'
                 )
 
-    for entry in rendered_entries:
-        if entry["column"] not in ATTACHABLE_COLUMNS:
-            continue
-        if _is_measure_header(entry["symbol"], entry["spec"]):
-            continue
-        target = _find_anchor_entry(rendered_entries, entry)
-        if target:
-            pending_attachments.append((entry, target))
-    attachment_bundle_profiles = _attachment_bundle_profiles(pending_attachments)
+    for m, header_count in sorted(measure_headers.items()):
+        band_width = header_layout.get(m, {}).get("max_text_width", 72.0) + 12.0
+        deferred_elements.insert(0, _render_measure_header_band(m, header_count, band_width, measure_tops[m], staff_left))
 
-    for measure, header_count in sorted(measure_headers.items()):
-        band_width = header_layout.get(measure, {}).get("max_text_width", 72.0) + 12.0
-        deferred_elements.insert(0, _render_measure_header_band(measure, header_count, band_width, measure_tops[measure], staff_left))
-
-    deferred_elements.extend(_render_repeat_separator_bridge(rendered_entries, routed_attachment_lines, header_corridors))
-    deferred_elements.extend(_render_repeat_spans(rendered_entries, routed_attachment_lines, measure_tops, header_corridors))
-    for entry, target in pending_attachments:
+    # Draw bridge routes
+    for route in bridge_routes:
+        pts = route["points"]
         deferred_elements.append(
-            _render_attachment_line(
-                entry,
-                target,
-                rendered_entries,
-                routed_attachment_lines,
-                header_corridors,
-                attachment_bundle_profiles.get(id(entry)),
-            )
+            f'<path class="repeat-separator-bridge" d="M {pts[0][0]:.1f} {pts[0][1]:.1f} L {pts[1][0]:.1f} {pts[1][1]:.1f}" '
+            'fill="none" stroke="#64748b" stroke-width="1.2"/>'
         )
+
+    # Draw span routes
+    for route in span_routes:
+        x = route["x"]
+        y1 = route["y1"]
+        y2 = route["y2"]
+        deferred_elements.append(
+            f'<path class="repeat-span" d="M {x:.1f} {y1:.1f} L {x:.1f} {y2:.1f} M {x:.1f} {y1:.1f} L {x + 9:.1f} {y1:.1f} M {x:.1f} {y2:.1f} L {x + 9:.1f} {y2:.1f}" '
+            'fill="none" stroke="#475569" stroke-width="1.4"/>'
+        )
+
+    # Draw attachment routes
+    for route in attachment_routes:
+        route_type = route["route_type"]
+        points = route["points"]
+        if route_type == "curve":
+            sx, sy = points[0]
+            mx, _ = points[1]
+            _, ty2 = points[2]
+            tx, ty = points[3]
+            deferred_elements.append(
+                f'<path class="attachment-line" data-route="curve" d="M {sx:.1f} {sy:.1f} C {mx:.1f} {sy:.1f}, {mx:.1f} {ty:.1f}, {tx:.1f} {ty:.1f}" '
+                'fill="none" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="3 3"/>'
+            )
+        else:
+            deferred_elements.append(_render_attachment_polyline(route_type, points))
+
     elements.extend(deferred_elements)
 
     return "\n".join(

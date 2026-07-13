@@ -10,6 +10,12 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = ["cairosvg>=2.7"]
 
+[project.optional-dependencies]
+# Music engraving (generate_score's music_source input / render_music tool).
+# Also requires a local `lilypond` binary on PATH; both degrade gracefully
+# to "music output omitted" rather than failing the whole score if missing.
+music = ["music21>=9.1"]
+
 [tool.setuptools]
 package-dir = {"" = "src"}
 

@@ -1,2 +1,12 @@
 __pycache__/
 *.py[cod]
+
+# Large reference scan (188-page facsimile source, not project code)
+La vivandière Pas de six Saint-Léon, Arthur, 1821-1870.pdf
+
+# Transient render scratch dirs
+tests/.tmp/
+dancenotation-pdf-*/
+
+# Local Claude Code session settings
+.claude/settings.local.json
