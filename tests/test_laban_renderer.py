@@ -7,6 +7,9 @@ from dancenotation_mcp.rendering.laban_renderer import (
     render_laban_svg,
     _render_turn_annotation,
     _render_jump_annotation,
+    _render_effort_diamond,
+    _render_shape_symbol,
+    _render_quality_annotation,
     LEVEL_FILLS,
 )
 from dancenotation_mcp.rendering.laban_layout import (
@@ -445,7 +448,11 @@ class LabanRendererTests(unittest.TestCase):
             },
         ])
         svg = render_laban_svg(ir)
-        self.assertIn('class="laban-annotation quality"', svg)
+        # quality.sustained is the Time-factor "sustained" pole, so it now
+        # renders with the shared effort-stroke geometry rather than the old
+        # generic labelled box.
+        self.assertIn('class="laban-annotation effort"', svg)
+        self.assertIn('data-effort="time.sustained"', svg)
 
     def test_measure_header_time_signature(self):
         ir = _minimal_ir(symbols=[{
@@ -908,6 +915,63 @@ class TurnJumpLevelFillTest(unittest.TestCase):
         entry["symbol"].pop("level")
         out = _render_jump_annotation(entry)
         self.assertIn('data-level="middle"', out)
+
+
+class EffortShapeGeometryTest(unittest.TestCase):
+    """Effort and shape signs must render as distinct authentic geometry, not
+    an identical empty diamond (effort) or a single letter (shape)."""
+
+    def _entry(self, symbol_id):
+        return {
+            "symbol": {"symbol_id": symbol_id},
+            "spec": {},
+            "x": 10.0, "y_top": 0.0, "y_bottom": 40.0, "width": 20.0,
+        }
+
+    def _geom(self, svg):
+        import re as _re
+        return _re.sub(r'data-[a-z-]+="[^"]*"', "", svg)
+
+    def test_eight_effort_poles_render_distinctly(self):
+        poles = [
+            "effort.weight.strong", "effort.weight.light",
+            "effort.space.direct", "effort.space.indirect",
+            "effort.time.sudden", "effort.time.sustained",
+            "effort.flow.bound", "effort.flow.free",
+        ]
+        geoms = {self._geom(_render_effort_diamond(self._entry(p))) for p in poles}
+        self.assertEqual(len(geoms), 8, "all 8 effort poles must be visually distinct")
+
+    def test_condensing_pole_filled_indulging_pole_open(self):
+        strong = _render_effort_diamond(self._entry("effort.weight.strong"))
+        light = _render_effort_diamond(self._entry("effort.weight.light"))
+        self.assertIn("path", strong)   # filled wedge
+        self.assertNotIn("path", light)  # open stroke only
+
+    def test_effort_graph_with_active_efforts_still_uses_diamond(self):
+        entry = self._entry("effort.drive.action")
+        entry["symbol"]["modifiers"] = {"active_efforts": ["weight", "time"]}
+        svg = _render_effort_diamond(entry)
+        # Aggregate graph keeps the four-quadrant diamond outline.
+        self.assertIn("L", svg)
+        self.assertIn('opacity="0.6"', svg)  # shaded active quadrants
+
+    def test_shape_families_render_distinctly_without_text_fallback(self):
+        shapes = [
+            "shape.wall.spreading", "shape.ball.bulging", "shape.pin.rising",
+            "shape.screw.advancing", "shape.flow.growing",
+            "shape.door.spreading", "shape.table.spreading",
+        ]
+        geoms = {self._geom(_render_shape_symbol(self._entry(s))) for s in shapes}
+        self.assertEqual(len(geoms), 7, "all 7 shape families must be distinct")
+        for s in shapes:
+            svg = _render_shape_symbol(self._entry(s))
+            self.assertNotIn('font-size="7"', svg, f"{s} fell back to a text label")
+
+    def test_quality_pole_alias_reuses_effort_geometry(self):
+        q = _render_quality_annotation(self._entry("quality.strong"))
+        e = _render_effort_diamond(self._entry("effort.weight.strong"))
+        self.assertEqual(self._geom(q), self._geom(e))
 
 
 if __name__ == "__main__":

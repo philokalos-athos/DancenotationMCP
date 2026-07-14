@@ -51,6 +51,31 @@ LEVEL_TEXT_COLOR = {
 }
 
 
+# Per-element effort strokes: factor -> pole -> (dx, dy, filled).
+# The stroke leaves the top of the central vertical action stroke at a fixed
+# per-factor angle; the two poles of each factor lean in opposite horizontal
+# directions, and the condensing pole (strong/direct/sudden/bound) is drawn as
+# a filled wedge while the indulging pole (light/flexible/sustained/free) is an
+# open stroke. Orientations follow the standard effort-graph layout so the
+# eight poles render mutually distinct and correctly paired.
+_EFFORT_STROKES = {
+    "weight": {"strong": (-1.0, 0.5, True), "light": (-1.0, -0.4, False)},
+    "space":  {"direct": (1.0, 0.5, True),  "indirect": (1.0, -0.4, False),
+               "flexible": (1.0, -0.4, False)},
+    "time":   {"sudden": (-0.6, 1.0, True), "sustained": (0.6, 1.0, False)},
+    "flow":   {"bound": (0.6, -1.0, True),  "free": (-0.6, -1.0, False)},
+}
+
+# Reverse lookup: effort pole (e.g. "strong") -> factor (e.g. "weight"), used
+# to render the ``quality.<pole>`` single-element aliases with effort strokes.
+_EFFORT_POLE_TO_FACTOR = {
+    pole: factor
+    for factor, poles in _EFFORT_STROKES.items()
+    for pole in poles
+}
+
+
+
 # ── Direction shape paths ─────────────────────────────────────────────
 
 def _direction_path(direction: str | None, x_left: float, y_top: float,
@@ -587,7 +612,13 @@ def _render_jump_annotation(entry: dict) -> str:
 
 
 def _render_quality_annotation(entry: dict) -> str:
-    """Render a quality/effort mark."""
+    """Render a quality/effort mark.
+
+    ``quality.<pole>`` ids (e.g. quality.strong, quality.direct) are single-
+    element aliases of the effort poles, so they reuse the same effort-stroke
+    geometry as ``effort.<factor>.<pole>`` for visual consistency. Anything
+    that isn't a recognised pole falls back to the labelled box.
+    """
     symbol = entry["symbol"]
     symbol_id = symbol.get("symbol_id", "")
     x = entry["x"]
@@ -597,7 +628,17 @@ def _render_quality_annotation(entry: dict) -> str:
     cx = x + w / 2
     cy = (y_top + y_bottom) / 2
 
-    # Quality symbols: small geometric marks
+    parts = symbol_id.split(".")
+    pole = parts[1] if len(parts) > 1 else ""
+    factor = _EFFORT_POLE_TO_FACTOR.get(pole)
+    if factor is not None:
+        # Reuse the effort-stroke renderer by synthesising the effort id.
+        return _render_effort_diamond({
+            **entry,
+            "symbol": {**symbol, "symbol_id": f"effort.{factor}.{pole}"},
+        })
+
+    # Quality symbols with no effort-pole mapping: small geometric marks
     label = symbol_id.split(".")[-1][:3]
     return (
         f'<g class="laban-annotation quality" data-symbol-id="{escape(symbol_id)}">'
@@ -860,7 +901,27 @@ def _render_flexion_symbol(entry: dict) -> str:
 
 
 def _render_effort_diamond(entry: dict) -> str:
-    """Render LMA effort graph as a diamond shape (~16x16px)."""
+    """Render an LMA effort sign.
+
+    Two cases:
+    - Aggregate effort graph (``modifiers.active_efforts`` present): the four-
+      quadrant diamond, with each active factor's quadrant shaded.
+    - A single effort element (e.g. ``effort.weight.strong``, the normal
+      standalone catalog symbol): the standard effort notation is built on a
+      central vertical "action stroke"; each of the four factors extends a
+      diagonal stroke from it in a fixed orientation, and the two poles of a
+      factor are drawn as opposite stroke directions. Indulging poles (light,
+      indirect/flexible, sustained, free) lean one way; condensing poles
+      (strong, direct, sudden, bound) lean the other — matching the standard
+      effort-graph convention that indulging elements sit above the diagonal
+      and condensing elements below it.
+
+    Per-element diagonal orientations are derived from the standard graph
+    layout, not pixel-copied from a specific published glyph; the goal is that
+    the eight poles render mutually distinct and correctly paired, which the
+    prior code did not (every standalone element drew an identical empty
+    diamond).
+    """
     symbol = entry["symbol"]
     symbol_id = symbol.get("symbol_id", "")
     x = entry["x"]
@@ -869,12 +930,42 @@ def _render_effort_diamond(entry: dict) -> str:
     w = entry["width"]
     cx = x + w / 2
     cy = (y_top + y_bottom) / 2
-    s = 8  # half-size of diamond
+    s = 8  # half-size
 
     modifiers = symbol.get("modifiers", {})
     active = set(modifiers.get("active_efforts", []))
 
-    # Diamond outline
+    parts = symbol_id.split(".")
+    factor = parts[1] if len(parts) > 1 else ""
+    pole = parts[2] if len(parts) > 2 else ""
+
+    # Single-element effort sign: central action stroke + one factor stroke.
+    if not active and factor in _EFFORT_STROKES and pole in _EFFORT_STROKES[factor]:
+        dx, dy, filled = _EFFORT_STROKES[factor][pole]
+        # Central vertical action stroke
+        svg = (
+            f'<g class="laban-annotation effort" data-effort="{escape(factor)}.{escape(pole)}" '
+            f'data-symbol-id="{escape(symbol_id)}">'
+            f'<line x1="{cx:.1f}" y1="{cy - s:.1f}" x2="{cx:.1f}" y2="{cy + s:.1f}" '
+            f'stroke="#111827" stroke-width="1.4"/>'
+        )
+        # Factor diagonal stroke off the top of the action stroke
+        tx = cx + dx * s
+        ty = (cy - s) + dy * s
+        svg += (
+            f'<line x1="{cx:.1f}" y1="{cy - s:.1f}" x2="{tx:.1f}" y2="{ty:.1f}" '
+            f'stroke="#111827" stroke-width="1.4"/>'
+        )
+        if filled:
+            # Condensing pole: solid wedge between the action stroke and the diagonal
+            svg += (
+                f'<path d="M {cx:.1f} {cy - s:.1f} L {tx:.1f} {ty:.1f} '
+                f'L {cx:.1f} {ty:.1f} Z" fill="#111827"/>'
+            )
+        svg += '</g>'
+        return svg
+
+    # Diamond outline (aggregate effort graph)
     svg = (
         f'<g class="laban-annotation effort" data-symbol-id="{escape(symbol_id)}">'
         f'<path d="M {cx:.1f} {cy - s:.1f} L {cx + s:.1f} {cy:.1f} '
@@ -918,7 +1009,10 @@ def _render_shape_symbol(entry: dict) -> str:
     cy = (y_top + y_bottom) / 2
 
     modifiers = symbol.get("modifiers", {})
-    shape_type = modifiers.get("shape_type") or symbol_id.split(".")[-1]
+    # Shape ids are "shape.<family>.<variant>" (e.g. shape.wall.spreading), so
+    # the family that selects the glyph is token[1], not the trailing variant.
+    parts = symbol_id.split(".")
+    shape_type = modifiers.get("shape_type") or (parts[1] if len(parts) > 1 else "")
 
     if shape_type == "pin":
         # Vertical line with arrowhead
@@ -957,6 +1051,32 @@ def _render_shape_symbol(entry: dict) -> str:
             f'Q {cx + 5:.1f} {cy + 3:.1f} {cx:.1f} {cy:.1f} '
             f'Q {cx - 4:.1f} {cy - 2:.1f} {cx:.1f} {cy - 4:.1f} '
             f'Q {cx + 3:.1f} {cy - 5:.1f} {cx + 2:.1f} {cy - 7:.1f}" '
+            f'fill="none" stroke="#111827" stroke-width="1.5"/>'
+            f'</g>'
+        )
+    if shape_type == "flow":
+        # Flow shape change (growing/shrinking): an open wavy vertical stroke
+        return (
+            f'<g class="laban-annotation shape" data-symbol-id="{escape(symbol_id)}">'
+            f'<path d="M {cx:.1f} {cy + 7:.1f} '
+            f'Q {cx + 5:.1f} {cy + 3:.1f} {cx:.1f} {cy:.1f} '
+            f'Q {cx - 5:.1f} {cy - 3:.1f} {cx:.1f} {cy - 7:.1f}" '
+            f'fill="none" stroke="#111827" stroke-width="1.5"/>'
+            f'</g>'
+        )
+    if shape_type == "door":
+        # Door plane (vertical plane): a tall upright rectangle
+        return (
+            f'<g class="laban-annotation shape" data-symbol-id="{escape(symbol_id)}">'
+            f'<rect x="{cx - 4:.1f}" y="{cy - 7:.1f}" width="8" height="14" '
+            f'fill="none" stroke="#111827" stroke-width="1.5"/>'
+            f'</g>'
+        )
+    if shape_type == "table":
+        # Table plane (horizontal plane): a wide flat rectangle
+        return (
+            f'<g class="laban-annotation shape" data-symbol-id="{escape(symbol_id)}">'
+            f'<rect x="{cx - 7:.1f}" y="{cy - 4:.1f}" width="14" height="8" '
             f'fill="none" stroke="#111827" stroke-width="1.5"/>'
             f'</g>'
         )
