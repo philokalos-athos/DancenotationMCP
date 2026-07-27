@@ -1128,6 +1128,65 @@ class QualityAliasIdentityTest(unittest.TestCase):
         self.assertNotIn("<text", group.group(0))
 
 
+class FloorPlanMarkerGeometryTest(unittest.TestCase):
+    """The four floor.* staff-annotation sub-families mean different things and
+    must not share one glyph.
+
+    ``_render_stage_marker`` drew a dot plus an abbreviation taken from
+    ``symbol["stage_position"]["zone"]``. None of these catalog symbols carries
+    that field, so all 31 fell back to the same dot and a literal "?" — a
+    facing, a group formation, a travel path and a stage zone all engraved
+    identically, though the id names each one.
+    """
+
+    FAMILIES = {
+        "facing": ["downstage", "upstage", "stage_left", "stage_right",
+                   "downstage_left", "downstage_right",
+                   "upstage_left", "upstage_right"],
+        "zone": ["center", "center_left", "center_right",
+                 "downstage_center", "downstage_left", "downstage_right",
+                 "upstage_center", "upstage_left", "upstage_right",
+                 "wings_left", "wings_right"],
+        "path": ["straight", "curved", "circular", "spiral", "zigzag",
+                 "figure_eight"],
+        "formation": ["circle", "line", "diagonal", "v_shape", "cluster",
+                      "scatter"],
+    }
+
+    def _markup(self, symbol_id):
+        svg = render_laban_svg(_minimal_ir([{
+            "symbol_id": symbol_id,
+            "body_part": "torso",
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {},
+        }]))
+        start = svg.find(f'data-symbol-id="{symbol_id}"')
+        self.assertNotEqual(start, -1, f"{symbol_id} not rendered")
+        start = svg.rfind("<g", 0, start)
+        body = svg[start:svg.find("</g>", start)]
+        # Only the id is stripped. Do NOT blank the coordinates: every symbol
+        # here renders in the same slot, so coordinates *are* the shape — an
+        # arrow pointing up and one pointing down differ only in a y value.
+        return re.sub(r'data-symbol-id="[^"]*"', "", body)
+
+    def test_every_floor_marker_renders_a_distinct_shape(self):
+        seen = {}
+        for family, names in self.FAMILIES.items():
+            for name in names:
+                symbol_id = f"floor.{family}.{name}"
+                shape = self._markup(symbol_id)
+                clash = seen.get(shape)
+                self.assertIsNone(
+                    clash, f"{symbol_id} renders identically to {clash}")
+                seen[shape] = symbol_id
+        self.assertEqual(len(seen), sum(len(v) for v in self.FAMILIES.values()))
+
+    def test_floor_markers_carry_no_placeholder_text(self):
+        for family, names in self.FAMILIES.items():
+            with self.subTest(family=family):
+                self.assertNotIn("?", self._markup(f"floor.{family}.{names[0]}"))
+
+
 class DirectionImpliedBySymbolIdTest(unittest.TestCase):
     """A symbol id that names a direction must render as that direction.
 

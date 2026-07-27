@@ -1183,8 +1183,121 @@ def _render_shape_symbol(entry: dict) -> str:
     )
 
 
+# Stage geography as unit offsets from centre, x to stage right, y downstage.
+# Both the facing arrows and the zone grid read from this, so a facing and a
+# zone that name the same place point at the same spot.
+_STAGE_OFFSETS = {
+    "downstage": (0, 1), "upstage": (0, -1),
+    "stage_left": (-1, 0), "stage_right": (1, 0),
+    "downstage_left": (-1, 1), "downstage_right": (1, 1),
+    "upstage_left": (-1, -1), "upstage_right": (1, -1),
+    "downstage_center": (0, 1), "upstage_center": (0, -1),
+    "center": (0, 0), "center_left": (-1, 0), "center_right": (1, 0),
+    "wings_left": (-2, 0), "wings_right": (2, 0),
+}
+
+
+def _render_facing_marker(cx: float, cy: float, name: str) -> str:
+    """Arrow from centre pointing the way the dancer faces."""
+    dx, dy = _STAGE_OFFSETS.get(name, (0, 1))
+    r = 7.0
+    norm = (dx * dx + dy * dy) ** 0.5 or 1.0
+    tx, ty = cx + r * dx / norm, cy + r * dy / norm
+    # arrowhead basis
+    px, py = -dy / norm, dx / norm
+    return (
+        f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="2" fill="#111827"/>'
+        f'<line x1="{cx:.1f}" y1="{cy:.1f}" x2="{tx:.1f}" y2="{ty:.1f}" '
+        f'stroke="#111827" stroke-width="1.4"/>'
+        f'<polygon points="{tx + 2.5 * dx / norm:.1f},{ty + 2.5 * dy / norm:.1f} '
+        f'{tx + 2.5 * px:.1f},{ty + 2.5 * py:.1f} '
+        f'{tx - 2.5 * px:.1f},{ty - 2.5 * py:.1f}" fill="#111827"/>'
+    )
+
+
+def _render_zone_marker(cx: float, cy: float, name: str) -> str:
+    """Stage rectangle with the named cell filled."""
+    dx, dy = _STAGE_OFFSETS.get(name, (0, 0))
+    half_w, half_h, cell = 9.0, 6.0, 3.0
+    svg = (
+        f'<rect x="{cx - half_w:.1f}" y="{cy - half_h:.1f}" '
+        f'width="{2 * half_w:.1f}" height="{2 * half_h:.1f}" '
+        f'fill="none" stroke="#111827" stroke-width="1"/>'
+    )
+    # wings sit outside the stage rectangle, hence the clamp on x only
+    mx = cx + max(-1, min(1, dx)) * (half_w * 0.55)
+    if abs(dx) > 1:
+        mx = cx + (half_w + 3) * (1 if dx > 0 else -1)
+    my = cy + dy * (half_h * 0.55)
+    svg += (
+        f'<rect x="{mx - cell / 2:.1f}" y="{my - cell / 2:.1f}" '
+        f'width="{cell:.1f}" height="{cell:.1f}" fill="#111827"/>'
+    )
+    return svg
+
+
+def _render_formation_marker(cx: float, cy: float, name: str) -> str:
+    """Dancer dots arranged in the named group formation."""
+    r = 7.0
+    layouts = {
+        "line": [(-1, 0), (-0.33, 0), (0.33, 0), (1, 0)],
+        "diagonal": [(-1, -1), (-0.33, -0.33), (0.33, 0.33), (1, 1)],
+        "v_shape": [(-1, -1), (-0.5, 0), (0, 0.7), (0.5, 0), (1, -1)],
+        "cluster": [(-0.3, -0.3), (0.3, -0.3), (0, 0.15), (-0.3, 0.45), (0.3, 0.45)],
+        "scatter": [(-1, -0.6), (0.2, -1), (-0.5, 0.5), (0.9, 0.3), (0.1, 0.05)],
+    }
+    if name == "circle":
+        import math
+        pts = [(math.cos(a), math.sin(a))
+               for a in (i * math.pi / 3 for i in range(6))]
+    else:
+        pts = layouts.get(name, layouts["cluster"])
+    return "".join(
+        f'<circle cx="{cx + px * r:.1f}" cy="{cy + py * r:.1f}" r="1.6" '
+        f'fill="#111827"/>'
+        for px, py in pts
+    )
+
+
+def _render_travel_path_marker(cx: float, cy: float, name: str) -> str:
+    """The travel path drawn as its own shape."""
+    r = 8.0
+    paths = {
+        "straight": f'M {cx - r:.1f} {cy:.1f} L {cx + r:.1f} {cy:.1f}',
+        "curved": (f'M {cx - r:.1f} {cy + 3:.1f} '
+                   f'Q {cx:.1f} {cy - 8:.1f} {cx + r:.1f} {cy + 3:.1f}'),
+        "circular": (f'M {cx - 5:.1f} {cy:.1f} A 5 5 0 1 1 {cx + 5:.1f} {cy:.1f} '
+                     f'A 5 5 0 1 1 {cx - 5:.1f} {cy:.1f}'),
+        "spiral": (f'M {cx:.1f} {cy:.1f} A 2 2 0 1 1 {cx + 2:.1f} {cy - 2:.1f} '
+                   f'A 4.5 4.5 0 1 1 {cx - 4.5:.1f} {cy - 1:.1f} '
+                   f'A 7 7 0 1 1 {cx + 4:.1f} {cy + 6:.1f}'),
+        "zigzag": (f'M {cx - r:.1f} {cy + 4:.1f} L {cx - r / 2:.1f} {cy - 4:.1f} '
+                   f'L {cx:.1f} {cy + 4:.1f} L {cx + r / 2:.1f} {cy - 4:.1f} '
+                   f'L {cx + r:.1f} {cy + 4:.1f}'),
+        # Two loops stacked vertically, crossing at the centre. Written as
+        # four half-arcs so the crossing is a real crossing, not two arcs
+        # landing on the same point (which just draws one circle).
+        "figure_eight": (
+            f'M {cx:.1f} {cy:.1f} '
+            f'A 4 4 0 1 1 {cx:.1f} {cy - 8:.1f} '
+            f'A 4 4 0 1 1 {cx:.1f} {cy:.1f} '
+            f'A 4 4 0 1 0 {cx:.1f} {cy + 8:.1f} '
+            f'A 4 4 0 1 0 {cx:.1f} {cy:.1f}'),
+    }
+    d = paths.get(name, paths["straight"])
+    return (f'<path d="{d}" fill="none" stroke="#111827" stroke-width="1.3" '
+            f'stroke-linecap="round"/>')
+
+
 def _render_stage_marker(entry: dict) -> str:
-    """Render stage position marker."""
+    """Render a floor-plan reference placed in the staff's annotation column.
+
+    Four sub-families share this column and mean quite different things — a
+    facing, a stage zone, a group formation and a travel path — so each draws
+    its own shape, read from the symbol id. The id is the only source: none of
+    these catalog entries carries the ``stage_position`` field this used to
+    read, which is why all 31 previously rendered as one dot and a "?".
+    """
     symbol = entry["symbol"]
     symbol_id = symbol.get("symbol_id", "")
     x = entry["x"]
@@ -1194,19 +1307,29 @@ def _render_stage_marker(entry: dict) -> str:
     cx = x + w / 2
     cy = (y_top + y_bottom) / 2
 
-    stage_position = symbol.get("stage_position", {})
-    zone = ""
-    if isinstance(stage_position, dict):
-        zone = stage_position.get("zone", "")
-    # Abbreviate zone name
-    zone_abbr = "".join(word[0].upper() for word in zone.split("_")) if zone else "?"
+    parts = symbol_id.split(".")
+    kind = parts[1] if len(parts) > 2 else ""
+    name = ".".join(parts[2:]) if len(parts) > 2 else ""
+
+    if kind == "facing":
+        body = _render_facing_marker(cx, cy, name)
+    elif kind == "zone":
+        body = _render_zone_marker(cx, cy, name)
+    elif kind == "formation":
+        body = _render_formation_marker(cx, cy, name)
+    elif kind == "path":
+        body = _render_travel_path_marker(cx, cy, name)
+    else:
+        # An explicit stage_position on a symbol whose id names no sub-family.
+        stage_position = symbol.get("stage_position", {})
+        zone = stage_position.get("zone", "") if isinstance(stage_position, dict) else ""
+        body = _render_zone_marker(cx, cy, zone) if zone else (
+            f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="3" fill="#111827"/>')
 
     return (
         f'<g class="laban-annotation floor_plan" data-symbol-id="{escape(symbol_id)}">'
-        f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="3" fill="#111827"/>'
-        f'<text x="{cx:.1f}" y="{cy - 6:.1f}" text-anchor="middle" font-size="6" fill="#475569">'
-        f'{escape(zone_abbr)}</text>'
-        f'<line x1="{cx:.1f}" y1="{cy + 3:.1f}" x2="{cx:.1f}" y2="{y_bottom:.1f}" '
+        f'{body}'
+        f'<line x1="{cx:.1f}" y1="{cy + 8:.1f}" x2="{cx:.1f}" y2="{y_bottom:.1f}" '
         f'stroke="#999" stroke-width="0.5" stroke-dasharray="2,2"/>'
         f'</g>'
     )
