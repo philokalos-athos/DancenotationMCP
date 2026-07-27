@@ -10,9 +10,9 @@ capability have drifted apart badly, and only the second one is parity.
 | Metric | Baseline | Now |
 |---|---|---|
 | Catalog symbols | 1122 | 906 |
-| Distinct glyphs actually produced | 159 | **474** |
-| Visual collapse ratio | 7.1 : 1 | **1.91 : 1** |
-| Symbols with a wholly unique glyph | — | **416** |
+| Distinct glyphs actually produced | 159 | **490** |
+| Visual collapse ratio | 7.1 : 1 | **1.85 : 1** |
+| Symbols with a wholly unique glyph | — | **436** |
 | Symbols whose authored id was lost in the SVG | 8 | 0 |
 
 Adding a catalog entry raises the first row and not the second. Treat the
@@ -34,6 +34,9 @@ found nine times over:
 | effort actions | 14 | the eight basic actions all drew an empty diamond |
 | pin / bow / turn / jump | 17 | subtype dropped; pin read a modifier nothing populates while `behavior.cap_shape` sat unread beside it |
 | music | 12 | only `rest.*` was handled, so `music.time.3_4` engraved as a quarter rest |
+| effort grading | 14 | the `.increasing`/`.decreasing` suffix was never read |
+| separator | 6 | read a modifier nothing populates; the catalog stated each mode in `behavior` |
+| surface | 3 | routed into the contact renderer, where their own names hit its defaults |
 
 Two catalog-level fixes belong on the same list: 216 combinatorial turn/jump
 entries naming signs that exist in no palette were removed, and plié, relevé,
