@@ -1912,5 +1912,47 @@ class CatalogConstraintTests(unittest.TestCase):
         self.assertIn("reorder_repeat_boundaries", hint_actions)
 
 
+class NoCombinatorialTurnJumpEntriesTest(unittest.TestCase):
+    """Turn and jump signs take no compass direction in LabanWriter.
+
+    A turn's direction is rotational (right/left), carried by the sign's own
+    arc, and a jump's travel direction is carried by the direction symbols in
+    the support columns — never by the jump sign itself. Entries like
+    ``turn.full.diagonal_backward_left.high`` therefore name signs that do not
+    exist in any LabanWriter palette. They rendered identically to their base
+    sign, inflated the catalog count without adding a single glyph, and no
+    parser path or fixture ever produced one.
+    """
+
+    DIRECTIONS = {
+        "forward", "backward", "left", "right", "place",
+        "diagonal_forward_left", "diagonal_forward_right",
+        "diagonal_backward_left", "diagonal_backward_right",
+    }
+    LEVELS = {"high", "middle", "low"}
+
+    def test_turn_and_jump_ids_carry_no_direction_or_level_suffix(self):
+        offenders = sorted(
+            sid for sid in load_symbol_catalog()
+            if sid.split(".")[0] in ("turn", "jump")
+            and set(sid.split(".")) & (self.DIRECTIONS | self.LEVELS)
+        )
+        self.assertEqual(
+            offenders, [],
+            f"{len(offenders)} combinatorial turn/jump entries remain, "
+            f"e.g. {offenders[:3]}",
+        )
+
+    def test_the_base_turn_and_jump_signs_are_still_present(self):
+        # The real signs must survive the cleanup — this is the guard that
+        # stops the rule above from being satisfied by deleting the family.
+        catalog = load_symbol_catalog()
+        for sid in ("turn.full", "turn.half", "turn.pivot", "turn.spin",
+                    "jump.assemble", "jump.large", "jump.sissonne",
+                    "jump.small", "jump.spring"):
+            with self.subTest(symbol=sid):
+                self.assertIn(sid, catalog)
+
+
 if __name__ == "__main__":
     unittest.main()

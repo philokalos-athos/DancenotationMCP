@@ -60,8 +60,26 @@ class CatalogExpandedTests(unittest.TestCase):
 
     # ---- 1. Total symbol count ----
 
-    def test_total_symbol_count_at_least_1100(self):
-        self.assertGreaterEqual(len(self.catalog), 1100)
+    def test_every_official_labanwriter_family_is_represented(self):
+        """Coverage is measured by families of real signs, not by raw entry
+        count. A count threshold rewards padding the catalog with mechanically
+        combined ids that render identically to their base sign — which is how
+        216 fictional turn/jump entries accumulated — while a missing family is
+        a genuine parity gap. See docs/labanwriter_parity_audit.md.
+        """
+        families = {sid.split(".")[0] for sid in self.catalog}
+        required = {
+            "support", "gesture", "body", "direction", "turn", "jump",
+            "travel", "path", "floor", "contact", "surface", "flexion",
+            "extension", "retention", "effort", "shape", "quality",
+            "timing", "music", "repeat", "pin", "bow", "motif", "dynamic",
+            "adlib", "sequential", "separator", "space", "level",
+            "foot", "foothook", "finger", "toe",
+        }
+        self.assertEqual(
+            required - families, set(),
+            "official LabanWriter families missing from the catalog",
+        )
 
     # ---- 2. No duplicate symbol ids ----
 
