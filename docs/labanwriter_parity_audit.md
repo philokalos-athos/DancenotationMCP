@@ -44,6 +44,29 @@ rise and lower had free `allowed_levels` so they engraved at the default middle
 — a support's level IS the state of the leg, so those are now pinned and the
 rule "one allowed level means that is the level" is applied generally.
 
+### Whole-score parity, measured separately
+
+Per-symbol work cannot see how a finished score reads. Rendering the largest
+example beside the plates found two defects the glyph probe is blind to:
+
+| | Plates | Was | Now |
+|---|---|---|---|
+| Page proportion | 1 : 1.37 | 1 : 20.6 | 1 : 1.08 |
+| System flow | side by side | stacked into one column | side by side |
+| Captions across the staff | none | 23 of 91 | 0 |
+
+Page proportion measured on La vivandière (2698x3668 and 2727x3775); p91 and
+p97 each carry two three-line staves side by side. Soirée musicale has three
+and four across, but those are four dancers on their own staves — a different
+thing from one dance wrapping, and not what settles this.
+
+What was NOT wrong: measure height, about 186px against the plates' ~190 at
+150dpi. The whole error was in the direction systems flow.
+
+Still open at this level: captions all take the same margin x, so where they
+are dense they overlap each other; and the trailing system of a score can come
+out nearly empty.
+
 ### What the remaining clusters are
 
 Every family the audit found discarding information has been fixed;
