@@ -261,18 +261,71 @@ class _RenderContext:
         self.split_clip_counter = 0
 
 
+# The catalog states each separator's mode in behavior; these translate its
+# spellings into the drawing modes below.
+_SEPARATOR_CAP_MODES = {
+    "single_bar": "single",
+    "double_bar": "double",
+    "single_hook": "hook",
+    "hooked": "hooked",
+}
+
+# separator.final carries no behavior block, so its mode comes from the id.
+_SEPARATOR_ID_MODES = {"separator.final": "final"}
+
+
 def _render_separator(entry: dict) -> str:
-    """Render separator lines across the staff."""
+    """Render a separator, in the mode the catalog asks for.
+
+    Mode selection order: an explicit ``modifiers.separator_mode``, else the
+    catalog's ``behavior.preferred_separator_mode``, else its ``cap_shape``,
+    else a per-id fallback, else a single rule.
+    """
     symbol = entry["symbol"]
     symbol_id = symbol.get("symbol_id", "")
     modifiers = symbol.get("modifiers", {})
-    mode = modifiers.get("separator_mode", "single")
+    # separator_mode came from modifiers alone, defaulting to "single" -- a
+    # field nothing populates -- so all six separators drew one plain rule,
+    # while the catalog stated each one's mode in behavior. An explicit
+    # modifier still wins.
+    behavior = (entry.get("spec") or {}).get("behavior", {})
+    mode = (modifiers.get("separator_mode")
+            or behavior.get("preferred_separator_mode")
+            or _SEPARATOR_CAP_MODES.get(behavior.get("cap_shape", ""))
+            or _SEPARATOR_ID_MODES.get(symbol_id, "single"))
+    # The manual lists the flipped staff separator as its own feature: the
+    # hooks turn to the other side rather than a stroke being added.
+    flipped = bool(behavior.get("flip_variant")) or symbol_id.endswith(".flipped")
 
     x_left = entry["x_left"]
     x_right = entry["x_right"]
     cy = (entry["y_top"] + entry["y_bottom"]) / 2
 
     svg = f'<g class="laban-symbol separator" data-symbol-id="{escape(symbol_id)}">'
+
+    if mode == "final":
+        # U+2AFC: the heaviest rule, closing a score rather than dividing it.
+        for offset, width in ((-2.5, "1"), (0.0, "2.2"), (2.5, "1")):
+            svg += (
+                f'<line x1="{x_left:.1f}" y1="{cy + offset:.1f}" '
+                f'x2="{x_right:.1f}" y2="{cy + offset:.1f}" '
+                f'stroke="#111827" stroke-width="{width}"/>'
+            )
+        svg += '</g>'
+        return svg
+
+    if mode == "hook":
+        # U+231F: a single rule with one hook, against the staff separator's
+        # pair of them.
+        svg += (
+            f'<line x1="{x_left:.1f}" y1="{cy:.1f}" x2="{x_right:.1f}" y2="{cy:.1f}" '
+            f'stroke="#111827" stroke-width="1"/>'
+            f'<line x1="{x_right:.1f}" y1="{cy:.1f}" '
+            f'x2="{x_right:.1f}" y2="{cy + 4:.1f}" '
+            f'stroke="#111827" stroke-width="1"/>'
+        )
+        svg += '</g>'
+        return svg
 
     if mode == "double":
         svg += (
@@ -282,7 +335,7 @@ def _render_separator(entry: dict) -> str:
             f'stroke="#111827" stroke-width="1"/>'
         )
     elif mode == "hooked":
-        hook = 4
+        hook = -4 if flipped else 4
         svg += (
             f'<line x1="{x_left:.1f}" y1="{cy:.1f}" x2="{x_right:.1f}" y2="{cy:.1f}" '
             f'stroke="#111827" stroke-width="1"/>'

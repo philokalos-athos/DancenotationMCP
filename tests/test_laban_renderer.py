@@ -1128,6 +1128,59 @@ class QualityAliasIdentityTest(unittest.TestCase):
         self.assertNotIn("<text", group.group(0))
 
 
+class SeparatorModeTest(unittest.TestCase):
+    """Six separators shared one glyph.
+
+    ``_render_separator`` read ``modifiers.separator_mode``, defaulting to
+    "single" — a field nothing populates — while the catalog stated the mode
+    for each entry in ``behavior.preferred_separator_mode`` and
+    ``behavior.cap_shape``, and marked the flipped staff separator with
+    ``behavior.flip_variant``. The LabanWriter manual lists the flipped staff
+    separator as its own feature, so that one in particular must not collapse
+    onto the unflipped form.
+    """
+
+    IDS = ["separator.single", "separator.double", "separator.hook",
+           "separator.final", "separator.staff", "separator.staff.flipped"]
+
+    def _markup(self, symbol_id, **extra):
+        symbol = {
+            "symbol_id": symbol_id,
+            "body_part": "torso",
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {},
+        }
+        symbol.update(extra)
+        svg = render_laban_svg(_minimal_ir([symbol]))
+        i = svg.find(f'data-symbol-id="{symbol_id}"')
+        self.assertNotEqual(i, -1, f"{symbol_id} not rendered")
+        start = svg.rfind("<g", 0, i)
+        return re.sub(r'data-symbol-id="[^"]*"', "",
+                      svg[start:svg.find("</g>", start)])
+
+    def test_every_separator_renders_distinctly(self):
+        seen = {}
+        for symbol_id in self.IDS:
+            shape = self._markup(symbol_id)
+            clash = seen.get(shape)
+            self.assertIsNone(clash, f"{symbol_id} renders like {clash}")
+            seen[shape] = symbol_id
+
+    def test_the_flipped_staff_separator_is_a_mirror_of_the_plain_one(self):
+        plain = self._markup("separator.staff")
+        flipped = self._markup("separator.staff.flipped")
+        self.assertNotEqual(plain, flipped)
+        # Same number of strokes — flipping turns the hooks, it does not add.
+        self.assertEqual(len(re.findall(r"<line", plain)),
+                         len(re.findall(r"<line", flipped)))
+
+    def test_an_explicit_separator_mode_still_wins(self):
+        by_catalog = self._markup("separator.single")
+        forced = self._markup("separator.single",
+                              modifiers={"separator_mode": "double"})
+        self.assertNotEqual(by_catalog, forced)
+
+
 class EffortGradingTest(unittest.TestCase):
     """``effort.<factor>.<pole>.increasing`` grades the element; the grading was
     dropped.
