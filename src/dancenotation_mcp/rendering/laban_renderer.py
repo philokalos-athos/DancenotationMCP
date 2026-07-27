@@ -362,6 +362,57 @@ def _render_modifier_overlays(svg: str, modifiers: dict,
     return svg
 
 
+def _render_body_action_mark(symbol_id: str, x_left: float, x_right: float,
+                             y_top: float, y_bottom: float) -> str:
+    """Mark on a body-column symbol saying *which* body action it is.
+
+    A body.* symbol used to draw its direction symbol and nothing else, so the
+    action — the point of the sign — was invisible: body.tilt.forward.high and
+    body.bend.forward.high engraved identically, and so did contract and
+    release. The catalog records the last two as mirror opposites (glyph
+    U+2282/U+2283) and bend/stretch likewise (U+2312/U+2322); the marks below
+    follow that pairing.
+
+    The exact ICKL form of these marks is not settled from a plate — see
+    docs/labanwriter_parity_audit.md. What is settled is that they must differ.
+    """
+    if not symbol_id.startswith("body."):
+        return ""
+    parts = symbol_id.split(".")
+    action = parts[1] if len(parts) > 1 else ""
+
+    cx = (x_left + x_right) / 2
+    cy = (y_top + y_bottom) / 2
+    r = min((x_right - x_left) / 2 - 2, 5.0)
+    if r <= 1:
+        return ""
+
+    if action in ("contract", "release"):
+        # Mirror pair. Sign follows the catalog's own glyphs: contract is
+        # U+2282 (opens right, bows left), release U+2283 (opens left).
+        s = 1 if action == "contract" else -1
+        return (
+            f'<path d="M {cx + s * r:.1f} {cy - r:.1f} '
+            f'Q {cx - s * r:.1f} {cy:.1f} {cx + s * r:.1f} {cy + r:.1f}" '
+            f'fill="none" stroke="#111827" stroke-width="1.4"/>'
+        )
+    if action in ("bend", "stretch"):
+        # Mirror pair: arc bowing up (bend) or down (stretch).
+        s = -1 if action == "bend" else 1
+        return (
+            f'<path d="M {cx - r:.1f} {cy:.1f} '
+            f'Q {cx:.1f} {cy + s * r * 1.4:.1f} {cx + r:.1f} {cy:.1f}" '
+            f'fill="none" stroke="#111827" stroke-width="1.4"/>'
+        )
+    if action == "tilt":
+        return (
+            f'<line x1="{cx - r:.1f}" y1="{cy + r:.1f}" '
+            f'x2="{cx + r:.1f}" y2="{cy - r:.1f}" '
+            f'stroke="#111827" stroke-width="1.4"/>'
+        )
+    return ""
+
+
 def _render_staff_symbol(entry: dict, ctx: _RenderContext,
                          use_defs: dict[tuple[str, str], str] | None = None) -> str:
     """Render a primary symbol as a direction-shape rectangle with modifier overlays.
@@ -478,6 +529,7 @@ def _render_staff_symbol(entry: dict, ctx: _RenderContext,
                 f'stroke-width="3.5" opacity="0.3"{dash_attr}/>'
             )
     svg = _render_modifier_overlays(svg, modifiers, x_left, x_right, y_top, y_bottom)
+    svg += _render_body_action_mark(symbol_id, x_left, x_right, y_top, y_bottom)
     if facing and facing != direction:
         svg += _render_facing_indicator(facing, x_right, y_top, y_bottom)
     svg += '</g>'

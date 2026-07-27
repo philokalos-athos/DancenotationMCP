@@ -1128,6 +1128,53 @@ class QualityAliasIdentityTest(unittest.TestCase):
         self.assertNotIn("<text", group.group(0))
 
 
+class BodyActionMarkTest(unittest.TestCase):
+    """The body action must be visible, not just its direction and level.
+
+    body.* symbols drew the direction symbol alone, so the action —
+    which is the whole point of the sign — was invisible: body.tilt.forward.high
+    and body.bend.forward.high engraved identically, and so did contract and
+    release, which the catalog itself records as mirror opposites (glyph U+2282
+    vs U+2283, and U+2312 vs U+2322 for bend vs stretch).
+    """
+
+    ACTIONS = ["bend", "stretch", "tilt", "contract", "release"]
+
+    def _markup(self, symbol_id, **extra):
+        symbol = {
+            "symbol_id": symbol_id,
+            "body_part": "torso",
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {},
+        }
+        symbol.update(extra)
+        svg = render_laban_svg(_minimal_ir([symbol]))
+        i = svg.find(f'data-symbol-id="{symbol_id}"')
+        self.assertNotEqual(i, -1, f"{symbol_id} not rendered")
+        start = svg.rfind("<g", 0, i)
+        return re.sub(r'data-symbol-id="[^"]*"', "",
+                      svg[start:svg.find("</g>", start)])
+
+    def test_each_body_action_is_distinguishable(self):
+        seen = {}
+        for action in self.ACTIONS:
+            shape = self._markup(f"body.{action}.forward.high")
+            clash = seen.get(shape)
+            self.assertIsNone(clash, f"body.{action} renders like body.{clash}")
+            seen[shape] = action
+
+    def test_mirror_pairs_are_not_identical(self):
+        for a, b in (("contract", "release"), ("bend", "stretch")):
+            with self.subTest(pair=f"{a}/{b}"):
+                self.assertNotEqual(self._markup(f"body.{a}.place.middle"),
+                                    self._markup(f"body.{b}.place.middle"))
+
+    def test_direction_and_level_still_reach_the_symbol(self):
+        # The action mark must not displace the direction symbol.
+        markup = self._markup("body.tilt.forward.high")
+        self.assertIn("laban-dir-forward-high", markup)
+
+
 class FlexionExtensionRoutingTest(unittest.TestCase):
     """Flexion and extension marks are annotation signs, not direction symbols.
 
