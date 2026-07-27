@@ -10,43 +10,67 @@ capability have drifted apart badly, and only the second one is parity.
 | Metric | Baseline | Now |
 |---|---|---|
 | Catalog symbols | 1122 | 906 |
-| Distinct glyphs actually produced | 159 | **207** |
-| Visual collapse ratio | 7.1 : 1 | **4.4 : 1** |
+| Distinct glyphs actually produced | 159 | **474** |
+| Visual collapse ratio | 7.1 : 1 | **1.91 : 1** |
+| Symbols with a wholly unique glyph | — | **416** |
 | Symbols whose authored id was lost in the SVG | 8 | 0 |
 
 Adding a catalog entry raises the first row and not the second. Treat the
 second row as the parity number.
 
-What closed the gap so far was not new geometry but reading information the
-symbol ids already carried and no consumer looked at:
+Almost none of this came from new geometry. It came from reading information
+the symbol ids already carried that no consumer looked at — the same defect
+found nine times over:
 
-- **direction and level** — 564 ids name a direction, 408 a level, and every
-  consumer read only `symbol["direction"]`. `support.step.backward` engraved as
-  "step in place", silently. Largest cluster 157 → 56.
-- **contact type and surface** — `contact_type` came from the *last* dotted
-  segment, so `contact.grasp.front` resolved to "front" and lost the grasp
-  staple. 38 symbols on one glyph → 38 distinct.
-- **floor-plan sub-family** — `_render_stage_marker` read a `stage_position`
-  field none of these entries carries, so 31 facings, zones, formations and
-  paths all drew one dot and a literal "?".
+| Family | Symbols | What was discarded |
+|---|---|---|
+| direction/level | 564 / 408 | every consumer read only `symbol["direction"]`, so `support.step.backward` engraved as "step in place" |
+| shape | 24 | the pole segment; spreading == enclosing, rising == sinking |
+| contact | 38 | type taken from the *last* id segment, so `contact.grasp.front` resolved to "front" |
+| floor-plan | 31 | read a `stage_position` field no entry carries; 31 facings/zones/formations/paths drew one dot and a "?" |
+| flexion/extension | 54 | family in neither routing set, so all engraved as `place` direction symbols on the staff |
+| sequential | 10 | the id was never read at all |
+| body / floor actions | 140 / 84 | the action itself was invisible; only direction and level were drawn |
+| effort actions | 14 | the eight basic actions all drew an empty diamond |
+| pin / bow / turn / jump | 17 | subtype dropped; pin read a modifier nothing populates while `behavior.cap_shape` sat unread beside it |
+| music | 12 | only `rest.*` was handled, so `music.time.3_4` engraved as a quarter rest |
 
-### Reading the remaining clusters
+Two catalog-level fixes belong on the same list: 216 combinatorial turn/jump
+entries naming signs that exist in no palette were removed, and plié, relevé,
+rise and lower had free `allowed_levels` so they engraved at the default middle
+— a support's level IS the state of the leg, so those are now pinned and the
+rule "one allowed level means that is the level" is applied generally.
 
-The clusters left are not all defects, and the next round has to separate two
-cases before touching anything:
+### What the remaining clusters are
 
-- **Renderer drops information** — the three above. Fix these.
-- **The notation genuinely shares a glyph** — `support.balance.backward`,
-  `support.heel.backward` and `gesture.leg.backward` all draw the same
-  direction symbol because in Labanotation the direction symbol encodes
-  direction and level only; heel support, balance and the rest are carried by
-  pre-signs and modifiers attached to it. Forcing these apart would be
-  inventing signs, not reaching parity.
+Every family the audit found discarding information has been fixed;
+`KNOWN_OPEN_COLLAPSES` in `tests/test_glyph_uniqueness.py` is empty.
 
-Current largest clusters, unclassified: 56 (`extension`/`flexion` degrees
-sharing a direction glyph), 39 (`body.bend`/`contract`/`release`/`stretch`),
-and a family of 21-symbol clusters, one per direction, of the pre-sign kind
-described above.
+What is left collapsing is `direction` / `support` / `gesture` / `travel`, and
+that is the notation working rather than a defect. A direction symbol encodes
+direction and level only; heel support, balance, kneel, stamp, slide and pivot
+are carried by pre-signs attached beside it, which the catalog holds no
+metadata for. Forcing those apart would be inventing signs.
+
+Confirmed by two independent routes: reading the plates of both reference
+scores, and Dance Notation Bureau Fundamentals — "the shapes of the symbols
+indicate nine different directions in space", with part-of-foot carried by a
+separate attached touch sign.
+
+Distinguishing them properly means modelling the attached signs, not drawing
+new direction glyphs. That is the next parity frontier, and it needs catalog
+metadata that does not exist yet.
+
+Two smaller cases share by design and are asserted to stay identical, so a
+later pass cannot "fix" them by inventing signs:
+
+- `flexion`/`extension` across joints — the mark for a 45-degree flexion is the
+  same mark whatever joint it applies to; the joint is carried by which limb it
+  attaches to.
+- `sequential.wave.arm` / `.body` / `.leg` — one shared glyph in the catalog,
+  the limb carried by placement.
+- `jump.*` across directions — a jump sign takes no compass direction; travel
+  direction lives in the support columns.
 
 This document audits the current symbol and renderer coverage against official LabanWriter categories and update notes.
 

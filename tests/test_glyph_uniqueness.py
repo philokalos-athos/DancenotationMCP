@@ -25,8 +25,8 @@ from dancenotation_mcp.rendering.laban_renderer import render_laban_svg
 
 # Measured floors, not aspirations. Raise them when the renderer improves;
 # never lower one to make a change pass.
-MIN_DISTINCT_GLYPHS = 426
-MAX_CLUSTER_SIZE = 39
+MIN_DISTINCT_GLYPHS = 474
+MAX_CLUSTER_SIZE = 33
 
 # Families whose members legitimately share a glyph.
 #

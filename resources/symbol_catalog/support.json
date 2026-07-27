@@ -633,9 +633,7 @@
     ],
     "requires_level": true,
     "allowed_levels": [
-      "high",
-      "middle",
-      "low"
+      "high"
     ],
     "geometry": {
       "glyph": "▴",
@@ -667,9 +665,7 @@
     ],
     "requires_level": true,
     "allowed_levels": [
-      "high",
-      "middle",
-      "low"
+      "high"
     ],
     "geometry": {
       "glyph": "▴",
@@ -701,9 +697,7 @@
     ],
     "requires_level": true,
     "allowed_levels": [
-      "high",
-      "middle",
-      "low"
+      "high"
     ],
     "geometry": {
       "glyph": "▴",
@@ -735,9 +729,7 @@
     ],
     "requires_level": true,
     "allowed_levels": [
-      "high",
-      "middle",
-      "low"
+      "high"
     ],
     "geometry": {
       "glyph": "▴",
@@ -769,9 +761,7 @@
     ],
     "requires_level": true,
     "allowed_levels": [
-      "high",
-      "middle",
-      "low"
+      "high"
     ],
     "geometry": {
       "glyph": "▴",
@@ -803,9 +793,7 @@
     ],
     "requires_level": true,
     "allowed_levels": [
-      "high",
-      "middle",
-      "low"
+      "high"
     ],
     "geometry": {
       "glyph": "▴",
@@ -837,9 +825,7 @@
     ],
     "requires_level": true,
     "allowed_levels": [
-      "high",
-      "middle",
-      "low"
+      "high"
     ],
     "geometry": {
       "glyph": "▴",
@@ -871,9 +857,7 @@
     ],
     "requires_level": true,
     "allowed_levels": [
-      "high",
-      "middle",
-      "low"
+      "high"
     ],
     "geometry": {
       "glyph": "▴",
@@ -905,9 +889,7 @@
     ],
     "requires_level": true,
     "allowed_levels": [
-      "high",
-      "middle",
-      "low"
+      "high"
     ],
     "geometry": {
       "glyph": "▴",
@@ -939,8 +921,6 @@
     ],
     "requires_level": true,
     "allowed_levels": [
-      "high",
-      "middle",
       "low"
     ],
     "geometry": {
@@ -973,8 +953,6 @@
     ],
     "requires_level": true,
     "allowed_levels": [
-      "high",
-      "middle",
       "low"
     ],
     "geometry": {
@@ -1007,8 +985,6 @@
     ],
     "requires_level": true,
     "allowed_levels": [
-      "high",
-      "middle",
       "low"
     ],
     "geometry": {
@@ -1041,8 +1017,6 @@
     ],
     "requires_level": true,
     "allowed_levels": [
-      "high",
-      "middle",
       "low"
     ],
     "geometry": {
@@ -1075,8 +1049,6 @@
     ],
     "requires_level": true,
     "allowed_levels": [
-      "high",
-      "middle",
       "low"
     ],
     "geometry": {
@@ -1109,8 +1081,6 @@
     ],
     "requires_level": true,
     "allowed_levels": [
-      "high",
-      "middle",
       "low"
     ],
     "geometry": {
@@ -1143,8 +1113,6 @@
     ],
     "requires_level": true,
     "allowed_levels": [
-      "high",
-      "middle",
       "low"
     ],
     "geometry": {
@@ -1177,8 +1145,6 @@
     ],
     "requires_level": true,
     "allowed_levels": [
-      "high",
-      "middle",
       "low"
     ],
     "geometry": {
@@ -1211,8 +1177,6 @@
     ],
     "requires_level": true,
     "allowed_levels": [
-      "high",
-      "middle",
       "low"
     ],
     "geometry": {
@@ -2469,9 +2433,7 @@
     ],
     "requires_level": true,
     "allowed_levels": [
-      "high",
-      "middle",
-      "low"
+      "high"
     ],
     "geometry": {
       "glyph": "◭",
@@ -2503,9 +2465,7 @@
     ],
     "requires_level": true,
     "allowed_levels": [
-      "high",
-      "middle",
-      "low"
+      "high"
     ],
     "geometry": {
       "glyph": "◭",
@@ -2537,9 +2497,7 @@
     ],
     "requires_level": true,
     "allowed_levels": [
-      "high",
-      "middle",
-      "low"
+      "high"
     ],
     "geometry": {
       "glyph": "◭",
@@ -2571,9 +2529,7 @@
     ],
     "requires_level": true,
     "allowed_levels": [
-      "high",
-      "middle",
-      "low"
+      "high"
     ],
     "geometry": {
       "glyph": "◭",
@@ -2605,9 +2561,7 @@
     ],
     "requires_level": true,
     "allowed_levels": [
-      "high",
-      "middle",
-      "low"
+      "high"
     ],
     "geometry": {
       "glyph": "◭",
@@ -2639,9 +2593,7 @@
     ],
     "requires_level": true,
     "allowed_levels": [
-      "high",
-      "middle",
-      "low"
+      "high"
     ],
     "geometry": {
       "glyph": "◭",
@@ -2673,9 +2625,7 @@
     ],
     "requires_level": true,
     "allowed_levels": [
-      "high",
-      "middle",
-      "low"
+      "high"
     ],
     "geometry": {
       "glyph": "◭",
@@ -2707,9 +2657,7 @@
     ],
     "requires_level": true,
     "allowed_levels": [
-      "high",
-      "middle",
-      "low"
+      "high"
     ],
     "geometry": {
       "glyph": "◭",
@@ -2741,9 +2689,7 @@
     ],
     "requires_level": true,
     "allowed_levels": [
-      "high",
-      "middle",
-      "low"
+      "high"
     ],
     "geometry": {
       "glyph": "◭",
@@ -2775,8 +2721,6 @@
     ],
     "requires_level": true,
     "allowed_levels": [
-      "high",
-      "middle",
       "low"
     ],
     "geometry": {
@@ -2809,8 +2753,6 @@
     ],
     "requires_level": true,
     "allowed_levels": [
-      "high",
-      "middle",
       "low"
     ],
     "geometry": {
@@ -2843,8 +2785,6 @@
     ],
     "requires_level": true,
     "allowed_levels": [
-      "high",
-      "middle",
       "low"
     ],
     "geometry": {
@@ -2877,8 +2817,6 @@
     ],
     "requires_level": true,
     "allowed_levels": [
-      "high",
-      "middle",
       "low"
     ],
     "geometry": {
@@ -2911,8 +2849,6 @@
     ],
     "requires_level": true,
     "allowed_levels": [
-      "high",
-      "middle",
       "low"
     ],
     "geometry": {
@@ -2945,8 +2881,6 @@
     ],
     "requires_level": true,
     "allowed_levels": [
-      "high",
-      "middle",
       "low"
     ],
     "geometry": {
@@ -2979,8 +2913,6 @@
     ],
     "requires_level": true,
     "allowed_levels": [
-      "high",
-      "middle",
       "low"
     ],
     "geometry": {
@@ -3013,8 +2945,6 @@
     ],
     "requires_level": true,
     "allowed_levels": [
-      "high",
-      "middle",
       "low"
     ],
     "geometry": {
@@ -3047,8 +2977,6 @@
     ],
     "requires_level": true,
     "allowed_levels": [
-      "high",
-      "middle",
       "low"
     ],
     "geometry": {
@@ -4985,9 +4913,7 @@
     ],
     "requires_level": true,
     "allowed_levels": [
-      "high",
-      "middle",
-      "low"
+      "high"
     ],
     "geometry": {
       "glyph": "▴",
@@ -5019,8 +4945,6 @@
     ],
     "requires_level": true,
     "allowed_levels": [
-      "high",
-      "middle",
       "low"
     ],
     "geometry": {

@@ -1128,6 +1128,58 @@ class QualityAliasIdentityTest(unittest.TestCase):
         self.assertNotIn("<text", group.group(0))
 
 
+class InherentLevelTest(unittest.TestCase):
+    """A support whose level is inherent must engrave at that level.
+
+    In Labanotation a support's level IS the state of the leg — DNB
+    Fundamentals: "a low level corresponds to a bent leg, a middle level to a
+    straight leg, and a high level to being up on the toes". So plié is a low
+    support and relevé a high one; they are not pre-signs added to a symbol,
+    they are that symbol's own shading, which the renderer already draws.
+
+    The catalog gave those entries free allowed_levels, so nothing pinned them
+    and they engraved byte-identical to a plain step. The rule applied: when
+    the catalog allows exactly one level, that is the level, and the symbol
+    need not repeat it.
+
+    They still coincide with a plain step at the matching level. That is
+    correct — a low-level step IS a plié step.
+    """
+
+    def _glyph(self, symbol_id, **extra):
+        symbol = {
+            "symbol_id": symbol_id,
+            "body_part": "left_leg",
+            "direction": "forward",
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {},
+        }
+        symbol.update(extra)
+        svg = render_laban_svg(_minimal_ir([symbol]))
+        m = re.search(r'<use href="#laban-dir-([a-z_]+)-([a-z]+)"', svg)
+        self.assertIsNotNone(m, f"no direction glyph for {symbol_id}")
+        return m.group(2)
+
+    def test_plie_is_a_low_support(self):
+        self.assertEqual(self._glyph("support.plie.forward"), "low")
+
+    def test_releve_and_rise_are_high_supports(self):
+        self.assertEqual(self._glyph("support.releve.forward"), "high")
+        self.assertEqual(self._glyph("support.rise.forward"), "high")
+
+    def test_lower_is_a_low_support(self):
+        self.assertEqual(self._glyph("support.lower.forward"), "low")
+
+    def test_a_plain_step_still_takes_any_level(self):
+        # Nothing is pinned on step; it must keep defaulting to middle and
+        # honour whatever the score asks for.
+        self.assertEqual(self._glyph("support.step.forward"), "middle")
+        self.assertEqual(self._glyph("support.step.forward", level="high"), "high")
+
+    def test_an_explicit_level_still_wins_over_the_inherent_one(self):
+        self.assertEqual(self._glyph("support.plie.forward", level="high"), "high")
+
+
 class JumpSubtypeTest(unittest.TestCase):
     """A jump id names a subtype the renderer never read.
 

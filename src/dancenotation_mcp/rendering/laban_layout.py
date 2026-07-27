@@ -285,9 +285,19 @@ def _system_for_measure(m: int) -> int:
     return (m - 1) // LABAN_SYSTEM_CAPACITY
 
 
-def _with_resolved_direction(symbol: dict) -> dict:
-    """Copy of ``symbol`` with direction/level filled in from its id."""
+def _with_resolved_direction(symbol: dict, spec: dict | None = None) -> dict:
+    """Copy of ``symbol`` with direction/level filled in from its id or spec.
+
+    When the catalog allows exactly one level, that IS the symbol's level and
+    the score need not repeat it — plié is a low support and relevé a high one,
+    which is the symbol's own shading rather than a sign added to it. Without
+    this they engraved at the default middle, byte-identical to a plain step.
+    """
     direction, level = resolve_direction_and_level(symbol)
+    if level is None and spec:
+        allowed = spec.get("allowed_levels") or []
+        if len(allowed) == 1:
+            level = allowed[0]
     if direction == symbol.get("direction") and level == symbol.get("level"):
         return symbol
     resolved = dict(symbol)
@@ -310,7 +320,8 @@ def compute_laban_layout(ir: dict) -> dict:
     # Fill direction/level from the symbol id where the score left them out —
     # most catalog ids name both, and without this a "support.step.backward"
     # engraves as "place". Copies, so the caller's IR is not mutated.
-    symbols = [_with_resolved_direction(s) for s in ir.get("symbols", [])]
+    symbols = [_with_resolved_direction(s, catalog.get(s.get("symbol_id", "")))
+               for s in ir.get("symbols", [])]
     beats_map = build_measure_beats_map(ir)
     mc = measure_count(symbols, beats_map)
 
