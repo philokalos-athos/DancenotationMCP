@@ -18,7 +18,7 @@ python -m pip install -e .
 python -m pip install cairosvg
 
 # Run MCP server (stdio JSON-RPC)
-PYTHONPATH=src python -m dancenotation_mcp.mcp_server.server
+PYTHONPATH=src python -m dancenotation_mcp.mcp_server.stdio_main
 
 # Run full test suite
 PYTHONPATH=src python -m unittest discover -s tests -v
@@ -31,6 +31,13 @@ PYTHONPATH=src python -m unittest tests.test_pipeline.TestPipeline.test_method_n
 ```
 
 On Windows PowerShell, use `$env:PYTHONPATH='src'` instead of the Unix prefix.
+
+**Entry points**: `mcp_server/stdio_main.py` is the only working MCP entry point — it
+uses the official `mcp` SDK, whose stdio transport is newline-delimited JSON.
+`mcp_server/server.py` holds the tool registry (`TOOLS`, `TOOL_SCHEMAS`) that
+`stdio_main` imports, but its own `main()` implements LSP-style `Content-Length`
+framing and will exit 0 without a word if a real MCP client connects to it.
+Point launchers and client configs at `stdio_main`.
 
 CI (`.github/workflows/ci.yml`) runs `unittest discover` on Python 3.11 for pushes to `main` and PRs. The required check name is `test`.
 
@@ -69,7 +76,10 @@ Key data contracts flowing between layers:
 
 ## Symbol Catalog
 
-`resources/symbol_catalog/` contains 871 symbols split across 6 JSON files (support, directions, actions, qualities, timing, official_extras). Each entry carries:
+`resources/symbol_catalog/` contains 1,122 symbols across 14 JSON files (actions, contact,
+directions, effort, flexion_extension, floor_plan, foot_detail, official_extras, qualities,
+retention, sequential, shape, support, timing). Every `*.json` in that directory is loaded,
+so adding a file needs no code change. Each entry carries:
 - Semantic constraints: `allowed_body_parts`, `requires_direction`, `allowed_levels`, etc.
 - Geometry metadata: `glyph`, `width`, `height`, `anchor`, `staff_column`
 - Behavior metadata (varies by family): `boundary_role`, `header_role`, `preferred_anchor_side`, `path_shape`, `composition_role`, stretch parameters, etc.
