@@ -1128,6 +1128,63 @@ class QualityAliasIdentityTest(unittest.TestCase):
         self.assertNotIn("<text", group.group(0))
 
 
+class EffortGradingTest(unittest.TestCase):
+    """``effort.<factor>.<pole>.increasing`` grades the element; the grading was
+    dropped.
+
+    ``_render_effort_diamond`` took factor from parts[1] and pole from
+    parts[2], then stopped — parts[3] was never read, so a bound flow and a
+    bound flow that is increasing engraved identically. In LMA a growing or
+    diminishing effort is the element plus a grading mark, so the element keeps
+    its stroke and the grading is added to it.
+    """
+
+    GRADED = [
+        ("effort.flow.bound", "effort.flow.bound.increasing"),
+        ("effort.flow.free", "effort.flow.free.increasing"),
+        ("effort.space.direct", "effort.space.direct.increasing"),
+        ("effort.space.indirect", "effort.space.indirect.increasing"),
+        ("effort.time.sudden", "effort.time.sudden.increasing"),
+        ("effort.time.sustained", "effort.time.sustained.increasing"),
+        ("effort.weight.strong", "effort.weight.strong.increasing"),
+        ("effort.weight.light", "effort.weight.light.decreasing"),
+    ]
+
+    def _markup(self, symbol_id):
+        svg = render_laban_svg(_minimal_ir([{
+            "symbol_id": symbol_id,
+            "body_part": "torso",
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {},
+        }]))
+        i = svg.find(f'data-symbol-id="{symbol_id}"')
+        self.assertNotEqual(i, -1, f"{symbol_id} not rendered")
+        start = svg.rfind("<g", 0, i)
+        return re.sub(r'data-symbol-id="[^"]*"', "",
+                      svg[start:svg.find("</g>", start)])
+
+    def test_a_graded_element_differs_from_the_plain_one(self):
+        for plain, graded in self.GRADED:
+            with self.subTest(symbol=graded):
+                self.assertNotEqual(self._markup(plain), self._markup(graded))
+
+    def test_the_element_stroke_survives_the_grading(self):
+        # The grading is added to the element, it does not replace it.
+        for plain, graded in self.GRADED:
+            with self.subTest(symbol=graded):
+                marked = self._markup(graded)
+                for line in re.findall(r'<line[^>]*/>', self._markup(plain)):
+                    self.assertIn(line, marked, "element stroke lost")
+
+    def test_increasing_and_decreasing_are_not_the_same_mark(self):
+        rising = self._markup("effort.weight.strong.increasing")
+        falling = self._markup("effort.weight.light.decreasing")
+        # Different poles too, so compare only the grading marks.
+        self.assertNotEqual(
+            re.findall(r'<path[^>]*/>', rising),
+            re.findall(r'<path[^>]*/>', falling))
+
+
 class InherentLevelTest(unittest.TestCase):
     """A support whose level is inherent must engrave at that level.
 

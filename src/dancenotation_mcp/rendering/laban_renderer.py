@@ -1320,6 +1320,23 @@ def _render_effort_diamond(entry: dict) -> str:
                 f'<path d="M {cx:.1f} {cy - s:.1f} L {tx:.1f} {ty:.1f} '
                 f'L {cx:.1f} {ty:.1f} Z" fill="#111827"/>'
             )
+        # Grading. parts[3] was never read, so a bound flow and a bound flow
+        # that is increasing engraved identically. The element keeps its
+        # stroke; the grading is added to the foot of the action stroke as a
+        # wedge opening the way the effort is going -- widening as it grows,
+        # narrowing as it fades.
+        grading = parts[3] if len(parts) > 3 else ""
+        if grading in ("increasing", "decreasing"):
+            growing = grading == "increasing"
+            near, far = (1.5, 4.5) if growing else (4.5, 1.5)
+            foot = cy + s
+            svg += (
+                f'<path d="M {cx - near:.1f} {foot - 5:.1f} '
+                f'L {cx - far:.1f} {foot:.1f} '
+                f'M {cx + near:.1f} {foot - 5:.1f} '
+                f'L {cx + far:.1f} {foot:.1f}" '
+                f'fill="none" stroke="#111827" stroke-width="1.1"/>'
+            )
         svg += '</g>'
         return svg
 
