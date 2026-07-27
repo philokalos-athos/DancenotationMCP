@@ -1231,6 +1231,26 @@ class ThreeLineStaffTest(unittest.TestCase):
                 f"bar line spans {x2 - x1:.0f}px, staff is only {support_span:.0f}px",
             )
 
+    def test_starting_position_area_does_not_hang_outside_the_staff(self):
+        # It was sized to the old full-column-extent box and now protrudes far
+        # past the three-line staff. Whether a dashed box belongs here at all is
+        # a separate question (the reference plates examined show no such box);
+        # this only requires it not to overhang.
+        positions = build_column_positions(0.0)
+        support_span = positions["right_support"][1] - positions["left_support"][0]
+        svg = render_laban_svg(_minimal_ir())
+        # The lookbehind matters: without it `width="..."` also matches inside
+        # `stroke-width="1"`, and the assertion silently becomes 1 <= anything.
+        rects = re.findall(
+            r'<rect x="([\d.]+)"[^>]*(?<![-\w])width="([\d.]+)"[^>]*stroke-dasharray',
+            svg)
+        self.assertTrue(rects, "no starting-position area rendered")
+        for _, w in rects:
+            self.assertLessEqual(
+                float(w), support_span + 12,
+                f"starting-position area is {w}px wide, staff is {support_span}px",
+            )
+
     def test_gesture_columns_lie_outside_the_staff_lines(self):
         # The arm/path columns must not be enclosed: if they were, the render
         # would be a box around all 10 columns rather than a 3-line staff.

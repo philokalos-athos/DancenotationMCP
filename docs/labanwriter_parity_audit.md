@@ -194,8 +194,11 @@ Fixed since the baseline measurement:
   produced those 216 entries.
 
 Next parity priorities:
-1. The starting-position area is still drawn at the pre-three-line-staff width
-   and now hangs well outside the staff.
+1. Whether a dashed starting-position box belongs in the output at all. It is
+   now sized to the staff rather than overhanging it, but no such box appears
+   on any plate examined — below the staff the plates carry plain dancer
+   identification text centred on the staff. Likely a UI affordance this
+   renderer invented; needs a plate showing the opening of a dance to settle.
 2. Bar lines: the plates show them running staff-line to staff-line with no
    overhang, plus separate dashed segments further out whose meaning was not
    established. We draw a 4px overhang and no dashed segments.

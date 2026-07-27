@@ -2309,10 +2309,14 @@ def render_laban_svg(ir: dict) -> str:
         sp_top = sys.get("starting_pos_top")
         sp_bottom = sys.get("starting_pos_bottom")
         if sp_top is not None and sp_bottom is not None:
-            # Dashed boundary for starting position box
+            # Dashed boundary, sized to the staff rather than to every column.
+            # It was inherited from the old full-width staff box and hung far
+            # outside the three-line staff. Note that the reference plates show
+            # no such box at all -- whether it should exist is open; this only
+            # stops it from overhanging.
             elements.append(
-                f'<rect x="{s_staff_left:.1f}" y="{sp_top:.1f}" '
-                f'width="{s_staff_right - s_staff_left:.1f}" '
+                f'<rect x="{bar_left:.1f}" y="{sp_top:.1f}" '
+                f'width="{bar_right - bar_left:.1f}" '
                 f'height="{sp_bottom - sp_top:.1f}" '
                 f'fill="none" stroke="#111827" stroke-width="1" '
                 f'stroke-dasharray="4,3"/>'

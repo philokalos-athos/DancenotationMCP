@@ -44,7 +44,7 @@
 <line x1="150.0" y1="2031.0" x2="210.0" y2="2031.0" stroke="#111827" stroke-width="1"/>
 <line x1="150.0" y1="109.0" x2="210.0" y2="109.0" stroke="#111827" stroke-width="1"/>
 <line x1="150.0" y1="106.0" x2="210.0" y2="106.0" stroke="#111827" stroke-width="3"/>
-<rect x="88.0" y="2030.0" width="184.0" height="60.0" fill="none" stroke="#111827" stroke-width="1" stroke-dasharray="4,3"/>
+<rect x="150.0" y="2030.0" width="60.0" height="60.0" fill="none" stroke="#111827" stroke-width="1" stroke-dasharray="4,3"/>
 <line x1="180.0" y1="2030.0" x2="180.0" y2="2090.0" stroke="#111827" stroke-width="1.5" stroke-dasharray="4,3"/>
 <text x="52.0" y="2026.0" text-anchor="end" font-size="9" fill="#999">1</text>
 <text x="52.0" y="1786.0" text-anchor="end" font-size="9" fill="#999">2</text>
