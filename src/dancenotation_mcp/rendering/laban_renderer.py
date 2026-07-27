@@ -661,6 +661,23 @@ def _render_timing_annotation(entry: dict) -> str:
     cx = x + w / 2
     cy = (y_top + y_bottom) / 2
 
+    # level.low / level.middle / level.high: a small diamond shaded per the
+    # shared LEVEL_FILLS convention (low = solid, middle = blank, high =
+    # hatched), so a standalone level mark reads identically to the level fill
+    # carried by direction pointers.
+    if symbol_id.startswith("level."):
+        lv = symbol_id.split(".")[-1]
+        style = LEVEL_FILLS.get(lv, LEVEL_FILLS["middle"])
+        s = 6
+        return (
+            f'<g class="laban-annotation level" data-symbol-id="{escape(symbol_id)}" '
+            f'data-level="{escape(lv)}">'
+            f'<path d="M {cx:.1f} {cy - s:.1f} L {cx + s:.1f} {cy:.1f} '
+            f'L {cx:.1f} {cy + s:.1f} L {cx - s:.1f} {cy:.1f} Z" '
+            f'fill="{style["fill"]}" stroke="{style["stroke"]}" stroke-width="1.4"/>'
+            f'</g>'
+        )
+
     kind = symbol_id.split(".")[-1]
     if kind == "accent":
         return (
@@ -677,6 +694,71 @@ def _render_timing_annotation(entry: dict) -> str:
             f'fill="none" stroke="#111827" stroke-width="1.2"/>'
             f'</g>'
         )
+    # timing.duration.<value>: a vertical duration line whose length scales
+    # with the note value (1_8 shortest .. 4 longest), reading like a
+    # duration-sign stem in the timing column.
+    if symbol_id.startswith("timing.duration."):
+        value = symbol_id.split(".")[-1]
+        factors = {"1_8": 1.0, "1_4": 1.5, "1_2": 2.0, "1": 2.5,
+                   "2": 3.0, "3": 3.5, "4": 4.0}
+        half = 2.0 * factors.get(value, 2.0)
+        return (
+            f'<g class="laban-annotation timing duration" data-symbol-id="{escape(symbol_id)}" '
+            f'data-duration="{escape(value)}">'
+            f'<line x1="{cx:.1f}" y1="{cy - half:.1f}" x2="{cx:.1f}" y2="{cy + half:.1f}" '
+            f'stroke="#111827" stroke-width="1.6"/>'
+            f'<line x1="{cx - 3:.1f}" y1="{cy - half:.1f}" x2="{cx + 3:.1f}" y2="{cy - half:.1f}" '
+            f'stroke="#111827" stroke-width="1.2"/>'
+            f'<line x1="{cx - 3:.1f}" y1="{cy + half:.1f}" x2="{cx + 3:.1f}" y2="{cy + half:.1f}" '
+            f'stroke="#111827" stroke-width="1.2"/>'
+            f'</g>'
+        )
+
+    # timing.syncopated: two offset dots astride the beat — the off-beat
+    # accent reads as displaced emphasis.
+    if kind == "syncopated":
+        return (
+            f'<g class="laban-annotation timing syncopated" data-symbol-id="{escape(symbol_id)}">'
+            f'<circle cx="{cx - 3.5:.1f}" cy="{cy + 2.5:.1f}" r="2.2" fill="#111827"/>'
+            f'<circle cx="{cx + 3.5:.1f}" cy="{cy - 2.5:.1f}" r="2.2" fill="#111827"/>'
+            f'<line x1="{cx - 5:.1f}" y1="{cy:.1f}" x2="{cx + 5:.1f}" y2="{cy:.1f}" '
+            f'stroke="#111827" stroke-width="0.8" stroke-dasharray="2 2"/>'
+            f'</g>'
+        )
+
+    # timing.staccato: the standard detached dot (small solid dot over a tick).
+    if kind == "staccato":
+        return (
+            f'<g class="laban-annotation timing staccato" data-symbol-id="{escape(symbol_id)}">'
+            f'<circle cx="{cx:.1f}" cy="{cy - 4:.1f}" r="2.0" fill="#111827"/>'
+            f'<line x1="{cx:.1f}" y1="{cy:.1f}" x2="{cx:.1f}" y2="{cy + 6:.1f}" '
+            f'stroke="#111827" stroke-width="1.4"/>'
+            f'</g>'
+        )
+
+    # timing.tenuto: the standard full-value horizontal bar.
+    if kind == "tenuto":
+        return (
+            f'<g class="laban-annotation timing tenuto" data-symbol-id="{escape(symbol_id)}">'
+            f'<line x1="{cx - 6:.1f}" y1="{cy:.1f}" x2="{cx + 6:.1f}" y2="{cy:.1f}" '
+            f'stroke="#111827" stroke-width="2.4"/>'
+            f'</g>'
+        )
+
+    # timing.fermata: the standard eye/bird's-eye — an arc over a dot,
+    # extended with a short tail to stay distinct from timing.hold (which is
+    # a dot under a short curve with no tail).
+    if kind == "fermata":
+        return (
+            f'<g class="laban-annotation timing fermata" data-symbol-id="{escape(symbol_id)}">'
+            f'<circle cx="{cx:.1f}" cy="{cy + 2:.1f}" r="1.8" fill="#111827"/>'
+            f'<path d="M {cx - 7:.1f} {cy + 2:.1f} Q {cx:.1f} {cy - 9:.1f} {cx + 7:.1f} {cy + 2:.1f}" '
+            f'fill="none" stroke="#111827" stroke-width="1.3"/>'
+            f'<line x1="{cx + 7:.1f}" y1="{cy + 2:.1f}" x2="{cx + 9:.1f}" y2="{cy + 5:.1f}" '
+            f'stroke="#111827" stroke-width="1.3"/>'
+            f'</g>'
+        )
+
     # Generic mark
     label = kind[:3]
     return (
@@ -1495,21 +1577,15 @@ def _render_generic_annotation(entry: dict) -> str:
 
 
 def _render_foot_detail_annotation(entry: dict) -> str:
-    """Render foot-surface/hook/position/digit modifier marks.
+    """Render foot-surface/hook/position/action/edge/digit modifier marks.
 
     These catalog entries (staff_column "foothook"/"digit") are small
-    non-directional modifiers (requires_direction=False, anchor="adjacent")
-    covering ~30 distinct concepts (foot surface, edge, hook, position,
-    digit pointer). Rather than inventing bespoke geometry for each, this
-    reuses the catalog author's own designated glyph as a small marker —
-    consistent with the symbol's "adjacent" anchor intent, and avoids the
-    misrendering-as-a-direction-pentagon bug this family had before routing
-    was fixed (see ANNOTATION_FAMILIES in laban_layout.py).
+    non-directional modifiers. Each sub-family draws a structurally distinct
+    glyph so they read correctly at annotation scale.
     """
     symbol = entry["symbol"]
     symbol_id = symbol.get("symbol_id", "")
     spec = entry.get("spec", {})
-    glyph = spec.get("geometry", {}).get("glyph") or "?"
     x = entry["x"]
     y_top = entry["y_top"]
     y_bottom = entry["y_bottom"]
@@ -1517,6 +1593,218 @@ def _render_foot_detail_annotation(entry: dict) -> str:
     cx = x + w / 2
     cy = (y_top + y_bottom) / 2
 
+    # Digit pointers (finger.mark / toe.mark)
+    if symbol_id == "finger.mark":
+        return (
+            f'<g class="laban-annotation digit" data-symbol-id="{escape(symbol_id)}">'
+            f'<line x1="{cx:.1f}" y1="{cy + 6:.1f}" x2="{cx:.1f}" y2="{cy - 2:.1f}" '
+            f'stroke="#111827" stroke-width="1.4"/>'
+            f'<circle cx="{cx:.1f}" cy="{cy - 5:.1f}" r="3.0" fill="#111827"/>'
+            f'</g>'
+        )
+    if symbol_id == "toe.mark":
+        return (
+            f'<g class="laban-annotation digit" data-symbol-id="{escape(symbol_id)}">'
+            f'<line x1="{cx:.1f}" y1="{cy + 6:.1f}" x2="{cx:.1f}" y2="{cy - 2:.1f}" '
+            f'stroke="#111827" stroke-width="1.4"/>'
+            f'<path d="M {cx - 3:.1f} {cy - 2:.1f} L {cx + 3:.1f} {cy - 2:.1f} '
+            f'L {cx:.1f} {cy - 8:.1f} Z" fill="#111827"/>'
+            f'</g>'
+        )
+
+    # L/R indicators
+    if symbol_id == "foothook.left":
+        return (
+            f'<g class="laban-annotation foot-hook foothook-lr" data-symbol-id="{escape(symbol_id)}">'
+            f'<line x1="{cx + 4:.1f}" y1="{cy - 6:.1f}" x2="{cx + 4:.1f}" y2="{cy + 6:.1f}" '
+            f'stroke="#111827" stroke-width="1.4"/>'
+            f'<line x1="{cx + 4:.1f}" y1="{cy:.1f}" x2="{cx - 4:.1f}" y2="{cy:.1f}" '
+            f'stroke="#111827" stroke-width="1.4"/>'
+            f'</g>'
+        )
+    if symbol_id == "foothook.right":
+        return (
+            f'<g class="laban-annotation foot-hook foothook-lr" data-symbol-id="{escape(symbol_id)}">'
+            f'<line x1="{cx - 4:.1f}" y1="{cy - 6:.1f}" x2="{cx - 4:.1f}" y2="{cy + 6:.1f}" '
+            f'stroke="#111827" stroke-width="1.4"/>'
+            f'<line x1="{cx - 4:.1f}" y1="{cy:.1f}" x2="{cx + 4:.1f}" y2="{cy:.1f}" '
+            f'stroke="#111827" stroke-width="1.4"/>'
+            f'</g>'
+        )
+
+    parts = symbol_id.split(".")
+    subfamily = parts[1] if len(parts) > 1 else ""
+    variant = parts[2] if len(parts) > 2 else ""
+
+    # ── foot.surface.*: foot outline with shaded contact region ──────────
+    if subfamily == "surface":
+        _SURFACE_REGIONS = {
+            "ball":        (0.0, 0.35),
+            "heel":        (0.65, 1.0),
+            "full_sole":   (0.0, 1.0),
+            "toe_tip":     (0.0, 0.15),
+            "demi_pointe": (0.0, 0.25),
+            "instep":      (0.3, 0.6),
+            "metatarsal":  (0.15, 0.45),
+        }
+        region = _SURFACE_REGIONS.get(variant, (0.0, 0.5))
+        foot_top = cy - 8
+        foot_bot = cy + 8
+        foot_h = foot_bot - foot_top
+        r_top = foot_top + region[0] * foot_h
+        r_bot = foot_top + region[1] * foot_h
+        return (
+            f'<g class="laban-annotation foot-surface" data-symbol-id="{escape(symbol_id)}">'
+            f'<rect x="{cx - 4:.1f}" y="{foot_top:.1f}" width="8" height="{foot_h:.1f}" '
+            f'rx="3" fill="none" stroke="#111827" stroke-width="1.2"/>'
+            f'<rect x="{cx - 3:.1f}" y="{r_top:.1f}" width="6" height="{r_bot - r_top:.1f}" '
+            f'fill="#111827" opacity="0.5"/>'
+            f'</g>'
+        )
+
+    # ── foot.edge.*: foot outline with side stripe ───────────────────────
+    if subfamily == "edge":
+        foot_top = cy - 8
+        foot_h = 16
+        if variant == "inside":
+            stripe_x = cx - 4
+        else:
+            stripe_x = cx + 2
+        return (
+            f'<g class="laban-annotation foot-edge" data-symbol-id="{escape(symbol_id)}">'
+            f'<rect x="{cx - 4:.1f}" y="{foot_top:.1f}" width="8" height="{foot_h}" '
+            f'rx="3" fill="none" stroke="#111827" stroke-width="1.2"/>'
+            f'<rect x="{stripe_x:.1f}" y="{foot_top + 2:.1f}" width="2" height="{foot_h - 4}" '
+            f'fill="#111827"/>'
+            f'</g>'
+        )
+
+    # ── foot.hook.*: stem with directional hook ──────────────────────────
+    if subfamily == "hook":
+        _HOOK_DIRS = {
+            "forward":          (0, -6),
+            "backward":         (0, 6),
+            "side":             (6, 0),
+            "crossed_forward":  (-4, -4),
+            "crossed_backward": (-4, 4),
+        }
+        dx, dy = _HOOK_DIRS.get(variant, (0, -6))
+        stem_top = cy - 6
+        stem_bot = cy + 6
+        return (
+            f'<g class="laban-annotation foot-hook" data-symbol-id="{escape(symbol_id)}">'
+            f'<line x1="{cx:.1f}" y1="{stem_bot:.1f}" x2="{cx:.1f}" y2="{stem_top:.1f}" '
+            f'stroke="#111827" stroke-width="1.4"/>'
+            f'<path d="M {cx:.1f} {stem_top:.1f} '
+            f'Q {cx + dx * 0.5:.1f} {stem_top + dy * 0.5:.1f} '
+            f'{cx + dx:.1f} {stem_top + dy:.1f}" '
+            f'fill="none" stroke="#111827" stroke-width="1.4"/>'
+            f'</g>'
+        )
+
+    # ── foot.position.*: paired tick marks at characteristic angles ──────
+    if subfamily == "position":
+        _POS_ANGLES = {
+            "parallel": (0, 0),
+            "turned_out": (20, -20),
+            "turned_in": (-15, 15),
+            "first": (30, -30),
+            "second": (40, -40),
+            "third": (45, -45),
+            "fourth": (30, -30),
+            "fifth": (50, -50),
+        }
+        import math
+        la, ra = _POS_ANGLES.get(variant, (0, 0))
+        tick = 6
+        lar = math.radians(la)
+        rar = math.radians(ra)
+        # left foot tick
+        lx2 = cx - 3 + tick * math.sin(lar)
+        ly2 = cy - tick * math.cos(lar)
+        # right foot tick
+        rx2 = cx + 3 + tick * math.sin(rar)
+        ry2 = cy - tick * math.cos(rar)
+        # fourth/fifth have offset separation
+        sep = 2 if variant in ("fourth", "fifth") else 0
+        return (
+            f'<g class="laban-annotation foot-position" data-symbol-id="{escape(symbol_id)}">'
+            f'<line x1="{cx - 3:.1f}" y1="{cy + sep:.1f}" x2="{lx2:.1f}" y2="{ly2 + sep:.1f}" '
+            f'stroke="#111827" stroke-width="1.5"/>'
+            f'<line x1="{cx + 3:.1f}" y1="{cy - sep:.1f}" x2="{rx2:.1f}" y2="{ry2 - sep:.1f}" '
+            f'stroke="#111827" stroke-width="1.5"/>'
+            f'</g>'
+        )
+
+    # ── foot.action.*: action-specific marks ─────────────────────────────
+    if subfamily == "action":
+        _ACTION_MARKS = {
+            "stamp":     "solid_arrow_down",
+            "tap":       "dot",
+            "brush":     "arc_right",
+            "scuff":     "arc_left",
+            "dig":       "v_down",
+            "slide":     "horizontal",
+            "heel_drop": "drop_right",
+            "toe_drop":  "drop_left",
+        }
+        mark = _ACTION_MARKS.get(variant, "dot")
+        svg = (f'<g class="laban-annotation foot-action" '
+               f'data-symbol-id="{escape(symbol_id)}">')
+        if mark == "solid_arrow_down":
+            svg += (
+                f'<line x1="{cx:.1f}" y1="{cy - 7:.1f}" x2="{cx:.1f}" y2="{cy + 5:.1f}" '
+                f'stroke="#111827" stroke-width="1.5"/>'
+                f'<path d="M {cx - 3:.1f} {cy + 2:.1f} L {cx:.1f} {cy + 7:.1f} '
+                f'L {cx + 3:.1f} {cy + 2:.1f} Z" fill="#111827"/>'
+            )
+        elif mark == "dot":
+            svg += f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="3.5" fill="#111827"/>'
+        elif mark == "arc_right":
+            svg += (
+                f'<path d="M {cx - 4:.1f} {cy + 5:.1f} '
+                f'Q {cx + 6:.1f} {cy:.1f} {cx - 4:.1f} {cy - 5:.1f}" '
+                f'fill="none" stroke="#111827" stroke-width="1.5"/>'
+            )
+        elif mark == "arc_left":
+            svg += (
+                f'<path d="M {cx + 4:.1f} {cy + 5:.1f} '
+                f'Q {cx - 6:.1f} {cy:.1f} {cx + 4:.1f} {cy - 5:.1f}" '
+                f'fill="none" stroke="#111827" stroke-width="1.5"/>'
+            )
+        elif mark == "v_down":
+            svg += (
+                f'<path d="M {cx - 4:.1f} {cy - 4:.1f} L {cx:.1f} {cy + 5:.1f} '
+                f'L {cx + 4:.1f} {cy - 4:.1f}" '
+                f'fill="none" stroke="#111827" stroke-width="1.5"/>'
+            )
+        elif mark == "horizontal":
+            svg += (
+                f'<line x1="{cx - 7:.1f}" y1="{cy:.1f}" x2="{cx + 7:.1f}" y2="{cy:.1f}" '
+                f'stroke="#111827" stroke-width="2.0"/>'
+                f'<path d="M {cx + 4:.1f} {cy - 2:.1f} L {cx + 7:.1f} {cy:.1f} '
+                f'L {cx + 4:.1f} {cy + 2:.1f}" fill="#111827"/>'
+            )
+        elif mark == "drop_right":
+            svg += (
+                f'<path d="M {cx:.1f} {cy - 6:.1f} Q {cx + 5:.1f} {cy:.1f} '
+                f'{cx:.1f} {cy + 6:.1f}" '
+                f'fill="none" stroke="#111827" stroke-width="1.4"/>'
+                f'<circle cx="{cx:.1f}" cy="{cy + 6:.1f}" r="1.5" fill="#111827"/>'
+            )
+        elif mark == "drop_left":
+            svg += (
+                f'<path d="M {cx:.1f} {cy - 6:.1f} Q {cx - 5:.1f} {cy:.1f} '
+                f'{cx:.1f} {cy + 6:.1f}" '
+                f'fill="none" stroke="#111827" stroke-width="1.4"/>'
+                f'<circle cx="{cx:.1f}" cy="{cy + 6:.1f}" r="1.5" fill="#111827"/>'
+            )
+        svg += '</g>'
+        return svg
+
+    # Fallback for unknown foothook symbols (should not be reached for known
+    # catalog entries)
+    glyph = spec.get("geometry", {}).get("glyph") or "?"
     return (
         f'<g class="laban-annotation foot-detail" data-symbol-id="{escape(symbol_id)}">'
         f'<text x="{cx:.1f}" y="{cy + 4:.1f}" text-anchor="middle" font-size="10" fill="#111827">'

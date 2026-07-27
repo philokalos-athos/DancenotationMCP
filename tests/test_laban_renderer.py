@@ -10,6 +10,8 @@ from dancenotation_mcp.rendering.laban_renderer import (
     _render_effort_diamond,
     _render_shape_symbol,
     _render_quality_annotation,
+    _render_timing_annotation,
+    _render_foot_detail_annotation,
     LEVEL_FILLS,
 )
 from dancenotation_mcp.rendering.laban_layout import (
@@ -298,7 +300,7 @@ class LabanRendererTests(unittest.TestCase):
             },
         ])
         svg = render_laban_svg(ir)
-        self.assertIn('class="laban-annotation foot-detail"', svg)
+        self.assertIn('class="laban-annotation foot-position"', svg)
 
     def test_motif_placed_in_annotation_area(self):
         """motif.* symbols (rise/fall/arc) must render as motif marks, not pentagons."""
@@ -972,6 +974,120 @@ class EffortShapeGeometryTest(unittest.TestCase):
         q = _render_quality_annotation(self._entry("quality.strong"))
         e = _render_effort_diamond(self._entry("effort.weight.strong"))
         self.assertEqual(self._geom(q), self._geom(e))
+
+
+class PlaceholderGeometryTest(unittest.TestCase):
+    """The last families that rendered as truncated-id / glyph text labels
+    (level, timing, digit, foothook) must draw distinct, convention-based
+    geometry with no text placeholder."""
+
+    def _entry(self, symbol_id, glyph=""):
+        return {
+            "symbol": {"symbol_id": symbol_id},
+            "spec": {"geometry": {"glyph": glyph}},
+            "x": 10.0, "y_top": 0.0, "y_bottom": 40.0, "width": 20.0,
+        }
+
+    def _geom(self, svg):
+        import re as _re
+        return _re.sub(r'data-[a-z-]+="[^"]*"', "", svg)
+
+    def _assert_no_text_placeholder(self, svg, sid):
+        shapes = ("<path", "<line", "<rect", "<circle", "<polygon",
+                  "<ellipse", "<polyline")
+        self.assertTrue(any(t in svg for t in shapes),
+                        f"{sid} drew no shape primitive")
+        self.assertNotIn("<text", svg, f"{sid} still renders a text label")
+
+    def test_level_marks_reuse_level_fills_and_are_distinct(self):
+        levels = ["level.low", "level.middle", "level.high"]
+        svgs = {lv: _render_timing_annotation(self._entry(lv)) for lv in levels}
+        geoms = {self._geom(s) for s in svgs.values()}
+        self.assertEqual(len(geoms), 3, "the 3 level marks must be distinct")
+        for lv, svg in svgs.items():
+            self._assert_no_text_placeholder(svg, lv)
+        # Fill follows the shared LEVEL_FILLS convention.
+        self.assertIn(LEVEL_FILLS["low"]["fill"], svgs["level.low"])
+        self.assertIn(LEVEL_FILLS["high"]["fill"], svgs["level.high"])
+
+    def test_timing_marks_render_distinctly_without_text_fallback(self):
+        ids = [
+            "timing.duration.1_8", "timing.duration.1_4", "timing.duration.1_2",
+            "timing.duration.1", "timing.duration.2", "timing.duration.3",
+            "timing.duration.4", "timing.syncopated", "timing.staccato",
+            "timing.tenuto", "timing.fermata",
+        ]
+        svgs = {sid: _render_timing_annotation(self._entry(sid)) for sid in ids}
+        geoms = {self._geom(s) for s in svgs.values()}
+        self.assertEqual(len(geoms), len(ids),
+                         "all 11 timing marks must be visually distinct")
+        for sid, svg in svgs.items():
+            self._assert_no_text_placeholder(svg, sid)
+
+    def test_duration_marks_scale_with_duration_value(self):
+        # Longer note values draw a longer duration line.
+        short = _render_timing_annotation(self._entry("timing.duration.1_8"))
+        long = _render_timing_annotation(self._entry("timing.duration.4"))
+        import re as _re
+
+        def line_len(svg):
+            m = _re.search(r'<line x1="[\d.]+" y1="([\d.]+)" x2="[\d.]+" y2="([\d.]+)"', svg)
+            return abs(float(m.group(2)) - float(m.group(1)))
+
+        self.assertLess(line_len(short), line_len(long))
+
+    def test_accent_and_hold_geometry_unchanged(self):
+        # Regression: the two timing marks that were already authentic must
+        # keep drawing their existing shapes.
+        self.assertIn("path", _render_timing_annotation(self._entry("timing.accent")))
+        self.assertIn("circle", _render_timing_annotation(self._entry("timing.hold")))
+
+    def test_digit_marks_render_distinctly_without_text_fallback(self):
+        ids = ["finger.mark", "toe.mark"]
+        svgs = {sid: _render_foot_detail_annotation(self._entry(sid)) for sid in ids}
+        geoms = {self._geom(s) for s in svgs.values()}
+        self.assertEqual(len(geoms), 2, "finger and toe marks must be distinct")
+        for sid, svg in svgs.items():
+            self._assert_no_text_placeholder(svg, sid)
+
+    def test_foothook_symbols_render_distinctly_without_text_fallback(self):
+        ids = [
+            "foot.surface.ball", "foot.surface.heel", "foot.surface.full_sole",
+            "foot.surface.toe_tip", "foot.surface.demi_pointe",
+            "foot.surface.instep", "foot.surface.metatarsal",
+            "foot.edge.inside", "foot.edge.outside",
+            "foot.hook.forward", "foot.hook.backward", "foot.hook.side",
+            "foot.hook.crossed_forward", "foot.hook.crossed_backward",
+            "foot.position.parallel", "foot.position.turned_out",
+            "foot.position.turned_in", "foot.position.first",
+            "foot.position.second", "foot.position.third",
+            "foot.position.fourth", "foot.position.fifth",
+            "foot.action.stamp", "foot.action.tap", "foot.action.brush",
+            "foot.action.scuff", "foot.action.dig", "foot.action.slide",
+            "foot.action.heel_drop", "foot.action.toe_drop",
+            "foothook.left", "foothook.right",
+        ]
+        svgs = {sid: _render_foot_detail_annotation(self._entry(sid)) for sid in ids}
+        geoms = {self._geom(s) for s in svgs.values()}
+        self.assertEqual(len(geoms), len(ids),
+                         f"all {len(ids)} foothook symbols must be visually distinct")
+        for sid, svg in svgs.items():
+            self._assert_no_text_placeholder(svg, sid)
+
+    def test_foothook_subfamilies_share_structural_motif(self):
+        # Each sub-family uses a consistent structural element:
+        # surface -> foot-outline with shaded region
+        # hook -> stem with hook endpoint
+        # position -> pair of tick marks
+        surface = _render_foot_detail_annotation(self._entry("foot.surface.ball"))
+        hook = _render_foot_detail_annotation(self._entry("foot.hook.forward"))
+        position = _render_foot_detail_annotation(self._entry("foot.position.first"))
+        action = _render_foot_detail_annotation(self._entry("foot.action.stamp"))
+        # Each sub-family has a unique class marker in its group.
+        self.assertIn("foot-surface", surface)
+        self.assertIn("foot-hook", hook)
+        self.assertIn("foot-position", position)
+        self.assertIn("foot-action", action)
 
 
 if __name__ == "__main__":
