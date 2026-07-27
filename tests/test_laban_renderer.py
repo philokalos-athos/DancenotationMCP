@@ -1128,6 +1128,62 @@ class QualityAliasIdentityTest(unittest.TestCase):
         self.assertNotIn("<text", group.group(0))
 
 
+class ContactSymbolIdParsingTest(unittest.TestCase):
+    """A contact id names two things — the contact type and, optionally, the
+    body surface — and both must reach the drawing.
+
+    ``contact_type`` was taken from the *last* dotted segment, so
+    ``contact.grasp.front`` resolved its type to "front", missed the grasp
+    staple and drew the generic touch caret. Only the bare ``contact.grasp``
+    ever rendered correctly. The surface suffix was ignored entirely: it was
+    read from modifiers only. 38 symbols collapsed onto one glyph.
+    """
+
+    TYPES = ["touch", "slide", "strike", "grasp", "brush", "carry",
+             "press", "release", "interlock", "support"]
+    SURFACES = ["front", "back", "inner", "outer"]
+
+    def _markup(self, symbol_id):
+        svg = render_laban_svg(_minimal_ir([{
+            "symbol_id": symbol_id,
+            "body_part": "right_arm",
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {},
+        }]))
+        i = svg.find(f'data-symbol-id="{symbol_id}"')
+        self.assertNotEqual(i, -1, f"{symbol_id} not rendered")
+        start = svg.rfind("<g", 0, i)
+        return re.sub(r'data-symbol-id="[^"]*"', "",
+                      svg[start:svg.find("</g>", start)])
+
+    def test_each_contact_type_has_its_own_shape(self):
+        seen = {}
+        for name in self.TYPES:
+            shape = self._markup(f"contact.{name}")
+            clash = seen.get(shape)
+            self.assertIsNone(clash, f"contact.{name} renders like contact.{clash}")
+            seen[shape] = name
+        self.assertEqual(len(seen), len(self.TYPES))
+
+    def test_surface_suffix_does_not_replace_the_contact_type(self):
+        # contact.grasp.front must still draw a grasp, plus a front mark.
+        bare = self._markup("contact.grasp")
+        for surface in self.SURFACES:
+            with self.subTest(surface=surface):
+                marked = self._markup(f"contact.grasp.{surface}")
+                self.assertNotEqual(marked, bare, "surface mark not drawn")
+                # every path of the bare grasp must survive
+                for path in re.findall(r'<path[^>]*>', bare):
+                    self.assertIn(path, marked, "grasp shape lost")
+
+    def test_each_surface_marks_a_different_side(self):
+        seen = {self._markup("contact.touch")}
+        for surface in self.SURFACES:
+            shape = self._markup(f"contact.touch.{surface}")
+            self.assertNotIn(shape, seen, f"contact.touch.{surface} is a duplicate")
+            seen.add(shape)
+
+
 class FloorPlanMarkerGeometryTest(unittest.TestCase):
     """The four floor.* staff-annotation sub-families mean different things and
     must not share one glyph.

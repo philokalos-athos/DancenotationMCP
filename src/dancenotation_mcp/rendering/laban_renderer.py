@@ -867,8 +867,18 @@ def _render_contact_annotation(entry: dict) -> str:
     cy = (y_top + y_bottom) / 2
 
     modifiers = symbol.get("modifiers", {})
-    contact_type = modifiers.get("contact_type") or symbol_id.split(".")[-1]
-    surface_marks = modifiers.get("surface_marks", [])
+    # A contact id is `contact.<type>[.<surface>]`. Reading the *last* segment
+    # for the type meant `contact.grasp.front` resolved to "front", lost the
+    # grasp staple and drew the generic caret — only the bare ids ever worked.
+    # The surface suffix was ignored too, being read from modifiers alone.
+    id_parts = symbol_id.split(".")
+    id_type = id_parts[1] if len(id_parts) > 1 else ""
+    id_surface = id_parts[2] if len(id_parts) > 2 else ""
+
+    contact_type = modifiers.get("contact_type") or id_type
+    surface_marks = list(modifiers.get("surface_marks", []))
+    if id_surface and id_surface not in surface_marks:
+        surface_marks.append(id_surface)
 
     parts = ""
 
@@ -898,6 +908,61 @@ def _render_contact_annotation(entry: dict) -> str:
             f'fill="none" stroke="#111827" stroke-width="1.5" stroke-linejoin="miter"/>'
             f'<line x1="{cx:.1f}" y1="{cy - 7:.1f}" x2="{cx:.1f}" y2="{cy + 7:.1f}" '
             f'stroke="#111827" stroke-width="1.2"/>'
+        )
+    elif contact_type == "brush":
+        # Passing contact: caret with a trailing sweep off the top right
+        parts = (
+            f'<path d="M {cx - 6:.1f} {cy + 4:.1f} L {cx:.1f} {cy - 4:.1f} L {cx + 6:.1f} {cy + 4:.1f}" '
+            f'fill="none" stroke="#111827" stroke-width="1.5" stroke-linejoin="miter"/>'
+            f'<path d="M {cx + 2:.1f} {cy - 6:.1f} Q {cx + 8:.1f} {cy - 8:.1f} {cx + 9:.1f} {cy - 2:.1f}" '
+            f'fill="none" stroke="#111827" stroke-width="1"/>'
+        )
+    elif contact_type == "carry":
+        # Weight borne along: caret sitting on a baseline
+        parts = (
+            f'<path d="M {cx - 6:.1f} {cy + 2:.1f} L {cx:.1f} {cy - 6:.1f} L {cx + 6:.1f} {cy + 2:.1f}" '
+            f'fill="none" stroke="#111827" stroke-width="1.5" stroke-linejoin="miter"/>'
+            f'<line x1="{cx - 7:.1f}" y1="{cy + 5:.1f}" x2="{cx + 7:.1f}" y2="{cy + 5:.1f}" '
+            f'stroke="#111827" stroke-width="1.5"/>'
+        )
+    elif contact_type == "press":
+        # Sustained force into the surface: caret under a downward arrow
+        parts = (
+            f'<path d="M {cx - 6:.1f} {cy + 5:.1f} L {cx:.1f} {cy - 3:.1f} L {cx + 6:.1f} {cy + 5:.1f}" '
+            f'fill="none" stroke="#111827" stroke-width="1.5" stroke-linejoin="miter"/>'
+            f'<line x1="{cx:.1f}" y1="{cy - 10:.1f}" x2="{cx:.1f}" y2="{cy - 5:.1f}" '
+            f'stroke="#111827" stroke-width="1"/>'
+            f'<polygon points="{cx:.1f},{cy - 4:.1f} {cx - 2.5:.1f},{cy - 8:.1f} '
+            f'{cx + 2.5:.1f},{cy - 8:.1f}" fill="#111827"/>'
+        )
+    elif contact_type == "release":
+        # Contact ending: caret broken by a gap, with the release tick above
+        parts = (
+            f'<path d="M {cx - 6:.1f} {cy + 4:.1f} L {cx - 2:.1f} {cy - 1:.1f} '
+            f'M {cx + 2:.1f} {cy - 1:.1f} L {cx + 6:.1f} {cy + 4:.1f}" '
+            f'fill="none" stroke="#111827" stroke-width="1.5"/>'
+            f'<line x1="{cx - 4:.1f}" y1="{cy - 7:.1f}" x2="{cx + 4:.1f}" y2="{cy - 7:.1f}" '
+            f'stroke="#111827" stroke-width="1"/>'
+        )
+    elif contact_type == "interlock":
+        # Mutual hold: two staples facing each other
+        parts = (
+            f'<path d="M {cx - 7:.1f} {cy - 5:.1f} L {cx - 7:.1f} {cy + 1:.1f} '
+            f'L {cx + 1:.1f} {cy + 1:.1f} L {cx + 1:.1f} {cy - 5:.1f}" '
+            f'fill="none" stroke="#111827" stroke-width="1.4" stroke-linejoin="miter"/>'
+            f'<path d="M {cx + 7:.1f} {cy + 5:.1f} L {cx + 7:.1f} {cy - 1:.1f} '
+            f'L {cx - 1:.1f} {cy - 1:.1f} L {cx - 1:.1f} {cy + 5:.1f}" '
+            f'fill="none" stroke="#111827" stroke-width="1.4" stroke-linejoin="miter"/>'
+        )
+    elif contact_type == "support":
+        # Weight taken by the contact: caret on a doubled baseline
+        parts = (
+            f'<path d="M {cx - 6:.1f} {cy:.1f} L {cx:.1f} {cy - 8:.1f} L {cx + 6:.1f} {cy:.1f}" '
+            f'fill="none" stroke="#111827" stroke-width="1.5" stroke-linejoin="miter"/>'
+            f'<line x1="{cx - 7:.1f}" y1="{cy + 3:.1f}" x2="{cx + 7:.1f}" y2="{cy + 3:.1f}" '
+            f'stroke="#111827" stroke-width="1.5"/>'
+            f'<line x1="{cx - 7:.1f}" y1="{cy + 6:.1f}" x2="{cx + 7:.1f}" y2="{cy + 6:.1f}" '
+            f'stroke="#111827" stroke-width="1.5"/>'
         )
     else:
         # Touch: clean upward caret (~12px wide, ~8px tall)
