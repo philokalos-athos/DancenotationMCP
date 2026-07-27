@@ -1128,6 +1128,78 @@ class QualityAliasIdentityTest(unittest.TestCase):
         self.assertNotIn("<text", group.group(0))
 
 
+class ShapePoleTest(unittest.TestCase):
+    """A shape id names a family AND a pole; both must reach the drawing.
+
+    ``_render_shape_symbol`` keyed only on ``parts[1]``, the family, and drew
+    one fixed glyph for it. The pole in ``parts[2]`` was never read, so every
+    semantic opposite engraved identically — spreading as enclosing, rising as
+    sinking, growing as shrinking — although the catalog gives each pole its own
+    glyph (wall.spreading U+2194 vs wall.enclosing U+2195, and so on).
+
+    The poles are directional opposites along LMA's three dimensions, so the
+    family keeps its form and the pole sets the sense.
+    """
+
+    POLES = {
+        "ball": ["bulging", "hollowing"],
+        "door": ["spreading", "enclosing"],
+        "flow": ["growing", "shrinking"],
+        "pin": ["rising", "sinking", "lengthening", "shortening"],
+        "screw": ["advancing", "retreating", "forward", "backward"],
+        "table": ["spreading", "enclosing"],
+        "wall": ["spreading", "enclosing", "widening", "narrowing"],
+    }
+
+    def _markup(self, symbol_id):
+        svg = render_laban_svg(_minimal_ir([{
+            "symbol_id": symbol_id,
+            "body_part": "torso",
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {},
+        }]))
+        i = svg.find(f'data-symbol-id="{symbol_id}"')
+        self.assertNotEqual(i, -1, f"{symbol_id} not rendered")
+        start = svg.rfind("<g", 0, i)
+        # Strip the id: two symbols drawn identically still differ by it, and
+        # keeping it would make every comparison below pass for free.
+        return re.sub(r'data-symbol-id="[^"]*"', "",
+                      svg[start:svg.find("</g>", start)])
+
+    def test_poles_within_a_family_render_distinctly(self):
+        for family, poles in self.POLES.items():
+            seen = {}
+            for pole in poles:
+                shape = self._markup(f"shape.{family}.{pole}")
+                clash = seen.get(shape)
+                self.assertIsNone(
+                    clash,
+                    f"shape.{family}.{pole} renders like shape.{family}.{clash}")
+                seen[shape] = pole
+
+    def test_every_shape_symbol_is_unique_across_families(self):
+        seen = {}
+        for family, poles in self.POLES.items():
+            for pole in poles:
+                symbol_id = f"shape.{family}.{pole}"
+                shape = self._markup(symbol_id)
+                clash = seen.get(shape)
+                self.assertIsNone(clash, f"{symbol_id} renders like {clash}")
+                seen[shape] = symbol_id
+        self.assertEqual(len(seen), sum(len(p) for p in self.POLES.values()))
+
+    def test_an_explicit_shape_type_modifier_still_selects_the_family(self):
+        # The modifier override predates the id parsing and must keep working.
+        by_id = self._markup("shape.wall.spreading")
+        svg = render_laban_svg(_minimal_ir([{
+            "symbol_id": "shape.wall.spreading",
+            "body_part": "torso",
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {"shape_type": "ball"},
+        }]))
+        self.assertNotIn(by_id.strip("<g >"), svg)
+
+
 class BodyActionMarkTest(unittest.TestCase):
     """The body action must be visible, not just its direction and level.
 

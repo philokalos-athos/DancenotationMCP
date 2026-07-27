@@ -1294,7 +1294,20 @@ def _render_effort_diamond(entry: dict) -> str:
 
 
 def _render_shape_symbol(entry: dict) -> str:
-    """Render LMA shape symbols (pin, wall, ball, screw)."""
+    """Render an LMA shape symbol.
+
+    A shape id is ``shape.<family>.<pole>``. Only the family was read, so one
+    fixed glyph was drawn per family and every semantic opposite engraved
+    identically: spreading as enclosing, rising as sinking, growing as
+    shrinking. The catalog gives each pole its own glyph (wall.spreading U+2194
+    vs wall.enclosing U+2195, ball.bulging U+2295 vs ball.hollowing U+2296),
+    which is the pairing followed here.
+
+    The poles are directional opposites along LMA's three dimensions, so the
+    family keeps its form and the pole sets the sense — an outward arrow pair
+    against an inward one, a plus against a minus, one rotation against the
+    other. Nothing is invented; the sign is simply read.
+    """
     symbol = entry["symbol"]
     symbol_id = symbol.get("symbol_id", "")
     x = entry["x"]
@@ -1305,84 +1318,155 @@ def _render_shape_symbol(entry: dict) -> str:
     cy = (y_top + y_bottom) / 2
 
     modifiers = symbol.get("modifiers", {})
-    # Shape ids are "shape.<family>.<variant>" (e.g. shape.wall.spreading), so
-    # the family that selects the glyph is token[1], not the trailing variant.
     parts = symbol_id.split(".")
     shape_type = modifiers.get("shape_type") or (parts[1] if len(parts) > 1 else "")
+    pole = parts[2] if len(parts) > 2 else ""
+
+    def wrap(body: str) -> str:
+        return (f'<g class="laban-annotation shape" '
+                f'data-symbol-id="{escape(symbol_id)}" '
+                f'data-shape-pole="{escape(pole)}">{body}</g>')
+
+    def arrow(tip_x, tip_y, dx, dy, size=3.0):
+        """Filled arrowhead at the tip, pointing along (dx, dy)."""
+        norm = (dx * dx + dy * dy) ** 0.5 or 1.0
+        ux, uy = dx / norm, dy / norm
+        px, py = -uy, ux
+        bx, by = tip_x - ux * size * 1.4, tip_y - uy * size * 1.4
+        return (f'<polygon points="{tip_x:.1f},{tip_y:.1f} '
+                f'{bx + px * size:.1f},{by + py * size:.1f} '
+                f'{bx - px * size:.1f},{by - py * size:.1f}" fill="#111827"/>')
 
     if shape_type == "pin":
-        # Vertical line with arrowhead
-        return (
-            f'<g class="laban-annotation shape" data-symbol-id="{escape(symbol_id)}">'
-            f'<line x1="{cx:.1f}" y1="{cy + 6:.1f}" x2="{cx:.1f}" y2="{cy - 6:.1f}" '
-            f'stroke="#111827" stroke-width="1.5"/>'
-            f'<polygon points="{cx:.1f},{cy - 8:.1f} {cx - 3:.1f},{cy - 4:.1f} {cx + 3:.1f},{cy - 4:.1f}" '
-            f'fill="#111827"/>'
-            f'</g>'
-        )
+        # Vertical dimension. rising/sinking are single-headed, lengthening and
+        # shortening doubled, matching the catalog's U+2191/U+2193 against
+        # U+21D1/U+21D3.
+        up = pole in ("rising", "lengthening")
+        sign = -1 if up else 1
+        body = (f'<line x1="{cx:.1f}" y1="{cy - sign * 6:.1f}" '
+                f'x2="{cx:.1f}" y2="{cy + sign * 5:.1f}" '
+                f'stroke="#111827" stroke-width="1.5"/>'
+                + arrow(cx, cy + sign * 8, 0, sign))
+        if pole in ("lengthening", "shortening"):
+            body += arrow(cx, cy + sign * 3, 0, sign, size=2.6)
+        return wrap(body)
+
     if shape_type == "wall":
-        # Horizontal line with arrows
-        return (
-            f'<g class="laban-annotation shape" data-symbol-id="{escape(symbol_id)}">'
-            f'<line x1="{cx - 7:.1f}" y1="{cy:.1f}" x2="{cx + 7:.1f}" y2="{cy:.1f}" '
-            f'stroke="#111827" stroke-width="1.5"/>'
-            f'<polygon points="{cx - 9:.1f},{cy:.1f} {cx - 5:.1f},{cy - 3:.1f} {cx - 5:.1f},{cy + 3:.1f}" '
-            f'fill="#111827"/>'
-            f'<polygon points="{cx + 9:.1f},{cy:.1f} {cx + 5:.1f},{cy - 3:.1f} {cx + 5:.1f},{cy + 3:.1f}" '
-            f'fill="#111827"/>'
-            f'</g>'
-        )
+        # Horizontal dimension. enclosing turns the axis vertical, as the
+        # catalog's U+2195 against U+2194 does; narrowing points inward.
+        if pole == "enclosing":
+            body = (f'<line x1="{cx:.1f}" y1="{cy - 6:.1f}" x2="{cx:.1f}" y2="{cy + 6:.1f}" '
+                    f'stroke="#111827" stroke-width="1.5"/>'
+                    + arrow(cx, cy - 8, 0, -1) + arrow(cx, cy + 8, 0, 1))
+        elif pole == "narrowing":
+            body = (f'<line x1="{cx - 7:.1f}" y1="{cy:.1f}" x2="{cx + 7:.1f}" y2="{cy:.1f}" '
+                    f'stroke="#111827" stroke-width="1.5"/>'
+                    + arrow(cx - 2, cy, 1, 0) + arrow(cx + 2, cy, -1, 0))
+        else:
+            # spreading / widening: outward, widening drawn wider (U+27F7).
+            reach = 9 if pole == "widening" else 7
+            body = (f'<line x1="{cx - reach:.1f}" y1="{cy:.1f}" '
+                    f'x2="{cx + reach:.1f}" y2="{cy:.1f}" '
+                    f'stroke="#111827" stroke-width="1.5"/>'
+                    + arrow(cx - reach - 2, cy, -1, 0)
+                    + arrow(cx + reach + 2, cy, 1, 0))
+        return wrap(body)
+
     if shape_type == "ball":
-        # Circle
-        return (
-            f'<g class="laban-annotation shape" data-symbol-id="{escape(symbol_id)}">'
-            f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="6" fill="none" stroke="#111827" stroke-width="1.5"/>'
-            f'</g>'
-        )
+        # U+2295 against U+2296: a plus for bulging, a minus for hollowing.
+        body = (f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="6" fill="none" '
+                f'stroke="#111827" stroke-width="1.5"/>'
+                f'<line x1="{cx - 3:.1f}" y1="{cy:.1f}" x2="{cx + 3:.1f}" y2="{cy:.1f}" '
+                f'stroke="#111827" stroke-width="1.5"/>')
+        if pole == "bulging":
+            body += (f'<line x1="{cx:.1f}" y1="{cy - 3:.1f}" '
+                     f'x2="{cx:.1f}" y2="{cy + 3:.1f}" '
+                     f'stroke="#111827" stroke-width="1.5"/>')
+        return wrap(body)
+
     if shape_type == "screw":
-        # Spiral line
-        return (
-            f'<g class="laban-annotation shape" data-symbol-id="{escape(symbol_id)}">'
-            f'<path d="M {cx:.1f} {cy + 6:.1f} '
-            f'Q {cx + 5:.1f} {cy + 3:.1f} {cx:.1f} {cy:.1f} '
-            f'Q {cx - 4:.1f} {cy - 2:.1f} {cx:.1f} {cy - 4:.1f} '
-            f'Q {cx + 3:.1f} {cy - 5:.1f} {cx + 2:.1f} {cy - 7:.1f}" '
-            f'fill="none" stroke="#111827" stroke-width="1.5"/>'
-            f'</g>'
-        )
+        if pole in ("forward", "backward"):
+            # Rotation sense: U+21BB clockwise against U+21BA anticlockwise.
+            clockwise = pole == "forward"
+            start_x = cx - 6 if clockwise else cx + 6
+            end_x = cx + 6 if clockwise else cx - 6
+            body = (f'<path d="M {start_x:.1f} {cy:.1f} '
+                    f'A 6 6 0 1 {1 if clockwise else 0} {end_x:.1f} {cy - 1:.1f}" '
+                    f'fill="none" stroke="#111827" stroke-width="1.5"/>'
+                    + arrow(end_x, cy + 2, 0, 1))
+        else:
+            # Sagittal pair: advancing U+229B carries the star, retreating
+            # U+229C the bars.
+            body = (f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="6" fill="none" '
+                    f'stroke="#111827" stroke-width="1.5"/>')
+            if pole == "advancing":
+                body += "".join(
+                    f'<line x1="{cx:.1f}" y1="{cy:.1f}" '
+                    f'x2="{cx + 4 * dx:.1f}" y2="{cy + 4 * dy:.1f}" '
+                    f'stroke="#111827" stroke-width="1.2"/>'
+                    for dx, dy in ((0, -1), (0.87, 0.5), (-0.87, 0.5)))
+            else:
+                body += (f'<line x1="{cx - 4:.1f}" y1="{cy - 2:.1f}" '
+                         f'x2="{cx + 4:.1f}" y2="{cy - 2:.1f}" '
+                         f'stroke="#111827" stroke-width="1.2"/>'
+                         f'<line x1="{cx - 4:.1f}" y1="{cy + 2:.1f}" '
+                         f'x2="{cx + 4:.1f}" y2="{cy + 2:.1f}" '
+                         f'stroke="#111827" stroke-width="1.2"/>')
+        return wrap(body)
+
     if shape_type == "flow":
-        # Flow shape change (growing/shrinking): an open wavy vertical stroke
-        return (
-            f'<g class="laban-annotation shape" data-symbol-id="{escape(symbol_id)}">'
-            f'<path d="M {cx:.1f} {cy + 7:.1f} '
-            f'Q {cx + 5:.1f} {cy + 3:.1f} {cx:.1f} {cy:.1f} '
-            f'Q {cx - 5:.1f} {cy - 3:.1f} {cx:.1f} {cy - 7:.1f}" '
-            f'fill="none" stroke="#111827" stroke-width="1.5"/>'
-            f'</g>'
-        )
-    if shape_type == "door":
-        # Door plane (vertical plane): a tall upright rectangle
-        return (
-            f'<g class="laban-annotation shape" data-symbol-id="{escape(symbol_id)}">'
-            f'<rect x="{cx - 4:.1f}" y="{cy - 7:.1f}" width="8" height="14" '
-            f'fill="none" stroke="#111827" stroke-width="1.5"/>'
-            f'</g>'
-        )
-    if shape_type == "table":
-        # Table plane (horizontal plane): a wide flat rectangle
-        return (
-            f'<g class="laban-annotation shape" data-symbol-id="{escape(symbol_id)}">'
-            f'<rect x="{cx - 7:.1f}" y="{cy - 4:.1f}" width="14" height="8" '
-            f'fill="none" stroke="#111827" stroke-width="1.5"/>'
-            f'</g>'
-        )
+        # Diagonal pair: growing U+2922 rises to the right, shrinking U+2921
+        # falls. The .upper/.lower suffix, when present, shifts the stroke.
+        # rise = -1 means the stroke climbs to the right (growing, U+2922);
+        # +1 falls (shrinking, U+2921). Getting this backwards passes a
+        # distinctness test happily, so it is spelled out: y0 is where the
+        # stroke starts on the left, y1 where it ends on the right.
+        rise = -1 if "growing" in symbol_id else 1
+        shift = -3 if symbol_id.endswith(".upper") else (
+            3 if symbol_id.endswith(".lower") else 0)
+        y0 = cy - rise * 6 + shift
+        y1 = cy + rise * 6 + shift
+        body = (f'<path d="M {cx - 6:.1f} {y0:.1f} '
+                f'Q {cx:.1f} {(y0 + y1) / 2 + rise * 3:.1f} {cx + 6:.1f} {y1:.1f}" '
+                f'fill="none" stroke="#111827" stroke-width="1.5"/>'
+                + arrow(cx + 8, y1 + rise * 1.5, 1, rise))
+        return wrap(body)
+
+    if shape_type in ("door", "table"):
+        # Plane pairs: the rectangle names the plane, the arrows the pole.
+        rx, ry = (4.0, 7.0) if shape_type == "door" else (7.0, 4.0)
+        body = (f'<rect x="{cx - rx:.1f}" y="{cy - ry:.1f}" '
+                f'width="{2 * rx:.1f}" height="{2 * ry:.1f}" '
+                f'fill="none" stroke="#111827" stroke-width="1.5"/>')
+        outward = pole == "spreading"
+        # Axis the arrows travel along: across the plane's short side, so they
+        # read as the plane opening or closing rather than sliding.
+        axis = ((0, -1), (0, 1)) if shape_type == "door" else ((-1, 0), (1, 0))
+        reach = (ry if shape_type == "door" else rx)
+        for dx, dy in axis:
+            if outward:
+                # Tip well clear of the rectangle, tail on its edge.
+                tip_x, tip_y = cx + dx * (reach + 7), cy + dy * (reach + 7)
+                body += (f'<line x1="{cx + dx * reach:.1f}" y1="{cy + dy * reach:.1f}" '
+                         f'x2="{tip_x:.1f}" y2="{tip_y:.1f}" '
+                         f'stroke="#111827" stroke-width="1.2"/>'
+                         + arrow(tip_x, tip_y, dx, dy, size=2.8))
+            else:
+                # Pointing back in at the rectangle from outside.
+                body += (f'<line x1="{cx + dx * (reach + 7):.1f}" '
+                         f'y1="{cy + dy * (reach + 7):.1f}" '
+                         f'x2="{cx + dx * (reach + 2):.1f}" '
+                         f'y2="{cy + dy * (reach + 2):.1f}" '
+                         f'stroke="#111827" stroke-width="1.2"/>'
+                         + arrow(cx + dx * reach, cy + dy * reach,
+                                 -dx, -dy, size=2.8))
+        return wrap(body)
+
     # Generic fallback
     label = shape_type[:3] if shape_type else "shp"
-    return (
-        f'<g class="laban-annotation shape" data-symbol-id="{escape(symbol_id)}">'
-        f'<text x="{cx:.1f}" y="{cy + 3:.1f}" text-anchor="middle" font-size="7" fill="#475569">'
-        f'{escape(label)}</text>'
-        f'</g>'
+    return wrap(
+        f'<text x="{cx:.1f}" y="{cy + 3:.1f}" text-anchor="middle" '
+        f'font-size="7" fill="#475569">{escape(label)}</text>'
     )
 
 

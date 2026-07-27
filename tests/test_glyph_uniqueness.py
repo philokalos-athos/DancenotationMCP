@@ -49,8 +49,6 @@ EXPECTED_SHARED_GLYPH_FAMILIES = {"support", "gesture", "travel", "direction",
 # list, not an exemption — the assertion below requires the set to shrink and
 # fails if a family is added to it without being listed here first.
 #
-#   shape       24  the pole segment is dropped; spreading == enclosing,
-#                   rising == sinking, growing == shrinking
 #   sequential  10  the id is never read at all; simultaneous == successive
 #                   == ripple
 #   jump         5  subtype dropped; small == large == assemble == sissonne
@@ -58,7 +56,7 @@ EXPECTED_SHARED_GLYPH_FAMILIES = {"support", "gesture", "travel", "direction",
 #   turn         4  subtype dropped; pivot == spin, half == full
 #   pin          4  reads modifiers.pin_head, which nothing populates, while
 #                   the catalog's own behavior.preferred_pin_head goes unread
-KNOWN_OPEN_COLLAPSES = {"shape", "sequential", "jump", "bow", "turn", "pin"}
+KNOWN_OPEN_COLLAPSES = {"sequential", "jump", "bow", "turn", "pin"}
 
 _GROUP = re.compile(r"<(/?)g\b[^>]*?(/?)>")
 
