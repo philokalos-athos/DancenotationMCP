@@ -334,10 +334,16 @@ class LabanRendererTests(unittest.TestCase):
             svg = render_laban_svg(ir)
             self.assertIn('class="laban-annotation path"', svg, symbol_id)
 
-    def test_bare_surface_symbols_render_as_contact_annotation(self):
+    def test_bare_surface_symbols_reach_a_dispatch_branch(self):
         """surface.contact/brush/glide (symbol_id prefix "surface", distinct
-        from the "contact" family prefix) had no dispatch branch — only
-        "contact" family was handled, not "surface".
+        from the "contact" family prefix) had no dispatch branch at all — only
+        "contact" was handled — and fell through.
+
+        They were first routed to the contact renderer, which stopped them
+        falling through but made all three engrave as contact.touch. The
+        catalog settles that they are their own signs, each with its own glyph
+        and staff_column, so they now have their own branch. See
+        SurfaceFamilyTest.
         """
         ir = _minimal_ir(symbols=[{
             "symbol_id": "surface.brush",
@@ -348,7 +354,7 @@ class LabanRendererTests(unittest.TestCase):
             "modifiers": {},
         }])
         svg = render_laban_svg(ir)
-        self.assertIn('class="laban-annotation contact"', svg)
+        self.assertIn('class="laban-annotation surface"', svg)
 
     def test_non_header_music_rest_renders_as_music_annotation(self):
         """music.rest.* symbols not used as a measure header (no
@@ -1126,6 +1132,61 @@ class QualityAliasIdentityTest(unittest.TestCase):
         group = re.search(r'<g class="laban-annotation effort"[^>]*>.*?</g>', svg, re.S)
         self.assertIsNotNone(group, "quality did not render as an effort stroke")
         self.assertNotIn("<text", group.group(0))
+
+
+class SurfaceFamilyTest(unittest.TestCase):
+    """surface.* are their own signs, not aliases of contact.*.
+
+    They routed into ``_render_contact_annotation``, where the type comes from
+    parts[1] — for a surface id that is "contact"/"glide"/"brush", so
+    surface.contact hit the touch default and surface.glide with it.
+
+    The catalog settles that they are distinct rather than aliases: each
+    carries its own glyph (U+224B, U+25CD, U+2248) and its own
+    ``staff_column`` of "surface". Where a family really is an alias — quality.*
+    against effort.* — the shared glyph is kept and only the authored id
+    preserved; that is not this case.
+    """
+
+    IDS = ["surface.brush", "surface.contact", "surface.glide"]
+
+    def _markup(self, symbol_id):
+        svg = render_laban_svg(_minimal_ir([{
+            "symbol_id": symbol_id,
+            "body_part": "torso",
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {},
+        }]))
+        i = svg.find(f'data-symbol-id="{symbol_id}"')
+        self.assertNotEqual(i, -1, f"{symbol_id} not rendered")
+        start = svg.rfind("<g", 0, i)
+        return re.sub(r'data-symbol-id="[^"]*"', "",
+                      svg[start:svg.find("</g>", start)])
+
+    def test_the_three_surface_signs_render_distinctly(self):
+        seen = {}
+        for symbol_id in self.IDS:
+            shape = self._markup(symbol_id)
+            clash = seen.get(shape)
+            self.assertIsNone(clash, f"{symbol_id} renders like {clash}")
+            seen[shape] = symbol_id
+
+    def test_a_surface_sign_is_not_a_contact_sign(self):
+        contact = self._markup("contact.touch")
+        for symbol_id in self.IDS:
+            with self.subTest(symbol=symbol_id):
+                self.assertNotEqual(self._markup(symbol_id), contact)
+
+    def test_surface_signs_keep_their_authored_id(self):
+        for symbol_id in self.IDS:
+            with self.subTest(symbol=symbol_id):
+                svg = render_laban_svg(_minimal_ir([{
+                    "symbol_id": symbol_id,
+                    "body_part": "torso",
+                    "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+                    "modifiers": {},
+                }]))
+                self.assertIn(f'data-symbol-id="{symbol_id}"', svg)
 
 
 class SeparatorModeTest(unittest.TestCase):

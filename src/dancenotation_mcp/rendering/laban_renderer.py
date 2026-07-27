@@ -1073,6 +1073,60 @@ def _render_retention_annotation(entry: dict) -> str:
     )
 
 
+def _render_surface_annotation(entry: dict) -> str:
+    """Render a surface sign — contact along a body surface rather than at a
+    point.
+
+    These routed into ``_render_contact_annotation``, where the type comes from
+    parts[1]: for a surface id that is "contact"/"glide"/"brush", so
+    surface.contact hit the touch default and surface.glide with it. The
+    catalog settles that they are their own signs rather than aliases — each
+    carries its own glyph (U+224B, U+25CD, U+2248) and its own staff_column.
+
+    The shared idea is a surface, drawn as a horizontal band; what differs is
+    what happens along it.
+    """
+    symbol = entry["symbol"]
+    symbol_id = symbol.get("symbol_id", "")
+    x = entry["x"]
+    y_top = entry["y_top"]
+    y_bottom = entry["y_bottom"]
+    w = entry["width"]
+    cx = x + w / 2
+    cy = (y_top + y_bottom) / 2
+
+    kind = symbol_id.split(".")[1] if "." in symbol_id else ""
+
+    if kind == "contact":
+        # U+25CD: contact held over the surface — a filled band inside it.
+        body = (f'<rect x="{cx - 7:.1f}" y="{cy - 4:.1f}" width="14" height="8" '
+                f'rx="1.5" fill="none" stroke="#111827" stroke-width="1.3"/>'
+                f'<rect x="{cx - 4:.1f}" y="{cy - 1.5:.1f}" width="8" height="3" '
+                f'fill="#111827"/>')
+    elif kind == "glide":
+        # U+2248: travelling along the surface — two long parallel strokes.
+        body = "".join(
+            f'<line x1="{cx - 7:.1f}" y1="{cy + dy:.1f}" '
+            f'x2="{cx + 7:.1f}" y2="{cy + dy:.1f}" '
+            f'stroke="#111827" stroke-width="1.3"/>'
+            for dy in (-2.5, 2.5))
+    elif kind == "brush":
+        # U+224B: passing across the surface — three short waves.
+        body = "".join(
+            f'<path d="M {cx - 7:.1f} {cy + dy:.1f} '
+            f'Q {cx - 2:.1f} {cy + dy - 2.5:.1f} {cx + 2:.1f} {cy + dy:.1f} '
+            f'Q {cx + 5:.1f} {cy + dy + 2:.1f} {cx + 7:.1f} {cy + dy:.1f}" '
+            f'fill="none" stroke="#111827" stroke-width="1.1"/>'
+            for dy in (-3.5, 0.0, 3.5))
+    else:
+        body = (f'<rect x="{cx - 7:.1f}" y="{cy - 4:.1f}" width="14" height="8" '
+                f'rx="1.5" fill="none" stroke="#111827" stroke-width="1.3"/>')
+
+    return (f'<g class="laban-annotation surface" '
+            f'data-symbol-id="{escape(symbol_id)}" '
+            f'data-surface-kind="{escape(kind)}">{body}</g>')
+
+
 def _render_contact_annotation(entry: dict) -> str:
     """Render ICKL-standard contact symbols (touch, slide, strike, grasp)."""
     symbol = entry["symbol"]
@@ -2561,7 +2615,9 @@ def _render_annotation(entry: dict) -> str:
         return _render_repeat_annotation(entry)
     if family == "retention":
         return _render_retention_annotation(entry)
-    if family in ("contact", "surface"):
+    if family == "surface":
+        return _render_surface_annotation(entry)
+    if family == "contact":
         return _render_contact_annotation(entry)
     if family == "path":
         return _render_path_annotation(entry)
