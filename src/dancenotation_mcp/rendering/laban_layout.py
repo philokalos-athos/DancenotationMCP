@@ -54,7 +54,12 @@ ANNOTATION_GAP = 6
 
 LABAN_SYSTEM_CAPACITY = 8   # measures per system before wrapping
 LABAN_SYSTEM_GAP_X = 40     # horizontal gap (kept for backward compat)
-LABAN_SYSTEM_GAP_Y = 30     # vertical gap between stacked systems
+LABAN_SYSTEM_GAP_Y = 30     # vertical gap between rows of systems
+
+# Height / width of a notation plate, measured on the reference scores:
+# La vivandière pages are 2698x3668 and 2727x3775, both 1 : 1.36-1.38. Systems
+# are packed toward this proportion instead of running off in one direction.
+PAGE_ASPECT = 1.37
 
 STARTING_POSITION_HEIGHT = 60  # vertical space for starting position area
 STARTING_POSITION_GAP = 8     # gap between starting position and measure 1
@@ -312,9 +317,11 @@ def compute_laban_layout(ir: dict) -> dict:
     """Compute full standard Labanotation layout from IR.
 
     When the score has more than ``LABAN_SYSTEM_CAPACITY`` measures the
-    layout wraps into multiple vertically stacked *systems*.  Each system
-    shares the same x-position; earlier measures appear at the top of the
-    page.
+    layout wraps into multiple *systems* laid out left to right across the
+    page, as the reference plates do — La vivandière p91 and p97 each carry
+    two three-line staves side by side. Stacking them instead produced one
+    unbounded column: a 33-measure score came out 360 x 7428, an aspect of
+    1 : 20.6 against the plates' 1 : 1.37.
     """
     catalog = load_symbol_catalog()
     # Fill direction/level from the symbol id where the score left them out —
@@ -333,11 +340,25 @@ def compute_laban_layout(ir: dict) -> dict:
     staff_w = staff_total_width()
     single_system_width = MARGIN_X + annotation_left_width + staff_w + annotation_right_width + MARGIN_X
 
+    # Systems flow left to right, wrapping to a new row when the page runs
+    # out of width. The row count is chosen so the finished canvas is close to
+    # the plates' portrait proportion rather than a strip in either direction.
+    system_h_estimate = (mc / num_systems) * 4.0 * BEAT_HEIGHT
+    per_row = max(1, min(num_systems, round(
+        (num_systems * single_system_width * system_h_estimate * PAGE_ASPECT)
+        ** 0.5 / single_system_width))) if system_h_estimate else num_systems
+
     systems: list[dict] = []
-    y_cursor = MARGIN_Y_TOP + HEADER_HEIGHT  # top of first system's content
+    row_top = MARGIN_Y_TOP + HEADER_HEIGHT   # top of the current row
+    y_cursor = row_top                       # top of this system's content
     for si in range(num_systems):
-        # All systems share the same x position (vertical stacking)
-        s_staff_left = MARGIN_X + annotation_left_width
+        column = si % per_row
+        if column == 0 and si:
+            # New row: drop below the tallest system in the row just finished.
+            row_top = max(x["canvas_bottom"] for x in systems) + LABAN_SYSTEM_GAP_Y
+        y_cursor = row_top
+        s_staff_left = (MARGIN_X + annotation_left_width
+                        + column * single_system_width)
         s_staff_right = s_staff_left + staff_w
         s_col_positions = build_column_positions(s_staff_left)
         # Center line sits between left_support and right_support
@@ -383,12 +404,10 @@ def compute_laban_layout(ir: dict) -> dict:
             "canvas_bottom": canvas_bottom,
         })
 
-        # Advance y_cursor for next system
-        y_cursor = canvas_bottom + LABAN_SYSTEM_GAP_Y
-
-    # Global canvas size — single column width, total stacked height
-    canvas_width = single_system_width
-    canvas_height = max(s["canvas_bottom"] for s in systems)
+    # Global canvas size — as many system columns as the widest row used.
+    columns_used = min(num_systems, per_row)
+    canvas_width = single_system_width * columns_used
+    canvas_height = max(s["canvas_bottom"] for s in systems) + MARGIN_Y_BOTTOM
 
     # Build a merged measure_positions dict for backward-compat (single system)
     merged_measure_positions: dict[int, tuple[float, float]] = {}

@@ -1134,6 +1134,50 @@ class QualityAliasIdentityTest(unittest.TestCase):
         self.assertNotIn("<text", group.group(0))
 
 
+class SystemLayoutTest(unittest.TestCase):
+    """Systems run side by side across the page, not stacked into one column.
+
+    Measured on the reference plates: La vivandière p91 and p97 each carry two
+    three-line staves side by side, and the page is 1 : 1.37 portrait. Stacking
+    every system vertically gave one unbounded column — a 33-measure score came
+    out 360 x 7428, an aspect of 1 : 20.6, which is not a page at all.
+
+    Measure height was already right (about 186px against the plates' ~190 at
+    150dpi); what was wrong was the direction systems flow and how many
+    measures one holds.
+    """
+
+    def _score(self, measures):
+        return _minimal_ir([{
+            "symbol_id": "support.step",
+            "body_part": "left_leg",
+            "direction": "forward",
+            "level": "middle",
+            "timing": {"measure": m, "beat": 1, "duration_beats": 1},
+            "modifiers": {},
+        } for m in range(1, measures + 1)])
+
+    def test_a_long_score_places_systems_side_by_side(self):
+        layout = compute_laban_layout(self._score(33))
+        self.assertGreater(len(layout["systems"]), 1, "score did not wrap")
+        lefts = {round(s["staff_left"], 1) for s in layout["systems"]}
+        self.assertGreater(
+            len(lefts), 1,
+            f"every system sits at the same x ({lefts}) — they are stacked")
+
+    def test_a_long_score_is_not_an_unbounded_column(self):
+        layout = compute_laban_layout(self._score(33))
+        aspect = layout["height"] / layout["width"]
+        self.assertLess(
+            aspect, 4.0,
+            f"canvas is {layout['width']}x{layout['height']} — aspect 1:{aspect:.1f}, "
+            f"the plates are 1:1.37")
+
+    def test_a_short_score_still_gets_one_system(self):
+        layout = compute_laban_layout(self._score(3))
+        self.assertEqual(len(layout["systems"]), 1)
+
+
 class SurfaceFamilyTest(unittest.TestCase):
     """surface.* are their own signs, not aliases of contact.*.
 
