@@ -501,6 +501,10 @@ def compute_laban_layout(ir: dict) -> dict:
                 "y_top": m_top_y - 18,
                 "y_bottom": m_top_y - 4,
                 "system_index": si,
+                # Head-column symbols sit on the centre line, so without this
+                # their captions fell back to "just right of the symbol" and
+                # landed on the staff.
+                "caption_x": s_col_positions[STAFF_COLUMNS[-1]][1] + ANNOTATION_GAP,
             })
             continue
 
@@ -528,6 +532,10 @@ def compute_laban_layout(ir: dict) -> dict:
             "y_top": y_top,
             "y_bottom": y_bottom,
             "system_index": si,
+            # Where a caption for this symbol may be written: clear of the
+            # staff, in the margin, as the plates do. Captions used to be
+            # drawn at the symbol's own x and landed across the notation.
+            "caption_x": s_col_positions[STAFF_COLUMNS[-1]][1] + ANNOTATION_GAP,
         })
 
     # ── Route computation ────────────────────────────────────────────

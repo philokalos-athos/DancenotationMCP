@@ -355,7 +355,7 @@ def _render_separator(entry: dict) -> str:
     return svg
 
 
-def _render_modifier_overlays(svg: str, modifiers: dict,
+def _render_modifier_overlays(svg: str, modifiers: dict, caption_x: float | None,
                               x_left: float, x_right: float,
                               y_top: float, y_bottom: float) -> str:
     """Append modifier visual overlays to an in-progress SVG group string.
@@ -425,11 +425,21 @@ def _render_modifier_overlays(svg: str, modifiers: dict,
             svg += f'<circle cx="{dx:.1f}" cy="{dot_y:.1f}" r="{dot_r}" fill="#111827"/>'
 
     # ── Label ────────────────────────────────────────────────────────
+    # Captions go in the margin, clear of the staff. Drawn at the symbol's own
+    # x they landed across the notation -- in one 33-measure score, 23 of 91
+    # sat inside the staff lines and one exactly on the centre line. The plates
+    # keep this text beside the staff, running vertically (Soirée musicale p58,
+    # "(DRY ELEGANT BOW)"), never over it.
     label = modifiers.get("label")
     if label:
+        if caption_x is None:
+            caption_x = x_right + 8
+        cap_y = (y_top + y_bottom) / 2
         svg += (
-            f'<text x="{cx:.1f}" y="{y_bottom + 10:.1f}" text-anchor="middle" '
-            f'font-size="7" fill="#475569">{escape(label)}</text>'
+            f'<text class="laban-caption" x="{caption_x:.1f}" y="{cap_y:.1f}" '
+            f'text-anchor="start" font-size="7" fill="#475569" '
+            f'transform="rotate(-90, {caption_x:.1f}, {cap_y:.1f})">'
+            f'{escape(label)}</text>'
         )
 
     # ── Source text ──────────────────────────────────────────────────
@@ -596,7 +606,8 @@ def _render_staff_symbol(entry: dict, ctx: _RenderContext,
             f'stroke="#111827" stroke-width="0.8"/>'
             f'<path d="{path_d}" fill="none" stroke="{top_style["stroke"]}" stroke-width="1.5"/>'
         )
-        svg = _render_modifier_overlays(svg, modifiers, x_left, x_right, y_top, y_bottom)
+        svg = _render_modifier_overlays(svg, modifiers, entry.get("caption_x"),
+                                    x_left, x_right, y_top, y_bottom)
         if facing and facing != direction:
             svg += _render_facing_indicator(facing, x_right, y_top, y_bottom)
         svg += '</g>'
@@ -632,7 +643,8 @@ def _render_staff_symbol(entry: dict, ctx: _RenderContext,
                 f'<path d="{path_d}" fill="none" stroke="{style["stroke"]}" '
                 f'stroke-width="3.5" opacity="0.3"{dash_attr}/>'
             )
-    svg = _render_modifier_overlays(svg, modifiers, x_left, x_right, y_top, y_bottom)
+    svg = _render_modifier_overlays(svg, modifiers, entry.get("caption_x"),
+                                    x_left, x_right, y_top, y_bottom)
     svg += _render_body_action_mark(symbol_id, x_left, x_right, y_top, y_bottom)
     if facing and facing != direction:
         svg += _render_facing_indicator(facing, x_right, y_top, y_bottom)

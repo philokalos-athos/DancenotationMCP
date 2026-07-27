@@ -1134,6 +1134,71 @@ class QualityAliasIdentityTest(unittest.TestCase):
         self.assertNotIn("<text", group.group(0))
 
 
+class CaptionPlacementTest(unittest.TestCase):
+    """A caption belongs beside the staff, not across it.
+
+    Captions were drawn at the symbol's own x, so they landed on the staff and
+    over the notation — in one 33-measure score, 23 of 91 sat inside the staff
+    lines, one of them exactly on the centre line.
+
+    The plates put this text in the margin: Soirée musicale p58 runs
+    "(DRY ELEGANT BOW)" vertically beside the staff, and La vivandière keeps
+    dancer identification below it. Nothing is written across the notation.
+    """
+
+    def _svg(self):
+        return render_laban_svg(_minimal_ir([
+            {
+                "symbol_id": "support.step",
+                "body_part": "left_leg",
+                "direction": "forward",
+                "level": "middle",
+                "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+                "modifiers": {"label": "grand plie 2nd"},
+            },
+            {
+                "symbol_id": "support.step",
+                "body_part": "right_leg",
+                "direction": "backward",
+                "level": "low",
+                "timing": {"measure": 1, "beat": 3, "duration_beats": 1},
+                "modifiers": {"label": "flat-back table"},
+            },
+        ]))
+
+    def _staff_bounds(self, svg):
+        xs = sorted({
+            round(float(m.group(1)), 1)
+            for m in re.finditer(
+                r'<line x1="([\d.]+)" y1="([\d.]+)" x2="\1" y2="([\d.]+)"([^>]*)>', svg)
+            if abs(float(m.group(3)) - float(m.group(2))) > 30
+            and "dasharray" not in m.group(4)
+        })
+        self.assertGreaterEqual(len(xs), 3, "staff lines not found")
+        return xs[0], xs[-1]
+
+    def test_no_caption_is_written_across_the_staff(self):
+        svg = self._svg()
+        left, right = self._staff_bounds(svg)
+        # Attribute order is not guaranteed, so match the class anywhere in the
+        # tag rather than assuming x comes first.
+        captions = [
+            (float(re.search(r'\sx="([\d.]+)"', m.group(1)).group(1)), m.group(2))
+            for m in re.finditer(
+                r'<text([^>]*class="laban-caption"[^>]*)>([^<]*)</text>', svg)
+        ]
+        self.assertTrue(captions, "no captions rendered")
+        for x, text in captions:
+            self.assertFalse(
+                left - 2 <= x <= right + 2,
+                f"caption {text!r} sits at x={x}, across the staff ({left}-{right})")
+
+    def test_captions_are_still_rendered(self):
+        svg = self._svg()
+        self.assertIn("grand plie 2nd", svg)
+        self.assertIn("flat-back table", svg)
+
+
 class SystemLayoutTest(unittest.TestCase):
     """Systems run side by side across the page, not stacked into one column.
 
