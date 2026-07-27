@@ -7,21 +7,46 @@ markup (position normalised away) gives the numbers below. Re-measure with the
 same method rather than counting catalog entries — catalog size and rendering
 capability have drifted apart badly, and only the second one is parity.
 
-| Metric | Value |
-|---|---|
-| Catalog symbols | 1122 (now 906 — see cleanup below) |
-| Distinct glyphs actually produced | 159 |
-| Visual collapse ratio | 7.1 symbols per glyph |
-| Symbols whose authored id was lost in the SVG | 8 (all of `quality.*`) |
-
-Largest collision clusters: 157 `support`/`travel`/`gesture` entries share one
-glyph; `jump.assemble.*` collapses to one glyph per level (direction is never
-read by `_render_jump_annotation`); `turn.full.*` likewise, though for turns
-that is arguably correct — a turn's direction is rotational, so the fault there
-is combinatorial catalog entries that do not correspond to real signs.
+| Metric | Baseline | Now |
+|---|---|---|
+| Catalog symbols | 1122 | 906 |
+| Distinct glyphs actually produced | 159 | **207** |
+| Visual collapse ratio | 7.1 : 1 | **4.4 : 1** |
+| Symbols whose authored id was lost in the SVG | 8 | 0 |
 
 Adding a catalog entry raises the first row and not the second. Treat the
 second row as the parity number.
+
+What closed the gap so far was not new geometry but reading information the
+symbol ids already carried and no consumer looked at:
+
+- **direction and level** — 564 ids name a direction, 408 a level, and every
+  consumer read only `symbol["direction"]`. `support.step.backward` engraved as
+  "step in place", silently. Largest cluster 157 → 56.
+- **contact type and surface** — `contact_type` came from the *last* dotted
+  segment, so `contact.grasp.front` resolved to "front" and lost the grasp
+  staple. 38 symbols on one glyph → 38 distinct.
+- **floor-plan sub-family** — `_render_stage_marker` read a `stage_position`
+  field none of these entries carries, so 31 facings, zones, formations and
+  paths all drew one dot and a literal "?".
+
+### Reading the remaining clusters
+
+The clusters left are not all defects, and the next round has to separate two
+cases before touching anything:
+
+- **Renderer drops information** — the three above. Fix these.
+- **The notation genuinely shares a glyph** — `support.balance.backward`,
+  `support.heel.backward` and `gesture.leg.backward` all draw the same
+  direction symbol because in Labanotation the direction symbol encodes
+  direction and level only; heel support, balance and the rest are carried by
+  pre-signs and modifiers attached to it. Forcing these apart would be
+  inventing signs, not reaching parity.
+
+Current largest clusters, unclassified: 56 (`extension`/`flexion` degrees
+sharing a direction glyph), 39 (`body.bend`/`contract`/`release`/`stretch`),
+and a family of 21-symbol clusters, one per direction, of the pre-sign kind
+described above.
 
 This document audits the current symbol and renderer coverage against official LabanWriter categories and update notes.
 
