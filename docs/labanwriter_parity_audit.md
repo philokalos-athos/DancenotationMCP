@@ -193,16 +193,33 @@ Fixed since the baseline measurement:
   family-coverage assertion: a count floor rewards exactly the padding that
   produced those 216 entries.
 
+### Settled: the starting-position area is drawn in solid lines
+
+The plates of `La vivandière` all open mid-piece, so this could not be settled
+there. The OPENING MARCH plate of `Soirée musicale` (p.58) shows it directly,
+on four staves at once:
+
+- The three staff lines **run straight down** past the opening double bar into
+  the starting-position area — it is the staff continuing, not a separate box.
+- A **solid** rule closes the area at the bottom.
+- The starting direction symbols sit inside it, in their normal columns.
+- Below that: the dancer identifier (`N`, `B2`, `B3`, `MN,MC,MT`) and a pin.
+- **Nothing in the area is dashed.**
+
+This renderer drew a dashed rectangle with a dashed centre line through it,
+which reads as a UI affordance rather than notation. Replaced with the three
+staff lines plus a solid closing rule (`StartingPositionAreaTest`).
+
+Note that the second reference score answered in one plate what 188 pages of
+the first could not, because it happens to open with a starting position. Where
+a convention cannot be found, the gap may be in the sample rather than in the
+notation.
+
 Next parity priorities:
-1. Whether a dashed starting-position box belongs in the output at all. It is
-   now sized to the staff rather than overhanging it, but no such box appears
-   on any plate examined — below the staff the plates carry plain dancer
-   identification text centred on the staff. Likely a UI affordance this
-   renderer invented; needs a plate showing the opening of a dance to settle.
-2. Bar lines: the plates show them running staff-line to staff-line with no
+1. Bar lines: the plates show them running staff-line to staff-line with no
    overhang, plus separate dashed segments further out whose meaning was not
    established. We draw a 4px overhang and no dashed segments.
-3. Shift more renderer branching from symbol-id checks to catalog behavior roles.
-4. Add explicit geometry for springs, carets, staples, and retention/cancellation families.
-5. Expand official motif and LMA variants beyond current placeholders.
-6. Add golden SVG fixtures for representative LabanWriter-style examples.
+2. Shift more renderer branching from symbol-id checks to catalog behavior roles.
+3. Add explicit geometry for springs, carets, staples, and retention/cancellation families.
+4. Expand official motif and LMA variants beyond current placeholders.
+5. Add golden SVG fixtures for representative LabanWriter-style examples.

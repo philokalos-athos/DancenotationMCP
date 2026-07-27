@@ -1,11 +1,12 @@
 __pycache__/
 *.py[cod]
 
-# Large reference scan (188-page facsimile source, not project code).
-# Globbed around the accented characters on purpose: the file on disk carries
-# NFD-decomposed names (e + U+0300), while a literal rule typed here is NFC
-# (U+00E8), so a literal match silently never fires.
+# Published reference scores kept in the repo root (100MB+ facsimiles, not
+# project code). Globbed around the accented characters on purpose: the files
+# on disk carry NFD-decomposed names (e + U+0300) while a literal rule typed
+# here is NFC (U+00E8), so a literal match silently never fires.
 La vivandi*re Pas de six*.pdf
+Soir*e musicale.pdf
 
 # Third-party reference publications (~56MB of ICKL proceedings). Fetch with
 # `python references/fetch_ickl.py`; see references/ickl/README.md.

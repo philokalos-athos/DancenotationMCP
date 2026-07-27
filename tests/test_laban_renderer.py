@@ -1128,6 +1128,50 @@ class QualityAliasIdentityTest(unittest.TestCase):
         self.assertNotIn("<text", group.group(0))
 
 
+class StartingPositionAreaTest(unittest.TestCase):
+    """The starting position is drawn as the staff continuing below the opening
+    double bar and closed by a rule at the bottom — all solid lines.
+
+    Verified against the OPENING plate of the Soirée musicale score, where every
+    staff shows the three staff lines running down past the double bar into the
+    starting-position area, a solid closing rule beneath it, and the starting
+    direction symbols inside. Nothing there is dashed; this renderer was drawing
+    a dashed box, which reads as a UI affordance rather than notation.
+    """
+
+    def _svg(self):
+        return render_laban_svg(_minimal_ir())
+
+    def test_starting_position_area_is_not_dashed(self):
+        svg = self._svg()
+        start = svg.find('class="laban-starting-position"')
+        self.assertNotEqual(start, -1, "starting-position area not rendered")
+        block = svg[start:svg.find("</g>", start)]
+        self.assertNotIn("stroke-dasharray", block)
+
+    def test_staff_lines_continue_through_the_starting_position(self):
+        svg = self._svg()
+        start = svg.find('class="laban-starting-position"')
+        block = svg[start:svg.find("</g>", start)]
+        verticals = {
+            round(float(m.group(1)), 1)
+            for m in re.finditer(
+                r'<line x1="([\d.]+)" y1="[\d.]+" x2="\1" y2="[\d.]+', block)
+        }
+        self.assertEqual(len(verticals), 3,
+                         f"expected the three staff lines, got {sorted(verticals)}")
+
+    def test_starting_position_area_is_closed_at_the_bottom(self):
+        svg = self._svg()
+        start = svg.find('class="laban-starting-position"')
+        block = svg[start:svg.find("</g>", start)]
+        horizontals = [
+            m for m in re.finditer(
+                r'<line x1="([\d.]+)" y1="([\d.]+)" x2="([\d.]+)" y2="\2"', block)
+        ]
+        self.assertTrue(horizontals, "no closing rule beneath the starting position")
+
+
 class SupportSymbolTouchesCentreLineTest(unittest.TestCase):
     """A support symbol touches the centre line -- that contact is what marks it
     as a support, so it carries meaning and is not a spacing choice.
@@ -1229,26 +1273,6 @@ class ThreeLineStaffTest(unittest.TestCase):
             self.assertLessEqual(
                 x2 - x1, support_span + 12,
                 f"bar line spans {x2 - x1:.0f}px, staff is only {support_span:.0f}px",
-            )
-
-    def test_starting_position_area_does_not_hang_outside_the_staff(self):
-        # It was sized to the old full-column-extent box and now protrudes far
-        # past the three-line staff. Whether a dashed box belongs here at all is
-        # a separate question (the reference plates examined show no such box);
-        # this only requires it not to overhang.
-        positions = build_column_positions(0.0)
-        support_span = positions["right_support"][1] - positions["left_support"][0]
-        svg = render_laban_svg(_minimal_ir())
-        # The lookbehind matters: without it `width="..."` also matches inside
-        # `stroke-width="1"`, and the assertion silently becomes 1 <= anything.
-        rects = re.findall(
-            r'<rect x="([\d.]+)"[^>]*(?<![-\w])width="([\d.]+)"[^>]*stroke-dasharray',
-            svg)
-        self.assertTrue(rects, "no starting-position area rendered")
-        for _, w in rects:
-            self.assertLessEqual(
-                float(w), support_span + 12,
-                f"starting-position area is {w}px wide, staff is {support_span}px",
             )
 
     def test_gesture_columns_lie_outside_the_staff_lines(self):

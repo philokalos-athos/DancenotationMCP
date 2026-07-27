@@ -2309,24 +2309,29 @@ def render_laban_svg(ir: dict) -> str:
         sp_top = sys.get("starting_pos_top")
         sp_bottom = sys.get("starting_pos_bottom")
         if sp_top is not None and sp_bottom is not None:
-            # Dashed boundary, sized to the staff rather than to every column.
-            # It was inherited from the old full-width staff box and hung far
-            # outside the three-line staff. Note that the reference plates show
-            # no such box at all -- whether it should exist is open; this only
-            # stops it from overhanging.
+            # The starting position is the staff itself continuing below the
+            # opening double bar, closed by a rule at the bottom. All solid:
+            # the OPENING plate of the reference score shows the three staff
+            # lines running straight down past the double bar with a solid
+            # closing rule beneath, and nothing dashed anywhere in the area.
+            # A dashed box reads as a UI affordance, not as notation.
+            elements.append('<g class="laban-starting-position">')
+            for line_x, stroke in (
+                (s_col_positions["left_support"][0], "2"),
+                (s_staff_center_x, "2.5"),
+                (s_col_positions["right_support"][1], "2"),
+            ):
+                elements.append(
+                    f'<line x1="{line_x:.1f}" y1="{sp_top:.1f}" '
+                    f'x2="{line_x:.1f}" y2="{sp_bottom:.1f}" '
+                    f'stroke="#111827" stroke-width="{stroke}"/>'
+                )
             elements.append(
-                f'<rect x="{bar_left:.1f}" y="{sp_top:.1f}" '
-                f'width="{bar_right - bar_left:.1f}" '
-                f'height="{sp_bottom - sp_top:.1f}" '
-                f'fill="none" stroke="#111827" stroke-width="1" '
-                f'stroke-dasharray="4,3"/>'
+                f'<line x1="{bar_left:.1f}" y1="{sp_bottom:.1f}" '
+                f'x2="{bar_right:.1f}" y2="{sp_bottom:.1f}" '
+                f'stroke="#111827" stroke-width="1.2"/>'
             )
-            # Center line extends into starting position
-            elements.append(
-                f'<line x1="{s_staff_center_x:.1f}" y1="{sp_top:.1f}" '
-                f'x2="{s_staff_center_x:.1f}" y2="{sp_bottom:.1f}" '
-                f'stroke="#111827" stroke-width="1.5" stroke-dasharray="4,3"/>'
-            )
+            elements.append('</g>')
 
         # Measure numbers
         for m in range(start_m, end_m + 1):
