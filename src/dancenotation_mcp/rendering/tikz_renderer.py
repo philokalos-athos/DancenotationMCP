@@ -30,8 +30,11 @@ def _escape_tex(text: str) -> str:
     return text
 
 
-# Per the LabanWriter manual: High = striped, Middle = blank/unshaded,
-# Low = solid black. See laban_renderer.py's LEVEL_FILLS for the citation.
+# High = striped, Middle = unshaded body + centre dot, Low = solid black.
+# "Unshaded" (the LabanWriter manual's wording) describes the absence of a fill
+# *pattern*; the middle-level dot is a separate mark drawn on top, as the
+# published plates in the reference score show. See laban_renderer.py's
+# LEVEL_FILLS and docs/labanwriter_parity_audit.md.
 _LEVEL_TIKZ = {
     "high": ("pattern=north east lines, pattern color=gray", "draw=black"),
     "middle": ("white", "draw=black"),
@@ -53,6 +56,7 @@ _TIKZ_PREAMBLE = r"""\documentclass[border=10pt]{standalone}
   bridge line/.style={draw=gray!60, semithick},
   span line/.style={draw=gray!70, semithick},
   body label/.style={font=\tiny\sffamily, text=gray!60},
+  laban level dot/.style={black},
 }
 
 \begin{document}
@@ -277,6 +281,13 @@ def render_tikz(ir: dict) -> str:
         lines.append(f"% {symbol_id} ({body_part}, {direction}, {level})")
         lines.append(f"\\fill[{fill_style}] {path_str};")
         lines.append(f"\\draw[laban shape] {path_str};")
+        # Middle level carries a centre dot on top of the unshaded body. Must
+        # match laban_renderer.py — the same score has to engrave identically
+        # whichever renderer produced it.
+        if level == "middle":
+            lines.append(
+                f"\\fill[laban level dot] {_tikz_coord(x, top + h / 2)} circle (2pt);"
+            )
 
         # Body label
         lines.append(f"\\node[body label, anchor=south] at {_tikz_coord(x, top - 6)} {{{_escape_tex(body_part.replace('_', ' '))}}};")

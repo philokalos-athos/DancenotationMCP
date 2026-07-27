@@ -176,7 +176,9 @@ class LabanRendererTests(unittest.TestCase):
         self.assertIn('fill="#111827"', svg)
 
     def test_level_encoding_middle_is_blank(self):
-        """Per the LabanWriter manual, Middle level is unshaded (no fill pattern)."""
+        """Per the LabanWriter manual, Middle level is unshaded (no fill
+        pattern). That is about the fill only — the centre dot that also marks
+        middle level is a separate mark; see MiddleLevelDotTest."""
         ir = _minimal_ir()
         svg = render_laban_svg(ir)
         self.assertIn('data-level="middle"', svg)
@@ -1088,6 +1090,153 @@ class PlaceholderGeometryTest(unittest.TestCase):
         self.assertIn("foot-hook", hook)
         self.assertIn("foot-position", position)
         self.assertIn("foot-action", action)
+
+
+class QualityAliasIdentityTest(unittest.TestCase):
+    """``quality.<pole>`` ids are aliases of the LMA effort poles and correctly
+    reuse the effort-stroke glyph. The glyph may be shared; the identity may
+    not — the emitted group must still name the symbol the score author wrote,
+    or the SVG cannot be traced back to the IR that produced it."""
+
+    POLES = ("strong", "light", "sudden", "sustained",
+             "direct", "flexible", "bound", "free")
+
+    def _render(self, pole):
+        ir = _minimal_ir([{
+            "symbol_id": f"quality.{pole}",
+            "body_part": "left_arm",
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {},
+        }])
+        return render_laban_svg(ir)
+
+    def test_authored_quality_id_survives_into_the_svg(self):
+        for pole in self.POLES:
+            with self.subTest(pole=pole):
+                self.assertIn(f'data-symbol-id="quality.{pole}"', self._render(pole))
+
+    def test_alias_target_is_recorded_separately(self):
+        # Keeping the effort id as its own attribute preserves the aliasing
+        # information without overwriting the authored identity.
+        self.assertIn('data-effort="weight.strong"', self._render("strong"))
+
+    def test_quality_still_renders_effort_stroke_geometry(self):
+        # The shared glyph is correct and must not regress into a text label.
+        svg = self._render("strong")
+        group = re.search(r'<g class="laban-annotation effort"[^>]*>.*?</g>', svg, re.S)
+        self.assertIsNotNone(group, "quality did not render as an effort stroke")
+        self.assertNotIn("<text", group.group(0))
+
+
+class ThreeLineStaffTest(unittest.TestCase):
+    """A Labanotation staff is three vertical lines: the centre line, plus one
+    line on each side delimiting the two support columns. The gesture, body,
+    arm and path columns lie outside those lines and are *not* boxed in — the
+    staff is open at both sides, never a rectangle enclosing every column."""
+
+    def _vertical_lines(self):
+        """x positions of full-measure-height vertical lines in the staff."""
+        ir = _minimal_ir()
+        svg = render_laban_svg(ir)
+        xs = []
+        for m in re.finditer(
+            r'<line x1="([-\d.]+)" y1="([-\d.]+)" x2="([-\d.]+)" y2="([-\d.]+)"([^/]*)/>',
+            svg,
+        ):
+            x1, y1, x2, y2, rest = m.groups()
+            if abs(float(x1) - float(x2)) < 0.01 and abs(float(y2) - float(y1)) > 30:
+                if "dasharray" not in rest:      # skip starting-position guides
+                    xs.append(round(float(x1), 1))
+        return sorted(set(xs))
+
+    def test_staff_draws_exactly_three_vertical_lines(self):
+        self.assertEqual(len(self._vertical_lines()), 3,
+                         f"got {self._vertical_lines()}")
+
+    def test_outer_staff_lines_sit_on_the_support_column_edges(self):
+        positions = build_column_positions(0.0)
+        left, centre, right = self._vertical_lines()
+        offset = centre - (positions["left_support"][1] + positions["right_support"][0]) / 2
+        self.assertAlmostEqual(left, positions["left_support"][0] + offset, places=1)
+        self.assertAlmostEqual(right, positions["right_support"][1] + offset, places=1)
+
+    def _horizontal_line_spans(self):
+        """(x1, x2) of horizontal rules — bar lines and the double bars."""
+        svg = render_laban_svg(_minimal_ir())
+        spans = []
+        for m in re.finditer(
+            r'<line x1="([-\d.]+)" y1="([-\d.]+)" x2="([-\d.]+)" y2="([-\d.]+)"([^/]*)/>',
+            svg,
+        ):
+            x1, y1, x2, y2, rest = m.groups()
+            if abs(float(y1) - float(y2)) < 0.01 and abs(float(x2) - float(x1)) > 20:
+                spans.append((float(x1), float(x2)))
+        return spans
+
+    def test_bar_lines_do_not_overhang_the_staff(self):
+        # Bar lines cross the staff; they must not stretch across the arm and
+        # path columns, which would re-draw the box the staff lines replaced.
+        positions = build_column_positions(0.0)
+        support_span = positions["right_support"][1] - positions["left_support"][0]
+        self.assertTrue(self._horizontal_line_spans(), "no horizontal rules found")
+        for x1, x2 in self._horizontal_line_spans():
+            self.assertLessEqual(
+                x2 - x1, support_span + 12,
+                f"bar line spans {x2 - x1:.0f}px, staff is only {support_span:.0f}px",
+            )
+
+    def test_gesture_columns_lie_outside_the_staff_lines(self):
+        # The arm/path columns must not be enclosed: if they were, the render
+        # would be a box around all 10 columns rather than a 3-line staff.
+        positions = build_column_positions(0.0)
+        left, _, right = self._vertical_lines()
+        staff_span = right - left
+        support_span = positions["right_support"][1] - positions["left_support"][0]
+        self.assertAlmostEqual(staff_span, support_span, places=1)
+
+
+class MiddleLevelDotTest(unittest.TestCase):
+    """ICKL/LabanWriter encode level on a direction symbol by shading:
+    low = solid black, middle = a dot at the centre, high = diagonal stripes.
+    Middle must not render as a bare unshaded outline — an empty symbol is not
+    a middle-level symbol, it is an unshaded one, and readers cannot tell the
+    two apart."""
+
+    def _symbol_def(self, level, direction="forward"):
+        """Return the <symbol> def markup the renderer emits for direction+level."""
+        ir = _minimal_ir([{
+            "symbol_id": "support.step",
+            "body_part": "left_leg",
+            "direction": direction,
+            "level": level,
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {},
+        }])
+        svg = render_laban_svg(ir)
+        match = re.search(
+            rf'<symbol id="laban-dir-{direction}-{level}".*?</symbol>', svg, re.S)
+        self.assertIsNotNone(
+            match, f"no <symbol> def emitted for {direction}/{level}")
+        return match.group(0)
+
+    def test_middle_level_direction_symbol_carries_centre_dot(self):
+        self.assertIn("<circle", self._symbol_def("middle"))
+
+    def test_low_and_high_levels_carry_no_dot(self):
+        # Low is solid black and high is hatched; a dot on either would be
+        # both invisible and wrong.
+        self.assertNotIn("<circle", self._symbol_def("low"))
+        self.assertNotIn("<circle", self._symbol_def("high"))
+
+    def test_middle_dot_is_filled_solid(self):
+        # An unfilled ring would read as a different sign, not a level dot.
+        dot = re.search(r"<circle[^>]*>", self._symbol_def("middle")).group(0)
+        self.assertIn('fill="#111827"', dot)
+
+    def test_every_direction_gets_the_dot_at_middle_level(self):
+        for direction in ("forward", "backward", "left", "right", "place"):
+            with self.subTest(direction=direction):
+                self.assertIn("<circle", self._symbol_def("middle", direction))
 
 
 if __name__ == "__main__":

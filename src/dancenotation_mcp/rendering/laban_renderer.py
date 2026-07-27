@@ -635,6 +635,7 @@ def _render_quality_annotation(entry: dict) -> str:
         # Reuse the effort-stroke renderer by synthesising the effort id.
         return _render_effort_diamond({
             **entry,
+            "identity_id": symbol_id,
             "symbol": {**symbol, "symbol_id": f"effort.{factor}.{pole}"},
         })
 
@@ -1006,6 +1007,12 @@ def _render_effort_diamond(entry: dict) -> str:
     """
     symbol = entry["symbol"]
     symbol_id = symbol.get("symbol_id", "")
+    # ``symbol_id`` picks the glyph; ``identity_id`` is what gets emitted. They
+    # differ when an alias family borrows this geometry (quality.* are the same
+    # eight signs as the effort poles) — the id the score author wrote has to
+    # survive into the SVG even though the drawing is shared, or the output
+    # cannot be traced back to the IR. See _render_quality_annotation.
+    identity_id = entry.get("identity_id") or symbol_id
     x = entry["x"]
     y_top = entry["y_top"]
     y_bottom = entry["y_bottom"]
@@ -1027,7 +1034,7 @@ def _render_effort_diamond(entry: dict) -> str:
         # Central vertical action stroke
         svg = (
             f'<g class="laban-annotation effort" data-effort="{escape(factor)}.{escape(pole)}" '
-            f'data-symbol-id="{escape(symbol_id)}">'
+            f'data-symbol-id="{escape(identity_id)}">'
             f'<line x1="{cx:.1f}" y1="{cy - s:.1f}" x2="{cx:.1f}" y2="{cy + s:.1f}" '
             f'stroke="#111827" stroke-width="1.4"/>'
         )
@@ -1049,7 +1056,7 @@ def _render_effort_diamond(entry: dict) -> str:
 
     # Diamond outline (aggregate effort graph)
     svg = (
-        f'<g class="laban-annotation effort" data-symbol-id="{escape(symbol_id)}">'
+        f'<g class="laban-annotation effort" data-symbol-id="{escape(identity_id)}">'
         f'<path d="M {cx:.1f} {cy - s:.1f} L {cx + s:.1f} {cy:.1f} '
         f'L {cx:.1f} {cy + s:.1f} L {cx - s:.1f} {cy:.1f} Z" '
         f'fill="none" stroke="#111827" stroke-width="1.2"/>'
@@ -2147,9 +2154,20 @@ def render_laban_svg(ir: dict) -> str:
         vb_x, vb_y = min(xs) - pad, min(ys) - pad
         vb_w = max(xs) - min(xs) + 2 * pad
         vb_h = max(ys) - min(ys) + 2 * pad
+        # Middle level is encoded by a dot at the centre of the shape, not by
+        # leaving it unshaded — an unshaded outline is indistinguishable from
+        # a symbol whose level was never set. Low (solid) and high (hatched)
+        # carry their level in the fill itself and take no dot.
+        dot = ""
+        if lv == "middle":
+            dot = (
+                f'<circle cx="{REF_W / 2:.1f}" cy="{REF_H / 2:.1f}" r="2.5" '
+                f'fill="{LEVEL_FILLS["low"]["fill"]}"/>'
+            )
         symbol_defs.append(
             f'<symbol id="{def_id}" viewBox="{vb_x:.1f} {vb_y:.1f} {vb_w:.1f} {vb_h:.1f}">'
             f'<path d="{path_d}" fill="{style["fill"]}" stroke="{style["stroke"]}" stroke-width="1.5"/>'
+            f'{dot}'
             f'</symbol>'
         )
 
@@ -2201,13 +2219,17 @@ def render_laban_svg(ir: dict) -> str:
             f'data-measures="{start_m}-{end_m}">'
         )
 
-        # Staff outer boundary
-        elements.append(
-            f'<rect x="{s_staff_left:.1f}" y="{staff_visual_top:.1f}" '
-            f'width="{s_staff_right - s_staff_left:.1f}" '
-            f'height="{staff_visual_bottom - staff_visual_top:.1f}" '
-            f'fill="none" stroke="#111827" stroke-width="2"/>'
-        )
+        # Support-column boundaries. These two lines plus the centre line are
+        # *the* Labanotation staff. Everything further out (body, arm, gesture,
+        # path) sits outside the staff and is deliberately not enclosed — a
+        # rectangle around all ten columns reads as a table, not a staff.
+        for boundary_x in (s_col_positions["left_support"][0],
+                           s_col_positions["right_support"][1]):
+            elements.append(
+                f'<line x1="{boundary_x:.1f}" y1="{staff_visual_top:.1f}" '
+                f'x2="{boundary_x:.1f}" y2="{staff_visual_bottom:.1f}" '
+                f'stroke="#111827" stroke-width="2"/>'
+            )
 
         # Center line (bold)
         elements.append(
@@ -2218,21 +2240,27 @@ def render_laban_svg(ir: dict) -> str:
 
         # No column divider lines: per the LabanWriter manual, column guides
         # are on-screen placement aids only ("these dots are guidelines to
-        # show columns. They do not print"). The staff prints only its outer
-        # box, center line, and measure lines.
+        # show columns. They do not print"). The staff prints only its three
+        # vertical lines and its measure lines.
+
+        # Bar lines cross the staff itself with a small overhang, not the full
+        # column extent — the arm/gesture/path columns are outside the staff.
+        BAR_OVERHANG = 4
+        bar_left = s_col_positions["left_support"][0] - BAR_OVERHANG
+        bar_right = s_col_positions["right_support"][1] + BAR_OVERHANG
 
         # Measure bar lines
         for m in range(start_m, end_m + 1):
             m_bottom, m_top = s_measure_positions[m]
             elements.append(
-                f'<line x1="{s_staff_left:.1f}" y1="{m_bottom:.1f}" '
-                f'x2="{s_staff_right:.1f}" y2="{m_bottom:.1f}" '
+                f'<line x1="{bar_left:.1f}" y1="{m_bottom:.1f}" '
+                f'x2="{bar_right:.1f}" y2="{m_bottom:.1f}" '
                 f'stroke="#111827" stroke-width="1.2"/>'
             )
             if m == end_m:
                 elements.append(
-                    f'<line x1="{s_staff_left:.1f}" y1="{m_top:.1f}" '
-                    f'x2="{s_staff_right:.1f}" y2="{m_top:.1f}" '
+                    f'<line x1="{bar_left:.1f}" y1="{m_top:.1f}" '
+                    f'x2="{bar_right:.1f}" y2="{m_top:.1f}" '
                     f'stroke="#111827" stroke-width="1.2"/>'
                 )
 
@@ -2250,26 +2278,26 @@ def render_laban_svg(ir: dict) -> str:
         # Starting double bar: thick (outer) + thin (inner) at bottom of system
         bottom_y = s_measure_positions[start_m][0]
         elements.append(
-            f'<line x1="{s_staff_left:.1f}" y1="{bottom_y + 4:.1f}" '
-            f'x2="{s_staff_right:.1f}" y2="{bottom_y + 4:.1f}" '
+            f'<line x1="{bar_left:.1f}" y1="{bottom_y + 4:.1f}" '
+            f'x2="{bar_right:.1f}" y2="{bottom_y + 4:.1f}" '
             f'stroke="#111827" stroke-width="3"/>'
         )
         elements.append(
-            f'<line x1="{s_staff_left:.1f}" y1="{bottom_y + 1:.1f}" '
-            f'x2="{s_staff_right:.1f}" y2="{bottom_y + 1:.1f}" '
+            f'<line x1="{bar_left:.1f}" y1="{bottom_y + 1:.1f}" '
+            f'x2="{bar_right:.1f}" y2="{bottom_y + 1:.1f}" '
             f'stroke="#111827" stroke-width="1"/>'
         )
 
         # Ending double bar: thin + thick at top of last measure
         top_y = s_measure_positions[end_m][1]
         elements.append(
-            f'<line x1="{s_staff_left:.1f}" y1="{top_y - 1:.1f}" '
-            f'x2="{s_staff_right:.1f}" y2="{top_y - 1:.1f}" '
+            f'<line x1="{bar_left:.1f}" y1="{top_y - 1:.1f}" '
+            f'x2="{bar_right:.1f}" y2="{top_y - 1:.1f}" '
             f'stroke="#111827" stroke-width="1"/>'
         )
         elements.append(
-            f'<line x1="{s_staff_left:.1f}" y1="{top_y - 4:.1f}" '
-            f'x2="{s_staff_right:.1f}" y2="{top_y - 4:.1f}" '
+            f'<line x1="{bar_left:.1f}" y1="{top_y - 4:.1f}" '
+            f'x2="{bar_right:.1f}" y2="{top_y - 4:.1f}" '
             f'stroke="#111827" stroke-width="3"/>'
         )
 

@@ -156,5 +156,37 @@ class TikZRendererTests(unittest.TestCase):
         self.assertEqual(len(paths), len(directions), "Some directions produce identical TikZ paths")
 
 
+class TikZLevelParityWithSvgTest(unittest.TestCase):
+    """Both renderers must encode level identically. "Unshaded" describes the
+    absence of a fill *pattern*; the middle-level centre dot is a separate mark
+    and both outputs need it, or the same score engraves differently depending
+    on which tool the user reached for."""
+
+    def _tikz(self, level):
+        ir = {
+            "metadata": {"title": "T", "ir_version": "0.1.0", "schema_version": "0.1.0"},
+            "symbols": [{
+                "symbol_id": "support.step",
+                "body_part": "left_leg",
+                "direction": "forward",
+                "level": level,
+                "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+                "modifiers": {},
+            }],
+        }
+        return render_tikz(ir)
+
+    # Match the \fill command, not the tikzset style definition — the style is
+    # declared in every preamble regardless of what the score contains.
+    DOT_CMD = r"\fill[laban level dot]"
+
+    def test_middle_level_draws_a_centre_dot(self):
+        self.assertIn(self.DOT_CMD, self._tikz("middle"))
+
+    def test_low_and_high_levels_draw_no_dot(self):
+        self.assertNotIn(self.DOT_CMD, self._tikz("low"))
+        self.assertNotIn(self.DOT_CMD, self._tikz("high"))
+
+
 if __name__ == "__main__":
     unittest.main()
