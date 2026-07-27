@@ -1128,6 +1128,60 @@ class QualityAliasIdentityTest(unittest.TestCase):
         self.assertNotIn("<text", group.group(0))
 
 
+class BarLineTest(unittest.TestCase):
+    """A measure line is solid across the staff and dashed outside it.
+
+    Verified at high magnification on the OPENING MARCH plate of Soirée
+    musicale: the rule is solid between the outer staff lines, stops exactly on
+    them with no overhang, and continues outward on both sides as a dashed line.
+    The dashed part is a time reference — on that plate it runs the full page
+    width, tying the same count across four dancers' staves and out to the count
+    numbers in the margin.
+
+    How far it should reach is layout-dependent and was not measurable to a
+    constant (staff detection was unreliable across plates and the answer
+    differs between single- and multi-staff pages), so we run it to the notation
+    column extent: everything drawn at that moment in time.
+    """
+
+    def _render(self):
+        svg = render_laban_svg(_minimal_ir())
+        horizontals = [
+            (float(a), float(b), "dasharray" in rest)
+            for a, _, b, rest in re.findall(
+                r'<line x1="([\d.]+)" y1="([\d.]+)" x2="([\d.]+)" y2="\2"([^>]*)>', svg)
+        ]
+        # Staff position must come from the render, not from
+        # build_column_positions(0.0) -- the staff is laid out at an offset.
+        verticals = sorted({
+            round(float(m.group(1)), 1)
+            for m in re.finditer(
+                r'<line x1="([\d.]+)" y1="([\d.]+)" x2="\1" y2="([\d.]+)"([^>]*)>', svg)
+            if abs(float(m.group(3)) - float(m.group(2))) > 30
+            and "dasharray" not in m.group(4)
+        })
+        return horizontals, verticals[0], verticals[-1]
+
+    def test_solid_measure_rule_stops_on_the_outer_staff_lines(self):
+        horizontals, left, right = self._render()
+        solid = [h for h in horizontals if not h[2]]
+        self.assertTrue(solid, "no solid horizontal rules rendered")
+        for x1, x2, _ in solid:
+            self.assertGreaterEqual(round(x1, 1), left - 0.1,
+                                    f"rule starts at {x1}, staff starts at {left}")
+            self.assertLessEqual(round(x2, 1), right + 0.1,
+                                 f"rule ends at {x2}, staff ends at {right}")
+
+    def test_measure_rule_continues_outside_the_staff_as_dashes(self):
+        horizontals, left, right = self._render()
+        dashed = [h for h in horizontals if h[2]]
+        self.assertTrue(dashed, "no dashed measure-line extensions rendered")
+        self.assertTrue(any(x2 <= left + 0.1 for x1, x2, _ in dashed),
+                        f"no dashed extension left of {left}: {dashed}")
+        self.assertTrue(any(x1 >= right - 0.1 for x1, x2, _ in dashed),
+                        f"no dashed extension right of {right}: {dashed}")
+
+
 class StartingPositionAreaTest(unittest.TestCase):
     """The starting position is drawn as the staff continuing below the opening
     double bar and closed by a rule at the bottom — all solid lines.
@@ -1250,8 +1304,13 @@ class ThreeLineStaffTest(unittest.TestCase):
         self.assertAlmostEqual(left, positions["left_support"][0] + offset, places=1)
         self.assertAlmostEqual(right, positions["right_support"][1] + offset, places=1)
 
-    def _horizontal_line_spans(self):
-        """(x1, x2) of horizontal rules — bar lines and the double bars."""
+    def _horizontal_line_spans(self, dashed=False):
+        """(x1, x2) of horizontal rules, solid by default.
+
+        The dashed measure-line extensions legitimately reach past the staff to
+        the notation column extent, so a span check on every horizontal rule
+        would flag them; pass dashed=True to look at those instead.
+        """
         svg = render_laban_svg(_minimal_ir())
         spans = []
         for m in re.finditer(
@@ -1260,16 +1319,21 @@ class ThreeLineStaffTest(unittest.TestCase):
         ):
             x1, y1, x2, y2, rest = m.groups()
             if abs(float(y1) - float(y2)) < 0.01 and abs(float(x2) - float(x1)) > 20:
-                spans.append((float(x1), float(x2)))
+                if ("dasharray" in rest) == dashed:
+                    spans.append((float(x1), float(x2)))
         return spans
 
-    def test_bar_lines_do_not_overhang_the_staff(self):
-        # Bar lines cross the staff; they must not stretch across the arm and
-        # path columns, which would re-draw the box the staff lines replaced.
+    def test_solid_bar_lines_do_not_overhang_the_staff(self):
+        # The solid part of a measure line crosses the staff and stops on the
+        # outer staff lines. It must not stretch across the arm and path
+        # columns, which would re-draw the box the staff lines replaced.
+        # (The *dashed* extension does reach that far, by design — see
+        # BarLineTest.)
         positions = build_column_positions(0.0)
         support_span = positions["right_support"][1] - positions["left_support"][0]
-        self.assertTrue(self._horizontal_line_spans(), "no horizontal rules found")
-        for x1, x2 in self._horizontal_line_spans():
+        spans = self._horizontal_line_spans()
+        self.assertTrue(spans, "no solid horizontal rules found")
+        for x1, x2 in spans:
             self.assertLessEqual(
                 x2 - x1, support_span + 12,
                 f"bar line spans {x2 - x1:.0f}px, staff is only {support_span:.0f}px",

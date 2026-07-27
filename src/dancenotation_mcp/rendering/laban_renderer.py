@@ -2247,26 +2247,39 @@ def render_laban_svg(ir: dict) -> str:
         # show columns. They do not print"). The staff prints only its three
         # vertical lines and its measure lines.
 
-        # Bar lines cross the staff itself with a small overhang, not the full
-        # column extent — the arm/gesture/path columns are outside the staff.
-        BAR_OVERHANG = 4
-        bar_left = s_col_positions["left_support"][0] - BAR_OVERHANG
-        bar_right = s_col_positions["right_support"][1] + BAR_OVERHANG
+        # A measure line is solid across the staff, stopping exactly on the
+        # outer staff lines, and continues outward on both sides as a dashed
+        # time reference. On the reference plates that dashed part ties the
+        # same count across every staff on the page and out to the count
+        # numbers in the margin, so here it runs to the notation column extent
+        # -- everything drawn at that moment.
+        bar_left = s_col_positions["left_support"][0]
+        bar_right = s_col_positions["right_support"][1]
+        ext_left = s_col_positions[STAFF_COLUMNS[0]][0]
+        ext_right = s_col_positions[STAFF_COLUMNS[-1]][1]
+
+        def _measure_rule(y: float) -> list[str]:
+            parts = [
+                f'<line x1="{bar_left:.1f}" y1="{y:.1f}" '
+                f'x2="{bar_right:.1f}" y2="{y:.1f}" '
+                f'stroke="#111827" stroke-width="1.2"/>'
+            ]
+            for x1, x2 in ((ext_left, bar_left), (bar_right, ext_right)):
+                if x2 - x1 > 1:
+                    parts.append(
+                        f'<line x1="{x1:.1f}" y1="{y:.1f}" '
+                        f'x2="{x2:.1f}" y2="{y:.1f}" '
+                        f'stroke="#111827" stroke-width="1" '
+                        f'stroke-dasharray="5,4"/>'
+                    )
+            return parts
 
         # Measure bar lines
         for m in range(start_m, end_m + 1):
             m_bottom, m_top = s_measure_positions[m]
-            elements.append(
-                f'<line x1="{bar_left:.1f}" y1="{m_bottom:.1f}" '
-                f'x2="{bar_right:.1f}" y2="{m_bottom:.1f}" '
-                f'stroke="#111827" stroke-width="1.2"/>'
-            )
+            elements.extend(_measure_rule(m_bottom))
             if m == end_m:
-                elements.append(
-                    f'<line x1="{bar_left:.1f}" y1="{m_top:.1f}" '
-                    f'x2="{bar_right:.1f}" y2="{m_top:.1f}" '
-                    f'stroke="#111827" stroke-width="1.2"/>'
-                )
+                elements.extend(_measure_rule(m_top))
 
             # Beat tick marks
             measure_h = m_bottom - m_top
