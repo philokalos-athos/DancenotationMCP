@@ -107,14 +107,20 @@ BODY_TO_COLUMN = {
 }
 
 # Symbol families placed inside the main staff columns.
-PRIMARY_FAMILIES = {"support", "direction", "gesture", "body", "flexion"}
+PRIMARY_FAMILIES = {"support", "direction", "gesture", "body"}
 
 # Symbol families placed in annotation areas beside the staff.
 ANNOTATION_FAMILIES = {"turn", "jump", "path", "quality", "timing",
                        "level", "surface", "pin", "repeat", "music",
                        "retention", "contact", "effort", "shape",
                        "floor_plan", "sequential", "bow", "dynamic",
-                       "adlib", "motif", "foothook", "digit"}
+                       "adlib", "motif", "foothook", "digit",
+                       # Flexion and extension are marks applied to a limb, not
+                       # direction symbols. "extension" was in neither set, so
+                       # _resolve_column fell through to the body-part mapping
+                       # and all 54 entries engraved as `place` direction
+                       # symbols on the staff.
+                       "flexion", "extension"}
 
 # Annotation side preference (left or right of staff).
 ANNOTATION_SIDE = {

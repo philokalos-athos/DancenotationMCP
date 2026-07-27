@@ -1128,6 +1128,63 @@ class QualityAliasIdentityTest(unittest.TestCase):
         self.assertNotIn("<text", group.group(0))
 
 
+class FlexionExtensionRoutingTest(unittest.TestCase):
+    """Flexion and extension marks are annotation signs, not direction symbols.
+
+    ``_symbol_family("extension.ankle.45")`` is "extension", which appears in
+    neither PRIMARY_FAMILIES nor ANNOTATION_FAMILIES, so ``_resolve_column``
+    fell through to the body-part mapping and all 54 catalog entries were drawn
+    on the staff as ``place``-``middle`` direction symbols — the wrong sign
+    entirely. ``_render_flexion_symbol`` was dead code for every one of them.
+
+    The degree is in the id (``.45``/``.90``/``.full``), which the renderer also
+    never read: it took degree from modifiers only.
+    """
+
+    def _markup(self, symbol_id, body_part="left_leg", **extra):
+        symbol = {
+            "symbol_id": symbol_id,
+            "body_part": body_part,
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {},
+        }
+        symbol.update(extra)
+        svg = render_laban_svg(_minimal_ir([symbol]))
+        i = svg.find(f'data-symbol-id="{symbol_id}"')
+        self.assertNotEqual(i, -1, f"{symbol_id} not rendered")
+        start = svg.rfind("<g", 0, i)
+        markup = svg[start:svg.find("</g>", start)]
+        # Strip the id, or every comparison below passes trivially: two symbols
+        # drawn identically still differ by their data-symbol-id.
+        return re.sub(r'data-symbol-id="[^"]*"', "", markup)
+
+    def test_flexion_marks_are_not_drawn_as_direction_symbols(self):
+        for symbol_id in ("flexion.knee.90", "extension.ankle.45",
+                          "flexion.elbow.full", "extension.spine.90"):
+            with self.subTest(symbol=symbol_id):
+                markup = self._markup(symbol_id)
+                self.assertNotIn("laban-dir-", markup,
+                                 "drawn as a direction glyph")
+                self.assertIn("laban-annotation flexion", markup)
+
+    def test_degree_comes_from_the_id(self):
+        shapes = {
+            degree: self._markup(f"flexion.knee.{degree}")
+            for degree in ("45", "90", "full")
+        }
+        self.assertEqual(len(set(shapes.values())), 3,
+                         f"degrees render alike: {list(shapes)}")
+
+    def test_flexion_and_extension_of_the_same_joint_differ(self):
+        self.assertNotEqual(self._markup("flexion.knee.90"),
+                            self._markup("extension.knee.90"))
+
+    def test_explicit_degree_modifier_still_wins(self):
+        by_id = self._markup("flexion.knee.45")
+        overridden = self._markup("flexion.knee.45", modifiers={"degree": 3})
+        self.assertNotEqual(by_id, overridden)
+
+
 class ContactSymbolIdParsingTest(unittest.TestCase):
     """A contact id names two things — the contact type and, optionally, the
     body surface — and both must reach the drawing.

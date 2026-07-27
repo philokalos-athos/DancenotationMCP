@@ -988,6 +988,10 @@ def _render_contact_annotation(entry: dict) -> str:
     )
 
 
+# Degree as named by the last id segment. One hook set per degree.
+_FLEXION_DEGREES = {"45": 1, "90": 2, "full": 3}
+
+
 def _render_flexion_symbol(entry: dict) -> str:
     """Render ICKL-standard flexion/extension marks with hooked X arms.
 
@@ -1007,7 +1011,12 @@ def _render_flexion_symbol(entry: dict) -> str:
     cy = (y_top + y_bottom) / 2
 
     modifiers = symbol.get("modifiers", {})
-    degree = max(1, min(int(modifiers.get("degree", 1)), 3))
+    # The degree is the id's last segment (.45/.90/.full); it was read from
+    # modifiers only, so every degree of a joint drew the same mark. An
+    # explicit modifier still wins.
+    id_degree = _FLEXION_DEGREES.get(symbol_id.rsplit(".", 1)[-1])
+    degree = modifiers.get("degree", id_degree if id_degree is not None else 1)
+    degree = max(1, min(int(degree), 3))
     is_extension = "extension" in symbol_id
 
     arm_len = 6
@@ -2048,7 +2057,7 @@ def _render_annotation(entry: dict) -> str:
         return _render_adlib_annotation(entry)
     if family == "motif":
         return _render_motif_annotation(entry)
-    if family == "flexion":
+    if family in ("flexion", "extension"):
         return _render_flexion_symbol(entry)
     if family == "shape":
         return _render_shape_symbol(entry)
