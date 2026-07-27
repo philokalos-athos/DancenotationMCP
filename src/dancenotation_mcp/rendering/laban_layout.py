@@ -27,7 +27,12 @@ MARGIN_Y_BOTTOM = 40
 HEADER_HEIGHT = 40
 
 COL_WIDTH = 20  # default fallback; per-column widths below override this
-CENTER_GAP = 4
+# The support columns abut the centre line with no gap: a support symbol
+# touching the centre line is what marks it as a support, so the contact
+# carries meaning. Measured over 57 plates of the reference score, 88% of
+# direction-sized symbols touch it, and symbols narrower than their column
+# keep that contact and open the gap on the outer side instead.
+CENTER_GAP = 0
 
 # ICKL-standard column widths: support widest, body medium, arm/gesture/path narrow
 COLUMN_WIDTHS = {

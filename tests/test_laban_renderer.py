@@ -1128,6 +1128,52 @@ class QualityAliasIdentityTest(unittest.TestCase):
         self.assertNotIn("<text", group.group(0))
 
 
+class SupportSymbolTouchesCentreLineTest(unittest.TestCase):
+    """A support symbol touches the centre line -- that contact is what marks it
+    as a support, so it carries meaning and is not a spacing choice.
+
+    Measured over 57 notation plates of the reference score (397 direction-sized
+    components): median width 100% of the column, 88% touching the centre line,
+    and when a symbol is narrower than its column the gap opens on the *outer*
+    side (p90 41%) not the centre side (p90 15%). See
+    docs/labanwriter_parity_audit.md.
+    """
+
+    def _placed(self, body_part="right_leg"):
+        ir = _minimal_ir([{
+            "symbol_id": "support.step",
+            "body_part": body_part,
+            "direction": "forward",
+            "level": "low",
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {},
+        }])
+        svg = render_laban_svg(ir)
+        use = re.search(
+            r'<use [^>]*x="([\d.]+)"[^>]*width="([\d.]+)"[^>]*/>', svg)
+        self.assertIsNotNone(use, "no <use> emitted for the support symbol")
+        x, w = float(use.group(1)), float(use.group(2))
+        centre = float(re.search(
+            r'<line x1="([\d.]+)" y1="[\d.]+" x2="\1" y2="[\d.]+" '
+            r'stroke="#111827" stroke-width="2.5"/>', svg).group(1))
+        return x, w, centre
+
+    def test_right_support_symbol_starts_at_the_centre_line(self):
+        x, _, centre = self._placed("right_leg")
+        self.assertAlmostEqual(x, centre, delta=1.5,
+                               msg=f"symbol starts at {x}, centre line at {centre}")
+
+    def test_left_support_symbol_ends_at_the_centre_line(self):
+        x, w, centre = self._placed("left_leg")
+        self.assertAlmostEqual(x + w, centre, delta=1.5,
+                               msg=f"symbol ends at {x + w}, centre line at {centre}")
+
+    def test_support_symbol_spans_the_full_column_width(self):
+        from dancenotation_mcp.rendering.laban_layout import COLUMN_WIDTHS
+        _, w, _ = self._placed("right_leg")
+        self.assertAlmostEqual(w, COLUMN_WIDTHS["right_support"], delta=0.5)
+
+
 class ThreeLineStaffTest(unittest.TestCase):
     """A Labanotation staff is three vertical lines: the centre line, plus one
     line on each side delimiting the two support columns. The gesture, body,

@@ -138,8 +138,41 @@ Verified against the plates so far:
   out are separate dashed segments. We currently draw a 4px overhang and no
   dashed segments. The dashed marks' meaning was not established — do not
   imitate them without reading the score properly first.
-- Whether direction symbols fill the support column edge-to-edge could not be
-  settled from the plates examined; unresolved.
+- Direction symbols fill the support column and abut the centre line —
+  **settled**, see below.
+
+### Settled: symbols abut the centre line
+
+Eyeballing the plates could not resolve this, so it was measured. Staff lines
+were located by column-wise dark-pixel analysis (they are the only near-full
+height vertical strokes), symbols were isolated as connected components, and
+each component's horizontal extent compared to its column bounds. 57 plates,
+397 direction-sized components:
+
+| Measurement | Result |
+|---|---|
+| Symbol width as % of column | median **100%** |
+| Components spanning >95% of the column | 72% |
+| Components touching the **centre** line (<2% gap) | **88%** |
+| Components touching the outer line (<2% gap) | 79% |
+| Gap to centre line | median 0%, p90 **14.7%** |
+| Gap to outer line | median 0%, p90 **41.2%** |
+
+The asymmetry in the last two rows is the actual rule: when a symbol is
+narrower than its column it keeps contact with the centre line and opens the
+gap on the *outer* side. That follows from the semantics — a support symbol
+touching the centre line is what marks it as a support, so the contact carries
+meaning and is not a spacing choice.
+
+The renderer had this backwards (3px off the centre, 1px off the outer) with a
+4px `CENTER_GAP` holding symbols away from a line they must touch. Fixed:
+`CENTER_GAP` is 0 and staff symbols carry no horizontal padding
+(`SupportSymbolTouchesCentreLineTest`).
+
+Note on method: a naive row-scan cannot settle this, because a bar line
+crossing the staff produces the same edge-to-edge ink signature as a symbol
+filling the column. Connected components are required. Plates where staff
+detection returned unequal columns were discarded rather than averaged in.
 
 Fixed since the baseline measurement:
 - Middle level now renders as a centre dot rather than an unshaded outline, so
@@ -161,8 +194,12 @@ Fixed since the baseline measurement:
   produced those 216 entries.
 
 Next parity priorities:
-1. Settle the symbol-fills-column question against the reference plates.
-2. Shift more renderer branching from symbol-id checks to catalog behavior roles.
+1. The starting-position area is still drawn at the pre-three-line-staff width
+   and now hangs well outside the staff.
+2. Bar lines: the plates show them running staff-line to staff-line with no
+   overhang, plus separate dashed segments further out whose meaning was not
+   established. We draw a 4px overhang and no dashed segments.
+3. Shift more renderer branching from symbol-id checks to catalog behavior roles.
 4. Add explicit geometry for springs, carets, staples, and retention/cancellation families.
 5. Expand official motif and LMA variants beyond current placeholders.
 6. Add golden SVG fixtures for representative LabanWriter-style examples.

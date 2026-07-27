@@ -377,8 +377,12 @@ def _render_staff_symbol(entry: dict, ctx: _RenderContext,
     symbol_id = symbol.get("symbol_id", "")
     facing = symbol.get("facing")
 
-    x_left = entry["x_left"] + 1   # small padding
-    x_right = entry["x_right"] - 1
+    # No horizontal padding: a direction symbol spans its column edge to edge
+    # (median 100% of column width across the reference plates), and in the
+    # support columns its inner edge must land on the centre line. Vertical
+    # padding stays -- consecutive symbols in time need to read as separate.
+    x_left = entry["x_left"]
+    x_right = entry["x_right"]
     y_top = entry["y_top"] + 1
     y_bottom = entry["y_bottom"] - 1
 
