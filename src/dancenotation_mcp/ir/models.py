@@ -38,6 +38,48 @@ DIRECTIONS = [
     "diagonal_backward_right", "diagonal_backward_left",
 ]
 
+LEVELS = ["high", "middle", "low"]
+
+_DIRECTION_TOKENS = frozenset(DIRECTIONS)
+_LEVEL_TOKENS = frozenset(LEVELS)
+
+
+def direction_and_level_from_id(symbol_id: str) -> tuple[str | None, str | None]:
+    """Return the (direction, level) a dotted symbol id names, if any.
+
+    564 of the 906 catalog ids encode a direction and 408 a level
+    (``support.step.backward``, ``gesture.arm.forward.high``), and the
+    list_symbols → insert_symbol workflow hands those ids straight into a
+    score. Consumers that read only ``symbol["direction"]`` therefore saw
+    nothing and fell back to ``place`` — a score saying "step backward"
+    engraved as "step in place", silently.
+
+    Only whole dot-separated segments count, so ``floor.facing.stage_left``
+    and ``body.left_shoulder`` are not mistaken for a ``left`` direction.
+    """
+    direction = level = None
+    for token in symbol_id.split("."):
+        if direction is None and token in _DIRECTION_TOKENS:
+            direction = token
+        elif level is None and token in _LEVEL_TOKENS:
+            level = token
+    return direction, level
+
+
+def resolve_direction_and_level(symbol: dict) -> tuple[str | None, str | None]:
+    """(direction, level) for a raw IR symbol, filling gaps from its id.
+
+    Explicit IR fields always win; the id is only consulted for what the
+    symbol does not state.
+    """
+    direction = symbol.get("direction")
+    level = symbol.get("level")
+    if direction and level:
+        return direction, level
+    implied_direction, implied_level = direction_and_level_from_id(
+        symbol.get("symbol_id", ""))
+    return direction or implied_direction, level or implied_level
+
 # ── Stage zones ──────────────────────────────────────────────────────
 
 STAGE_ZONES = [

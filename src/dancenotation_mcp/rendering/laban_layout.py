@@ -13,6 +13,7 @@ from __future__ import annotations
 from math import ceil
 
 from dancenotation_mcp.ir.catalog import load_symbol_catalog
+from dancenotation_mcp.ir.models import resolve_direction_and_level
 from dancenotation_mcp.ir.time_signatures import (
     DEFAULT_BEATS_PER_MEASURE,
     beats_for_measure,
@@ -278,6 +279,19 @@ def _system_for_measure(m: int) -> int:
     return (m - 1) // LABAN_SYSTEM_CAPACITY
 
 
+def _with_resolved_direction(symbol: dict) -> dict:
+    """Copy of ``symbol`` with direction/level filled in from its id."""
+    direction, level = resolve_direction_and_level(symbol)
+    if direction == symbol.get("direction") and level == symbol.get("level"):
+        return symbol
+    resolved = dict(symbol)
+    if direction is not None:
+        resolved["direction"] = direction
+    if level is not None:
+        resolved["level"] = level
+    return resolved
+
+
 def compute_laban_layout(ir: dict) -> dict:
     """Compute full standard Labanotation layout from IR.
 
@@ -287,7 +301,10 @@ def compute_laban_layout(ir: dict) -> dict:
     page.
     """
     catalog = load_symbol_catalog()
-    symbols = ir.get("symbols", [])
+    # Fill direction/level from the symbol id where the score left them out —
+    # most catalog ids name both, and without this a "support.step.backward"
+    # engraves as "place". Copies, so the caller's IR is not mutated.
+    symbols = [_with_resolved_direction(s) for s in ir.get("symbols", [])]
     beats_map = build_measure_beats_map(ir)
     mc = measure_count(symbols, beats_map)
 

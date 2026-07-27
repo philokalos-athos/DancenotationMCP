@@ -1128,6 +1128,52 @@ class QualityAliasIdentityTest(unittest.TestCase):
         self.assertNotIn("<text", group.group(0))
 
 
+class DirectionImpliedBySymbolIdTest(unittest.TestCase):
+    """A symbol id that names a direction must render as that direction.
+
+    564 of the 906 catalog ids encode one (`support.step.backward`), and the
+    list_symbols → insert_symbol workflow hands those ids straight to the score.
+    Without inference the renderer fell back to the `place` glyph: a score that
+    says "step backward" engraved as "step in place", silently and with no
+    diagnostic. Explicit IR fields always win over the id.
+    """
+
+    def _glyph(self, symbol_id, **extra):
+        symbol = {
+            "symbol_id": symbol_id,
+            "body_part": "left_leg",
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {},
+        }
+        symbol.update(extra)
+        svg = render_laban_svg(_minimal_ir([symbol]))
+        m = re.search(r'<use href="#laban-dir-([a-z_]+)-([a-z]+)"', svg)
+        self.assertIsNotNone(m, f"no direction glyph emitted for {symbol_id}")
+        return m.group(1), m.group(2)
+
+    def test_direction_in_the_id_is_used_when_the_ir_omits_it(self):
+        for symbol_id, expected in (
+            ("support.step.backward", "backward"),
+            ("support.step.forward", "forward"),
+            ("support.balance.diagonal_backward_left", "diagonal_backward_left"),
+            ("gesture.arm.forward.high", "forward"),
+        ):
+            with self.subTest(symbol=symbol_id):
+                self.assertEqual(self._glyph(symbol_id)[0], expected)
+
+    def test_level_in_the_id_is_used_when_the_ir_omits_it(self):
+        self.assertEqual(self._glyph("support.step.forward.low")[1], "low")
+        self.assertEqual(self._glyph("gesture.arm.forward.high")[1], "high")
+
+    def test_explicit_ir_fields_win_over_the_id(self):
+        direction, level = self._glyph(
+            "support.step.backward", direction="forward", level="low")
+        self.assertEqual((direction, level), ("forward", "low"))
+
+    def test_ids_naming_no_direction_still_fall_back_to_place(self):
+        self.assertEqual(self._glyph("support.step")[0], "place")
+
+
 class BarLineTest(unittest.TestCase):
     """A measure line is solid across the staff and dashed outside it.
 
