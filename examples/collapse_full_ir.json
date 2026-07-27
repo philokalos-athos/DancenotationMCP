@@ -1,0 +1,3690 @@
+{
+  "metadata": {
+    "title": "Collapse of Symmetry \u2014 Solo in Seven Fractures",
+    "source_prompt": "Collapse of Symmetry \u2014 Solo in Seven Fractures. Full 53-measure score in 7/8 time, tempo 144.",
+    "ir_version": "0.2.0",
+    "schema_version": "0.2.0"
+  },
+  "symbols": [
+    {
+      "symbol_id": "music.time.7_8",
+      "body_part": "torso",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {
+        "measure": 1,
+        "beat": 1.0,
+        "duration_beats": 1.0
+      },
+      "modifiers": {
+        "measure_header": true,
+        "source_text": "7/8 time"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.stand.place",
+      "body_part": "left_leg",
+      "direction": "place",
+      "level": "middle",
+      "timing": {
+        "measure": 1,
+        "beat": 1.0,
+        "duration_beats": 1.5
+      },
+      "modifiers": {
+        "source_text": "Standing on left foot upstage-right"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.plie.place",
+      "body_part": "left_leg",
+      "direction": "left",
+      "level": "low",
+      "timing": {
+        "measure": 1,
+        "beat": 1.0,
+        "duration_beats": 3.0
+      },
+      "modifiers": {
+        "source_text": "Grand pli\u00e9 second position"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.plie.place",
+      "body_part": "right_leg",
+      "direction": "right",
+      "level": "low",
+      "timing": {
+        "measure": 1,
+        "beat": 1.0,
+        "duration_beats": 3.0
+      },
+      "modifiers": {
+        "source_text": "Grand pli\u00e9 second position"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "body.bend",
+      "body_part": "torso",
+      "direction": "forward",
+      "level": "low",
+      "timing": {
+        "measure": 1,
+        "beat": 1.0,
+        "duration_beats": 3.0
+      },
+      "modifiers": {
+        "effort": {
+          "weight": "strong",
+          "time": "sudden"
+        },
+        "source_text": "Torso contraction to flat-back"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "left_arm",
+      "direction": "forward",
+      "level": "high",
+      "timing": {
+        "measure": 1,
+        "beat": 2.0,
+        "duration_beats": 2.0
+      },
+      "modifiers": {
+        "source_text": "Arms slash down then shoot to V overhead"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "right_arm",
+      "direction": "forward",
+      "level": "high",
+      "timing": {
+        "measure": 1,
+        "beat": 2.0,
+        "duration_beats": 2.0
+      },
+      "modifiers": {
+        "source_text": "Arms slash down then shoot to V overhead"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "direction.forward",
+      "body_part": "head",
+      "direction": "forward",
+      "level": "low",
+      "timing": {
+        "measure": 1,
+        "beat": 1.0,
+        "duration_beats": 3.0
+      },
+      "modifiers": {
+        "source_text": "Head drops chin to chest"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.releve.place",
+      "body_part": "left_leg",
+      "direction": "place",
+      "level": "high",
+      "timing": {
+        "measure": 1,
+        "beat": 2.0,
+        "duration_beats": 2.0
+      },
+      "modifiers": {
+        "source_text": "Spring to relev\u00e9 left foot"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.leg",
+      "body_part": "right_leg",
+      "direction": "right",
+      "level": "high",
+      "timing": {
+        "measure": 1,
+        "beat": 2.0,
+        "duration_beats": 2.0
+      },
+      "modifiers": {
+        "source_text": "Right leg \u00e0 la seconde 90\u00b0"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "turn.pivot",
+      "body_part": "torso",
+      "direction": "right",
+      "level": "middle",
+      "timing": {
+        "measure": 1,
+        "beat": 2.0,
+        "duration_beats": 2.0
+      },
+      "modifiers": {
+        "rotation_degrees": 90,
+        "source_text": "Quarter turn right to face upstage"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "left_arm",
+      "direction": "right",
+      "level": "middle",
+      "timing": {
+        "measure": 1,
+        "beat": 2.0,
+        "duration_beats": 2.0
+      },
+      "modifiers": {
+        "source_text": "Left arm crosses to right hip"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "right_arm",
+      "direction": "diagonal_forward_right",
+      "level": "high",
+      "timing": {
+        "measure": 1,
+        "beat": 2.0,
+        "duration_beats": 2.0
+      },
+      "modifiers": {
+        "source_text": "Right arm high-right-forward diagonal"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.lunge",
+      "body_part": "right_leg",
+      "direction": "right",
+      "level": "low",
+      "timing": {
+        "measure": 1,
+        "beat": 3.0,
+        "duration_beats": 1.5
+      },
+      "modifiers": {
+        "source_text": "Controlled fall caught in deep lunge right"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.leg",
+      "body_part": "left_leg",
+      "direction": "backward",
+      "level": "low",
+      "timing": {
+        "measure": 1,
+        "beat": 3.0,
+        "duration_beats": 1.5
+      },
+      "modifiers": {
+        "source_text": "Left leg extended behind in lunge"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "body.bend",
+      "body_part": "torso",
+      "direction": "right",
+      "level": "middle",
+      "timing": {
+        "measure": 1,
+        "beat": 3.0,
+        "duration_beats": 1.5
+      },
+      "modifiers": {
+        "source_text": "Torso arches laterally over right leg"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "left_arm",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {
+        "measure": 2,
+        "beat": 1.0,
+        "duration_beats": 1.5
+      },
+      "modifiers": {
+        "source_text": "Left arm forward-middle after windmill"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "right_arm",
+      "direction": "backward",
+      "level": "low",
+      "timing": {
+        "measure": 2,
+        "beat": 1.0,
+        "duration_beats": 1.5
+      },
+      "modifiers": {
+        "source_text": "Right arm backward-low after windmill"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "turn.pivot",
+      "body_part": "torso",
+      "direction": "right",
+      "level": "middle",
+      "timing": {
+        "measure": 3,
+        "beat": 1.0,
+        "duration_beats": 2.3
+      },
+      "modifiers": {
+        "rotation_degrees": 360,
+        "source_text": "Chain\u00e9 turn 1 slow"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "turn.pivot",
+      "body_part": "torso",
+      "direction": "right",
+      "level": "middle",
+      "timing": {
+        "measure": 3,
+        "beat": 3.3,
+        "duration_beats": 1.2000000000000002
+      },
+      "modifiers": {
+        "rotation_degrees": 360,
+        "source_text": "Chain\u00e9 turn 2 medium"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "turn.pivot",
+      "body_part": "torso",
+      "direction": "right",
+      "level": "middle",
+      "timing": {
+        "measure": 3,
+        "beat": 2.65,
+        "duration_beats": 1.7
+      },
+      "modifiers": {
+        "rotation_degrees": 360,
+        "source_text": "Chain\u00e9 turn 3 fast"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "left_arm",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {
+        "measure": 3,
+        "beat": 1.0,
+        "duration_beats": 2.3
+      },
+      "modifiers": {
+        "source_text": "Arms first position turn 1"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "right_arm",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {
+        "measure": 3,
+        "beat": 1.0,
+        "duration_beats": 2.3
+      },
+      "modifiers": {
+        "source_text": "Arms first position turn 1"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "left_arm",
+      "direction": "left",
+      "level": "middle",
+      "timing": {
+        "measure": 3,
+        "beat": 3.3,
+        "duration_beats": 1.2000000000000002
+      },
+      "modifiers": {
+        "source_text": "Arms demi-seconde turn 2"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "right_arm",
+      "direction": "right",
+      "level": "middle",
+      "timing": {
+        "measure": 3,
+        "beat": 3.3,
+        "duration_beats": 1.2000000000000002
+      },
+      "modifiers": {
+        "source_text": "Arms demi-seconde turn 2"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "left_arm",
+      "direction": "left",
+      "level": "middle",
+      "timing": {
+        "measure": 3,
+        "beat": 2.65,
+        "duration_beats": 1.7
+      },
+      "modifiers": {
+        "source_text": "Arms full second turn 3 flexed hands"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "right_arm",
+      "direction": "right",
+      "level": "middle",
+      "timing": {
+        "measure": 3,
+        "beat": 2.65,
+        "duration_beats": 1.7
+      },
+      "modifiers": {
+        "source_text": "Arms full second turn 3 flexed hands"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "body.bend",
+      "body_part": "torso",
+      "direction": "backward",
+      "level": "middle",
+      "timing": {
+        "measure": 4,
+        "beat": 1.0,
+        "duration_beats": 3.0
+      },
+      "modifiers": {
+        "source_text": "Forced arch fall backward cambr\u00e9 derri\u00e8re"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.releve.place",
+      "body_part": "left_leg",
+      "direction": "place",
+      "level": "high",
+      "timing": {
+        "measure": 4,
+        "beat": 1.0,
+        "duration_beats": 3.0
+      },
+      "modifiers": {
+        "source_text": "Relev\u00e9 maintained during fall"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.releve.place",
+      "body_part": "right_leg",
+      "direction": "place",
+      "level": "high",
+      "timing": {
+        "measure": 4,
+        "beat": 1.0,
+        "duration_beats": 3.0
+      },
+      "modifiers": {
+        "source_text": "Relev\u00e9 maintained during fall"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.kneel.place",
+      "body_part": "right_leg",
+      "direction": "place",
+      "level": "low",
+      "timing": {
+        "measure": 4,
+        "beat": 2.0,
+        "duration_beats": 2.0
+      },
+      "modifiers": {
+        "source_text": "Right knee drops to floor controlled"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.leg",
+      "body_part": "left_leg",
+      "direction": "left",
+      "level": "high",
+      "timing": {
+        "measure": 4,
+        "beat": 2.5,
+        "duration_beats": 2.0
+      },
+      "modifiers": {
+        "source_text": "Left leg d\u00e9velopp\u00e9 \u00e0 la seconde 120\u00b0"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "floor.roll",
+      "body_part": "torso",
+      "direction": "right",
+      "level": "low",
+      "timing": {
+        "measure": 5,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Body rolls sideways from kneeling"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.kneel.place",
+      "body_part": "left_leg",
+      "direction": "place",
+      "level": "low",
+      "timing": {
+        "measure": 5,
+        "beat": 1.0,
+        "duration_beats": 2.0
+      },
+      "modifiers": {
+        "source_text": "From kneeling position"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.lower.place",
+      "body_part": "right_leg",
+      "direction": "forward",
+      "level": "low",
+      "timing": {
+        "measure": 5,
+        "beat": 3.0,
+        "duration_beats": 1.5
+      },
+      "modifiers": {
+        "source_text": "Prone position weight on hands"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "left_arm",
+      "direction": "forward",
+      "level": "low",
+      "timing": {
+        "measure": 5,
+        "beat": 3.0,
+        "duration_beats": 1.5
+      },
+      "modifiers": {
+        "source_text": "Weight on hands pushing shoulder rolls"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "right_arm",
+      "direction": "forward",
+      "level": "low",
+      "timing": {
+        "measure": 5,
+        "beat": 3.0,
+        "duration_beats": 1.5
+      },
+      "modifiers": {
+        "source_text": "Weight on hands pushing shoulder rolls"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.lower.place",
+      "body_part": "left_leg",
+      "direction": "left",
+      "level": "low",
+      "timing": {
+        "measure": 6,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Sitting weight on left hip"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.leg",
+      "body_part": "left_leg",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {
+        "measure": 6,
+        "beat": 2.0,
+        "duration_beats": 2.5
+      },
+      "modifiers": {
+        "source_text": "Both legs forward feet flexed"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.leg",
+      "body_part": "right_leg",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {
+        "measure": 6,
+        "beat": 2.0,
+        "duration_beats": 2.5
+      },
+      "modifiers": {
+        "source_text": "Both legs forward feet flexed"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "left_arm",
+      "direction": "backward",
+      "level": "high",
+      "timing": {
+        "measure": 6,
+        "beat": 2.0,
+        "duration_beats": 2.5
+      },
+      "modifiers": {
+        "source_text": "Arms reach overhead backward touch floor"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "right_arm",
+      "direction": "backward",
+      "level": "high",
+      "timing": {
+        "measure": 6,
+        "beat": 2.0,
+        "duration_beats": 2.5
+      },
+      "modifiers": {
+        "source_text": "Arms reach overhead backward touch floor"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "body.bend",
+      "body_part": "torso",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {
+        "measure": 7,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "effort": {
+          "weight": "light",
+          "time": "sustained",
+          "flow": "free"
+        },
+        "source_text": "Full body wave fingertips through spine"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "floor.roll",
+      "body_part": "torso",
+      "direction": "backward",
+      "level": "low",
+      "timing": {
+        "measure": 7,
+        "beat": 2.0,
+        "duration_beats": 2.5
+      },
+      "modifiers": {
+        "source_text": "Roll to supine"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "body.bend",
+      "body_part": "torso",
+      "direction": "forward",
+      "level": "low",
+      "timing": {
+        "measure": 8,
+        "beat": 1.0,
+        "duration_beats": 2.0
+      },
+      "modifiers": {
+        "effort": {
+          "weight": "strong",
+          "time": "sudden"
+        },
+        "source_text": "Contract to fetal curl"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "jump.small",
+      "body_part": "left_leg",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {
+        "measure": 8,
+        "beat": 3.0,
+        "duration_beats": 1.5
+      },
+      "modifiers": {
+        "source_text": "Explosive burst upward to standing"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.stand.place",
+      "body_part": "left_leg",
+      "direction": "place",
+      "level": "middle",
+      "timing": {
+        "measure": 8,
+        "beat": 2.5,
+        "duration_beats": 2.0
+      },
+      "modifiers": {
+        "source_text": "Standing facing downstage-left"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.stand.place",
+      "body_part": "right_leg",
+      "direction": "place",
+      "level": "middle",
+      "timing": {
+        "measure": 8,
+        "beat": 2.5,
+        "duration_beats": 2.0
+      },
+      "modifiers": {
+        "source_text": "Standing facing downstage-left"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "travel.run",
+      "body_part": "right_leg",
+      "direction": "right",
+      "level": "middle",
+      "timing": {
+        "measure": 9,
+        "beat": 1.0,
+        "duration_beats": 2.0
+      },
+      "modifiers": {
+        "source_text": "Glissade right"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "jump.small",
+      "body_part": "left_leg",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {
+        "measure": 9,
+        "beat": 3.0,
+        "duration_beats": 1.5
+      },
+      "modifiers": {
+        "source_text": "Assembl\u00e9"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "jump.small",
+      "body_part": "right_leg",
+      "direction": "right",
+      "level": "middle",
+      "timing": {
+        "measure": 9,
+        "beat": 2.5,
+        "duration_beats": 2.0
+      },
+      "modifiers": {
+        "source_text": "Sissonne ouverte right"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.leg",
+      "body_part": "right_leg",
+      "direction": "right",
+      "level": "high",
+      "timing": {
+        "measure": 10,
+        "beat": 1.0,
+        "duration_beats": 2.0
+      },
+      "modifiers": {
+        "source_text": "Right leg extended 90\u00b0"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.step",
+      "body_part": "right_leg",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {
+        "measure": 10,
+        "beat": 3.0,
+        "duration_beats": 1.5
+      },
+      "modifiers": {
+        "source_text": "Tomb\u00e9 onto right foot"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.step",
+      "body_part": "left_leg",
+      "direction": "backward",
+      "level": "middle",
+      "timing": {
+        "measure": 10,
+        "beat": 2.25,
+        "duration_beats": 1.0
+      },
+      "modifiers": {
+        "source_text": "Pas de bourr\u00e9e under step 1"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.step",
+      "body_part": "right_leg",
+      "direction": "right",
+      "level": "middle",
+      "timing": {
+        "measure": 10,
+        "beat": 2.75,
+        "duration_beats": 1.0
+      },
+      "modifiers": {
+        "source_text": "Pas de bourr\u00e9e under step 2"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.step",
+      "body_part": "left_leg",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {
+        "measure": 10,
+        "beat": 3.25,
+        "duration_beats": 1.0
+      },
+      "modifiers": {
+        "source_text": "Pas de bourr\u00e9e under step 3"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "jump.small",
+      "body_part": "left_leg",
+      "direction": "forward",
+      "level": "high",
+      "timing": {
+        "measure": 11,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "effort": {
+          "weight": "strong",
+          "time": "sudden"
+        },
+        "source_text": "Grand jet\u00e9 en avant"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.leg",
+      "body_part": "left_leg",
+      "direction": "forward",
+      "level": "high",
+      "timing": {
+        "measure": 11,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Left leg leading 160\u00b0 split"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.leg",
+      "body_part": "right_leg",
+      "direction": "backward",
+      "level": "high",
+      "timing": {
+        "measure": 11,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Right leg trailing split"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.step",
+      "body_part": "left_leg",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {
+        "measure": 11,
+        "beat": 2.25,
+        "duration_beats": 1.0
+      },
+      "modifiers": {
+        "source_text": "Land on left foot"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "turn.pivot",
+      "body_part": "torso",
+      "direction": "right",
+      "level": "middle",
+      "timing": {
+        "measure": 11,
+        "beat": 2.75,
+        "duration_beats": 1.75
+      },
+      "modifiers": {
+        "rotation_degrees": 360,
+        "source_text": "Chain\u00e9 turn"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "travel.run",
+      "body_part": "left_leg",
+      "direction": "left",
+      "level": "middle",
+      "timing": {
+        "measure": 12,
+        "beat": 1.0,
+        "duration_beats": 2.0
+      },
+      "modifiers": {
+        "source_text": "Repeat reversed: glissade left"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "jump.small",
+      "body_part": "right_leg",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {
+        "measure": 12,
+        "beat": 3.0,
+        "duration_beats": 1.5
+      },
+      "modifiers": {
+        "source_text": "Assembl\u00e9 reversed"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "jump.small",
+      "body_part": "left_leg",
+      "direction": "left",
+      "level": "middle",
+      "timing": {
+        "measure": 12,
+        "beat": 2.5,
+        "duration_beats": 2.0
+      },
+      "modifiers": {
+        "source_text": "Sissonne ouverte left reversed"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "jump.small",
+      "body_part": "right_leg",
+      "direction": "forward",
+      "level": "high",
+      "timing": {
+        "measure": 13,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Grand jet\u00e9 reversed right leg leading"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.step",
+      "body_part": "right_leg",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {
+        "measure": 13,
+        "beat": 2.25,
+        "duration_beats": 1.0
+      },
+      "modifiers": {
+        "source_text": "Land on right foot"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "turn.pivot",
+      "body_part": "torso",
+      "direction": "left",
+      "level": "middle",
+      "timing": {
+        "measure": 13,
+        "beat": 2.75,
+        "duration_beats": 1.75
+      },
+      "modifiers": {
+        "rotation_degrees": 360,
+        "source_text": "Chain\u00e9 turn reversed"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "quality.sudden",
+      "body_part": "torso",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {
+        "measure": 9,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Effort: explosive weight sudden time throughout m9-16"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "quality.strong",
+      "body_part": "torso",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {
+        "measure": 9,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Effort: explosive weight"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.stand.place",
+      "body_part": "left_leg",
+      "direction": "place",
+      "level": "middle",
+      "timing": {
+        "measure": 14,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Standing transition m14"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.stand.place",
+      "body_part": "right_leg",
+      "direction": "place",
+      "level": "middle",
+      "timing": {
+        "measure": 14,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Standing transition m14"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.stand.place",
+      "body_part": "left_leg",
+      "direction": "place",
+      "level": "middle",
+      "timing": {
+        "measure": 15,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Transition to Section B m15"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.stand.place",
+      "body_part": "right_leg",
+      "direction": "place",
+      "level": "middle",
+      "timing": {
+        "measure": 15,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Transition to Section B m15"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.stand.place",
+      "body_part": "left_leg",
+      "direction": "place",
+      "level": "middle",
+      "timing": {
+        "measure": 16,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "End Section A m16"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.stand.place",
+      "body_part": "right_leg",
+      "direction": "place",
+      "level": "middle",
+      "timing": {
+        "measure": 16,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "End Section A m16"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.releve.place",
+      "body_part": "left_leg",
+      "direction": "place",
+      "level": "high",
+      "timing": {
+        "measure": 17,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Section B: Relev\u00e9 left foot d\u00e9velopp\u00e9"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.leg",
+      "body_part": "right_leg",
+      "direction": "forward",
+      "level": "high",
+      "timing": {
+        "measure": 17,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "D\u00e9velopp\u00e9 right leg forward 90\u00b0"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "quality.sustained",
+      "body_part": "torso",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {
+        "measure": 17,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Sustained adagio"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "left_arm",
+      "direction": "forward",
+      "level": "high",
+      "timing": {
+        "measure": 17,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Arms third position left high"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "right_arm",
+      "direction": "right",
+      "level": "middle",
+      "timing": {
+        "measure": 17,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Arms third position right side"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "timing.hold",
+      "body_part": "right_leg",
+      "direction": "forward",
+      "level": "high",
+      "timing": {
+        "measure": 17,
+        "beat": 2.0,
+        "duration_beats": 2.5
+      },
+      "modifiers": {
+        "source_text": "Hold d\u00e9velopp\u00e9 4 beats"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "turn.pivot",
+      "body_part": "torso",
+      "direction": "right",
+      "level": "middle",
+      "timing": {
+        "measure": 18,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "rotation_degrees": 360,
+        "source_text": "Promenade en dehors full 360\u00b0 over 7 beats"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.releve.place",
+      "body_part": "left_leg",
+      "direction": "place",
+      "level": "high",
+      "timing": {
+        "measure": 18,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Maintaining relev\u00e9 during promenade"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "body.bend",
+      "body_part": "torso",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {
+        "measure": 19,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Pench\u00e9 forward torso horizontal"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.leg",
+      "body_part": "right_leg",
+      "direction": "backward",
+      "level": "high",
+      "timing": {
+        "measure": 19,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Right leg arabesque 180\u00b0"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "timing.hold",
+      "body_part": "torso",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {
+        "measure": 19,
+        "beat": 2.0,
+        "duration_beats": 2.5
+      },
+      "modifiers": {
+        "source_text": "Hold balance 3 beats"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.plie.place",
+      "body_part": "left_leg",
+      "direction": "place",
+      "level": "low",
+      "timing": {
+        "measure": 20,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Melt through fondu demi-pli\u00e9"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.lower.place",
+      "body_part": "left_leg",
+      "direction": "left",
+      "level": "low",
+      "timing": {
+        "measure": 20,
+        "beat": 2.0,
+        "duration_beats": 2.5
+      },
+      "modifiers": {
+        "source_text": "Lower to sitting on left hip"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.leg",
+      "body_part": "right_leg",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {
+        "measure": 20,
+        "beat": 2.5,
+        "duration_beats": 2.0
+      },
+      "modifiers": {
+        "source_text": "Right leg pass\u00e9 retir\u00e9"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "body.bend",
+      "body_part": "torso",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {
+        "measure": 21,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Sequential body wave pelvis through spine to head"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.kneel.place",
+      "body_part": "left_leg",
+      "direction": "place",
+      "level": "low",
+      "timing": {
+        "measure": 21,
+        "beat": 2.0,
+        "duration_beats": 2.5
+      },
+      "modifiers": {
+        "source_text": "Rise to kneeling both knees"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.kneel.place",
+      "body_part": "right_leg",
+      "direction": "place",
+      "level": "low",
+      "timing": {
+        "measure": 21,
+        "beat": 2.0,
+        "duration_beats": 2.5
+      },
+      "modifiers": {
+        "source_text": "Rise to kneeling both knees"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "left_arm",
+      "direction": "place",
+      "level": "low",
+      "timing": {
+        "measure": 22,
+        "beat": 1.0,
+        "duration_beats": 2.0
+      },
+      "modifiers": {
+        "source_text": "Grand port de bras from low"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "right_arm",
+      "direction": "place",
+      "level": "low",
+      "timing": {
+        "measure": 22,
+        "beat": 1.0,
+        "duration_beats": 2.0
+      },
+      "modifiers": {
+        "source_text": "Grand port de bras from low"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "left_arm",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {
+        "measure": 22,
+        "beat": 3.0,
+        "duration_beats": 1.5
+      },
+      "modifiers": {
+        "source_text": "Through first position"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "right_arm",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {
+        "measure": 22,
+        "beat": 3.0,
+        "duration_beats": 1.5
+      },
+      "modifiers": {
+        "source_text": "Through first position"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "left_arm",
+      "direction": "forward",
+      "level": "high",
+      "timing": {
+        "measure": 22,
+        "beat": 2.5,
+        "duration_beats": 2.0
+      },
+      "modifiers": {
+        "source_text": "To high fifth"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "right_arm",
+      "direction": "forward",
+      "level": "high",
+      "timing": {
+        "measure": 22,
+        "beat": 2.5,
+        "duration_beats": 2.0
+      },
+      "modifiers": {
+        "source_text": "To high fifth"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "left_arm",
+      "direction": "left",
+      "level": "middle",
+      "timing": {
+        "measure": 23,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Open to second position"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "right_arm",
+      "direction": "right",
+      "level": "middle",
+      "timing": {
+        "measure": 23,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Open to second position"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "body.bend",
+      "body_part": "torso",
+      "direction": "right",
+      "level": "middle",
+      "timing": {
+        "measure": 23,
+        "beat": 2.0,
+        "duration_beats": 2.5
+      },
+      "modifiers": {
+        "source_text": "Torso circles clockwise increasing tilt"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "body.bend",
+      "body_part": "torso",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {
+        "measure": 24,
+        "beat": 2.0,
+        "duration_beats": 1.5
+      },
+      "modifiers": {
+        "effort": {
+          "weight": "strong",
+          "time": "sudden"
+        },
+        "source_text": "Contract release pattern 1"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "body.bend",
+      "body_part": "torso",
+      "direction": "backward",
+      "level": "middle",
+      "timing": {
+        "measure": 24,
+        "beat": 2.75,
+        "duration_beats": 1.5
+      },
+      "modifiers": {
+        "source_text": "Release 1"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "body.bend",
+      "body_part": "torso",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {
+        "measure": 25,
+        "beat": 1.0,
+        "duration_beats": 1.5
+      },
+      "modifiers": {
+        "effort": {
+          "weight": "strong",
+          "time": "sudden"
+        },
+        "source_text": "Contract 2"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "body.bend",
+      "body_part": "torso",
+      "direction": "backward",
+      "level": "middle",
+      "timing": {
+        "measure": 25,
+        "beat": 2.5,
+        "duration_beats": 1.5
+      },
+      "modifiers": {
+        "source_text": "Release 2"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "body.bend",
+      "body_part": "torso",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {
+        "measure": 25,
+        "beat": 2.0,
+        "duration_beats": 1.5
+      },
+      "modifiers": {
+        "effort": {
+          "weight": "strong",
+          "time": "sudden"
+        },
+        "source_text": "Contract 3 increasing"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "body.bend",
+      "body_part": "torso",
+      "direction": "backward",
+      "level": "middle",
+      "timing": {
+        "measure": 25,
+        "beat": 2.75,
+        "duration_beats": 1.5
+      },
+      "modifiers": {
+        "source_text": "Release 3"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.releve.place",
+      "body_part": "left_leg",
+      "direction": "place",
+      "level": "high",
+      "timing": {
+        "measure": 26,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Stand through relev\u00e9"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.releve.place",
+      "body_part": "right_leg",
+      "direction": "place",
+      "level": "high",
+      "timing": {
+        "measure": 26,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Stand through relev\u00e9"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.stand.place",
+      "body_part": "left_leg",
+      "direction": "place",
+      "level": "middle",
+      "timing": {
+        "measure": 26,
+        "beat": 2.0,
+        "duration_beats": 2.5
+      },
+      "modifiers": {
+        "source_text": "Full standing"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.stand.place",
+      "body_part": "right_leg",
+      "direction": "place",
+      "level": "middle",
+      "timing": {
+        "measure": 26,
+        "beat": 2.0,
+        "duration_beats": 2.5
+      },
+      "modifiers": {
+        "source_text": "Full standing"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "jump.small",
+      "body_part": "left_leg",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {
+        "measure": 27,
+        "beat": 1.0,
+        "duration_beats": 2.0
+      },
+      "modifiers": {
+        "source_text": "Pas de chat"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "jump.small",
+      "body_part": "left_leg",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {
+        "measure": 27,
+        "beat": 3.0,
+        "duration_beats": 1.5
+      },
+      "modifiers": {
+        "source_text": "Temps lev\u00e9"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "jump.small",
+      "body_part": "left_leg",
+      "direction": "forward",
+      "level": "high",
+      "timing": {
+        "measure": 27,
+        "beat": 2.5,
+        "duration_beats": 2.0
+      },
+      "modifiers": {
+        "rotation_degrees": 360,
+        "source_text": "Tour en l'air single"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.stand.place",
+      "body_part": "left_leg",
+      "direction": "place",
+      "level": "middle",
+      "timing": {
+        "measure": 28,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Land fifth position"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.stand.place",
+      "body_part": "right_leg",
+      "direction": "place",
+      "level": "middle",
+      "timing": {
+        "measure": 28,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Land fifth position"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.stand.place",
+      "body_part": "left_leg",
+      "direction": "place",
+      "level": "middle",
+      "timing": {
+        "measure": 29,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Transition measures 29-32"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.stand.place",
+      "body_part": "right_leg",
+      "direction": "place",
+      "level": "middle",
+      "timing": {
+        "measure": 29,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Transition measures 29-32"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.stand.place",
+      "body_part": "left_leg",
+      "direction": "place",
+      "level": "middle",
+      "timing": {
+        "measure": 30,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Transition m30"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.stand.place",
+      "body_part": "right_leg",
+      "direction": "place",
+      "level": "middle",
+      "timing": {
+        "measure": 30,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Transition m30"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.stand.place",
+      "body_part": "left_leg",
+      "direction": "place",
+      "level": "middle",
+      "timing": {
+        "measure": 31,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Transition m31"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.stand.place",
+      "body_part": "right_leg",
+      "direction": "place",
+      "level": "middle",
+      "timing": {
+        "measure": 31,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Transition m31"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.stand.place",
+      "body_part": "left_leg",
+      "direction": "place",
+      "level": "middle",
+      "timing": {
+        "measure": 32,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "End Section B m32"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.stand.place",
+      "body_part": "right_leg",
+      "direction": "place",
+      "level": "middle",
+      "timing": {
+        "measure": 32,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "End Section B m32"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "jump.small",
+      "body_part": "right_leg",
+      "direction": "backward",
+      "level": "middle",
+      "timing": {
+        "measure": 33,
+        "beat": 1.0,
+        "duration_beats": 2.0
+      },
+      "modifiers": {
+        "source_text": "Section C: Sissonne tomb\u00e9 upstage"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.step",
+      "body_part": "right_leg",
+      "direction": "backward",
+      "level": "middle",
+      "timing": {
+        "measure": 33,
+        "beat": 3.0,
+        "duration_beats": 1.5
+      },
+      "modifiers": {
+        "source_text": "Tomb\u00e9 backward"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "left_arm",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {
+        "measure": 33,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Arms in opposition forward"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "right_arm",
+      "direction": "backward",
+      "level": "middle",
+      "timing": {
+        "measure": 33,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Arms in opposition backward"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "turn.pivot",
+      "body_part": "torso",
+      "direction": "right",
+      "level": "middle",
+      "timing": {
+        "measure": 33,
+        "beat": 2.5,
+        "duration_beats": 2.0
+      },
+      "modifiers": {
+        "rotation_degrees": 720,
+        "source_text": "Pirouette en dehors double from fourth"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "left_arm",
+      "direction": "left",
+      "level": "middle",
+      "timing": {
+        "measure": 33,
+        "beat": 2.5,
+        "duration_beats": 1.5
+      },
+      "modifiers": {
+        "source_text": "Arms second during turn"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "right_arm",
+      "direction": "right",
+      "level": "middle",
+      "timing": {
+        "measure": 33,
+        "beat": 2.5,
+        "duration_beats": 1.5
+      },
+      "modifiers": {
+        "source_text": "Arms second during turn"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "left_arm",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {
+        "measure": 34,
+        "beat": 1.0,
+        "duration_beats": 1.5
+      },
+      "modifiers": {
+        "source_text": "Arms pull to first during turn"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "right_arm",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {
+        "measure": 34,
+        "beat": 1.0,
+        "duration_beats": 1.5
+      },
+      "modifiers": {
+        "source_text": "Arms pull to first during turn"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.lunge",
+      "body_part": "left_leg",
+      "direction": "forward",
+      "level": "low",
+      "timing": {
+        "measure": 34,
+        "beat": 3.0,
+        "duration_beats": 1.5
+      },
+      "modifiers": {
+        "source_text": "Deep fourth position lunge"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.leg",
+      "body_part": "right_leg",
+      "direction": "backward",
+      "level": "low",
+      "timing": {
+        "measure": 34,
+        "beat": 3.0,
+        "duration_beats": 1.5
+      },
+      "modifiers": {
+        "source_text": "Back leg stretched"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "body.bend",
+      "body_part": "torso",
+      "direction": "right",
+      "level": "middle",
+      "timing": {
+        "measure": 35,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Cambr\u00e9 side right"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "left_arm",
+      "direction": "left",
+      "level": "high",
+      "timing": {
+        "measure": 35,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Arms high V cambr\u00e9 right"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "right_arm",
+      "direction": "right",
+      "level": "high",
+      "timing": {
+        "measure": 35,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Arms high V cambr\u00e9 right"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "body.bend",
+      "body_part": "torso",
+      "direction": "left",
+      "level": "middle",
+      "timing": {
+        "measure": 35,
+        "beat": 2.0,
+        "duration_beats": 2.5
+      },
+      "modifiers": {
+        "source_text": "Cambr\u00e9 side left"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "turn.pivot",
+      "body_part": "torso",
+      "direction": "right",
+      "level": "middle",
+      "timing": {
+        "measure": 36,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "rotation_degrees": 360,
+        "source_text": "Barrel turn horizontal rotation body tilted 45\u00b0"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "body.bend",
+      "body_part": "torso",
+      "direction": "right",
+      "level": "middle",
+      "timing": {
+        "measure": 36,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Body tilted sideways 45\u00b0 during barrel turn"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.lower.place",
+      "body_part": "left_leg",
+      "direction": "backward",
+      "level": "low",
+      "timing": {
+        "measure": 36,
+        "beat": 2.5,
+        "duration_beats": 2.0
+      },
+      "modifiers": {
+        "source_text": "Fall backward to sitting"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "floor.roll",
+      "body_part": "torso",
+      "direction": "backward",
+      "level": "low",
+      "timing": {
+        "measure": 37,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Roll to prone"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "left_arm",
+      "direction": "forward",
+      "level": "low",
+      "timing": {
+        "measure": 37,
+        "beat": 2.0,
+        "duration_beats": 2.5
+      },
+      "modifiers": {
+        "source_text": "Push up to downward dog hands"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "right_arm",
+      "direction": "forward",
+      "level": "low",
+      "timing": {
+        "measure": 37,
+        "beat": 2.0,
+        "duration_beats": 2.5
+      },
+      "modifiers": {
+        "source_text": "Push up to downward dog hands"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "body.bend",
+      "body_part": "torso",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {
+        "measure": 38,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Walk hands back standing roll-up spine"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.step",
+      "body_part": "right_leg",
+      "direction": "diagonal_backward_right",
+      "level": "middle",
+      "timing": {
+        "measure": 39,
+        "beat": 1.0,
+        "duration_beats": 1.0
+      },
+      "modifiers": {
+        "source_text": "Bourr\u00e9e traveling upstage-right step 1"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.step",
+      "body_part": "left_leg",
+      "direction": "diagonal_backward_right",
+      "level": "middle",
+      "timing": {
+        "measure": 39,
+        "beat": 2.0,
+        "duration_beats": 1.0
+      },
+      "modifiers": {
+        "source_text": "Bourr\u00e9e step 2"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.step",
+      "body_part": "right_leg",
+      "direction": "diagonal_backward_right",
+      "level": "middle",
+      "timing": {
+        "measure": 39,
+        "beat": 3.0,
+        "duration_beats": 1.0
+      },
+      "modifiers": {
+        "source_text": "Bourr\u00e9e step 3"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.step",
+      "body_part": "left_leg",
+      "direction": "diagonal_backward_right",
+      "level": "middle",
+      "timing": {
+        "measure": 39,
+        "beat": 2.0,
+        "duration_beats": 1.0
+      },
+      "modifiers": {
+        "source_text": "Bourr\u00e9e step 4"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.step",
+      "body_part": "right_leg",
+      "direction": "diagonal_backward_right",
+      "level": "middle",
+      "timing": {
+        "measure": 39,
+        "beat": 2.5,
+        "duration_beats": 1.0
+      },
+      "modifiers": {
+        "source_text": "Bourr\u00e9e step 5"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.step",
+      "body_part": "left_leg",
+      "direction": "diagonal_backward_right",
+      "level": "middle",
+      "timing": {
+        "measure": 39,
+        "beat": 3.0,
+        "duration_beats": 1.0
+      },
+      "modifiers": {
+        "source_text": "Bourr\u00e9e step 6"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.step",
+      "body_part": "right_leg",
+      "direction": "diagonal_backward_right",
+      "level": "middle",
+      "timing": {
+        "measure": 39,
+        "beat": 3.5,
+        "duration_beats": 0.5
+      },
+      "modifiers": {
+        "source_text": "Bourr\u00e9e step 7"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "quality.light",
+      "body_part": "torso",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {
+        "measure": 39,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Arms floating port de bras",
+        "attach_to": "support.step"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.stand.place",
+      "body_part": "left_leg",
+      "direction": "place",
+      "level": "middle",
+      "timing": {
+        "measure": 40,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Transition m40-48"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.stand.place",
+      "body_part": "right_leg",
+      "direction": "place",
+      "level": "middle",
+      "timing": {
+        "measure": 40,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Transition m40-48"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.stand.place",
+      "body_part": "left_leg",
+      "direction": "place",
+      "level": "middle",
+      "timing": {
+        "measure": 49,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Section D: Center fifth position"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.stand.place",
+      "body_part": "right_leg",
+      "direction": "place",
+      "level": "middle",
+      "timing": {
+        "measure": 49,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Section D: Center fifth position"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "left_arm",
+      "direction": "forward",
+      "level": "high",
+      "timing": {
+        "measure": 49,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Arms high fifth"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "right_arm",
+      "direction": "forward",
+      "level": "high",
+      "timing": {
+        "measure": 49,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Arms high fifth"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "body.bend",
+      "body_part": "torso",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {
+        "measure": 49,
+        "beat": 2.0,
+        "duration_beats": 2.5
+      },
+      "modifiers": {
+        "source_text": "Off-balance tilt forward plank"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.step",
+      "body_part": "right_leg",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {
+        "measure": 50,
+        "beat": 1.0,
+        "duration_beats": 1.5
+      },
+      "modifiers": {
+        "source_text": "Catch at 30\u00b0 step right"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.step",
+      "body_part": "left_leg",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {
+        "measure": 50,
+        "beat": 2.5,
+        "duration_beats": 1.5
+      },
+      "modifiers": {
+        "source_text": "Catch at 45\u00b0 step left"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.lower.place",
+      "body_part": "left_leg",
+      "direction": "forward",
+      "level": "low",
+      "timing": {
+        "measure": 50,
+        "beat": 2.0,
+        "duration_beats": 2.5
+      },
+      "modifiers": {
+        "source_text": "Full fall forward 60\u00b0 hands catch floor"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "left_arm",
+      "direction": "forward",
+      "level": "low",
+      "timing": {
+        "measure": 50,
+        "beat": 2.0,
+        "duration_beats": 2.5
+      },
+      "modifiers": {
+        "source_text": "Hands catch floor push-up position"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "right_arm",
+      "direction": "forward",
+      "level": "low",
+      "timing": {
+        "measure": 50,
+        "beat": 2.0,
+        "duration_beats": 2.5
+      },
+      "modifiers": {
+        "source_text": "Hands catch floor push-up position"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "body.bend",
+      "body_part": "torso",
+      "direction": "forward",
+      "level": "low",
+      "timing": {
+        "measure": 51,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Body wave hands through spine to feet"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "body.bend",
+      "body_part": "torso",
+      "direction": "backward",
+      "level": "low",
+      "timing": {
+        "measure": 52,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Cobra position arch"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.rise.place",
+      "body_part": "left_leg",
+      "direction": "place",
+      "level": "middle",
+      "timing": {
+        "measure": 52,
+        "beat": 2.0,
+        "duration_beats": 2.5
+      },
+      "modifiers": {
+        "source_text": "Push through plank to standing"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.rise.place",
+      "body_part": "right_leg",
+      "direction": "place",
+      "level": "middle",
+      "timing": {
+        "measure": 52,
+        "beat": 2.0,
+        "duration_beats": 2.5
+      },
+      "modifiers": {
+        "source_text": "Push through plank to standing"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.stand.place",
+      "body_part": "left_leg",
+      "direction": "place",
+      "level": "middle",
+      "timing": {
+        "measure": 53,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Final image: standing center forced arch"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "support.stand.place",
+      "body_part": "right_leg",
+      "direction": "place",
+      "level": "middle",
+      "timing": {
+        "measure": 53,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Final image standing"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "body.bend",
+      "body_part": "torso",
+      "direction": "right",
+      "level": "middle",
+      "timing": {
+        "measure": 53,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Torso spiral right shoulder forward left back"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "direction.forward",
+      "body_part": "head",
+      "direction": "right",
+      "level": "middle",
+      "timing": {
+        "measure": 53,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Head tilted right"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "left_arm",
+      "direction": "left",
+      "level": "middle",
+      "timing": {
+        "measure": 53,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Left arm side-left 45\u00b0 above horizontal palm up"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "right_arm",
+      "direction": "place",
+      "level": "low",
+      "timing": {
+        "measure": 53,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Right arm hangs at side fingertips brushing thigh"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "timing.hold",
+      "body_part": "torso",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {
+        "measure": 53,
+        "beat": 1.0,
+        "duration_beats": 3.5
+      },
+      "modifiers": {
+        "source_text": "Hold final image 4 beats"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "left_hand",
+      "direction": "place",
+      "level": "middle",
+      "timing": {
+        "measure": 53,
+        "beat": 2.5,
+        "duration_beats": 1.0
+      },
+      "modifiers": {
+        "label": "fist",
+        "source_text": "Beat 5: left hand closes to fist"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "gesture.arm",
+      "body_part": "right_hand",
+      "direction": "place",
+      "level": "middle",
+      "timing": {
+        "measure": 53,
+        "beat": 3.0,
+        "duration_beats": 1.0
+      },
+      "modifiers": {
+        "label": "open",
+        "source_text": "Beat 6: right hand opens fingers spread"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    },
+    {
+      "symbol_id": "timing.accent",
+      "body_part": "torso",
+      "direction": "forward",
+      "level": "middle",
+      "timing": {
+        "measure": 53,
+        "beat": 3.5,
+        "duration_beats": 0.5
+      },
+      "modifiers": {
+        "label": "blackout",
+        "source_text": "Beat 7: blackout"
+      },
+      "rotation_degrees": null,
+      "flexion_degrees": null,
+      "stage_position": null,
+      "facing": null,
+      "retention": null
+    }
+  ],
+  "extensions": {
+    "time_signatures": [
+      {
+        "measure": 1,
+        "numerator": 7,
+        "denominator": 8
+      }
+    ],
+    "floor_plan": [
+      {
+        "performer_id": "dancer_1",
+        "measure": 1,
+        "beat": 1.0,
+        "position": {
+          "zone": "upstage_right",
+          "x": 0.9,
+          "y": 0.9
+        },
+        "facing": "stage_left",
+        "path_to_next": "straight"
+      },
+      {
+        "performer_id": "dancer_1",
+        "measure": 8,
+        "beat": 1.0,
+        "position": {
+          "zone": "center",
+          "x": 0.5,
+          "y": 0.5
+        },
+        "facing": "diagonal_downstage_left",
+        "path_to_next": "straight"
+      },
+      {
+        "performer_id": "dancer_1",
+        "measure": 9,
+        "beat": 1.0,
+        "position": {
+          "zone": "upstage_right",
+          "x": 0.8,
+          "y": 0.8
+        },
+        "facing": "diagonal_downstage_left",
+        "path_to_next": "straight"
+      },
+      {
+        "performer_id": "dancer_1",
+        "measure": 13,
+        "beat": 1.0,
+        "position": {
+          "zone": "downstage_left",
+          "x": 0.2,
+          "y": 0.2
+        },
+        "facing": "diagonal_downstage_left",
+        "path_to_next": null
+      },
+      {
+        "performer_id": "dancer_1",
+        "measure": 17,
+        "beat": 1.0,
+        "position": {
+          "zone": "center",
+          "x": 0.5,
+          "y": 0.5
+        },
+        "facing": "downstage",
+        "path_to_next": "straight"
+      },
+      {
+        "performer_id": "dancer_1",
+        "measure": 27,
+        "beat": 1.0,
+        "position": {
+          "zone": "center",
+          "x": 0.4,
+          "y": 0.4
+        },
+        "facing": "downstage",
+        "path_to_next": "straight"
+      },
+      {
+        "performer_id": "dancer_1",
+        "measure": 28,
+        "beat": 1.0,
+        "position": {
+          "zone": "downstage_left",
+          "x": 0.3,
+          "y": 0.3
+        },
+        "facing": "downstage",
+        "path_to_next": null
+      },
+      {
+        "performer_id": "dancer_1",
+        "measure": 33,
+        "beat": 1.0,
+        "position": {
+          "zone": "center_left",
+          "x": 0.1,
+          "y": 0.5
+        },
+        "facing": "upstage",
+        "path_to_next": "zigzag"
+      },
+      {
+        "performer_id": "dancer_1",
+        "measure": 39,
+        "beat": 1.0,
+        "position": {
+          "zone": "center",
+          "x": 0.5,
+          "y": 0.5
+        },
+        "facing": "upstage",
+        "path_to_next": "zigzag"
+      },
+      {
+        "performer_id": "dancer_1",
+        "measure": 48,
+        "beat": 1.0,
+        "position": {
+          "zone": "upstage_right",
+          "x": 0.8,
+          "y": 0.8
+        },
+        "facing": "upstage",
+        "path_to_next": null
+      },
+      {
+        "performer_id": "dancer_1",
+        "measure": 49,
+        "beat": 1.0,
+        "position": {
+          "zone": "center",
+          "x": 0.5,
+          "y": 0.5
+        },
+        "facing": "downstage",
+        "path_to_next": null
+      }
+    ],
+    "effort_graphs": [
+      {
+        "symbol_index": 4,
+        "weight": "strong",
+        "time": "sudden",
+        "space": "direct",
+        "flow": "free"
+      },
+      {
+        "symbol_index": 60,
+        "weight": "strong",
+        "time": "sudden",
+        "space": "direct",
+        "flow": "free"
+      },
+      {
+        "symbol_index": 80,
+        "weight": "light",
+        "time": "sustained",
+        "space": "indirect",
+        "flow": "free"
+      },
+      {
+        "symbol_index": 105,
+        "weight": "strong",
+        "time": "sudden",
+        "space": "direct",
+        "flow": "bound"
+      },
+      {
+        "symbol_index": 145,
+        "weight": "light",
+        "time": "sustained",
+        "space": "indirect",
+        "flow": "free"
+      }
+    ]
+  },
+  "relationship_bows": [
+    {
+      "source_symbol_index": 11,
+      "target_symbol_index": 12,
+      "bow_type": "touch",
+      "side": "left"
+    },
+    {
+      "source_symbol_index": 170,
+      "target_symbol_index": 171,
+      "bow_type": "near",
+      "side": "right"
+    }
+  ],
+  "sections": [
+    {
+      "name": "A \u2014 Eruption",
+      "start_measure": 1,
+      "end_measure": 16
+    },
+    {
+      "name": "B \u2014 Dissolution",
+      "start_measure": 17,
+      "end_measure": 32
+    },
+    {
+      "name": "C \u2014 Reconstruction",
+      "start_measure": 33,
+      "end_measure": 48
+    },
+    {
+      "name": "D \u2014 Final Image",
+      "start_measure": 49,
+      "end_measure": 53
+    }
+  ]
+}
