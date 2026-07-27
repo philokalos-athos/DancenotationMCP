@@ -97,11 +97,36 @@ Current implementation status in this repo:
   - more exact fill and contour parity for mixed-level and degree-altered symbols
   - screenshot or golden-SVG parity fixtures for representative official scores
 
+## Where an engraving question gets settled
+
+Authority depends on the kind of question, and the split is not the obvious one:
+
+| Question | Authority |
+|---|---|
+| What a sign means; how a movement is analysed | ICKL Proceedings + Technical Reports |
+| What a sign looks like | LabanWriter / KineScribe palettes |
+| Column widths, spacing, alignment, what fills what | **Published scores only** |
+
+ICKL is the standards body — its aim includes "acting as a deciding body with
+regard to the orthography and principles of the system" — but it does not
+standardise engraving. Full-text search across ~1500 pages of its proceedings
+finds zero occurrences of `column width`, `staff width`, `line thickness` or
+`symbol size`, and one of `engrav*`. See `references/ickl/README.md` for the
+measurement and `references/fetch_ickl.py` to obtain the documents.
+
+Nor does any tool automate layout. LabanWriter and its touch-screen successor
+KineScribe are both manual drawing programs: the notator positions symbols by
+hand against guides that, per the LabanWriter manual, do not print. There is no
+reference implementation of automatic Labanotation layout to compare against —
+this project has to encode as explicit rules what is currently craft knowledge.
+
+That makes the published score the primary layout authority, not a fallback.
+
 ## Reference score
 
 `La vivandière Pas de six` (Saint-Léon, notated by Ann Hutchinson Guest) is in
-the repo root, gitignored for size. Guest co-authored the ICKL standard that
-LabanWriter implements, so its notation plates (from p.~73 on) are the
+the repo root, gitignored for size. Guest chaired ICKL and sits on its Research
+Panel as honorary member, so its notation plates (from p.~73 on) are the
 acceptance benchmark for engraving questions — settle conventions against them
 rather than by argument.
 

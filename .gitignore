@@ -7,6 +7,10 @@ __pycache__/
 # (U+00E8), so a literal match silently never fires.
 La vivandi*re Pas de six*.pdf
 
+# Third-party reference publications (~56MB of ICKL proceedings). Fetch with
+# `python references/fetch_ickl.py`; see references/ickl/README.md.
+references/ickl/*.pdf
+
 # Transient render scratch dirs
 tests/.tmp/
 dancenotation-pdf-*/
