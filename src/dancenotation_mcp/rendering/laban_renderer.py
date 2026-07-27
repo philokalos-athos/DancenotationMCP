@@ -617,15 +617,47 @@ def _render_turn_annotation(entry: dict) -> str:
     rotation_degrees = symbol.get("rotation_degrees") or symbol.get("modifiers", {}).get("rotation_degrees")
     rotate_attr = f' transform="rotate({rotation_degrees}, {cx:.1f}, {cy:.1f})"' if rotation_degrees else ""
 
+    # The id's subtype never reached the drawing, so turn.pivot == turn.spin
+    # and turn.half == turn.full. Two independent distinctions live here: how
+    # far (half against full) and what kind (a pivot on the spot against a
+    # spin). They are drawn on different features so neither hides the other.
+    subtype = symbol_id.split(".")[1] if "." in symbol_id else ""
+    amount_mark = ""
+    if subtype == "half":
+        # Half the revolution: the arc stops at the top instead of coming
+        # round, so the sign reads as an unfinished turn.
+        arc = (f'<path d="M {cx - r:.1f} {cy:.1f} '
+               f'A {r:.1f} {r:.1f} 0 0 {sweep} {cx:.1f} {cy - r:.1f}" '
+               f'fill="none" stroke="#111827" stroke-width="1.5"/>')
+        head = (f'<polygon points="{cx + 1:.1f},{cy - r - 3:.1f} '
+                f'{cx - 3:.1f},{cy - r + 2:.1f} {cx + 3:.1f},{cy - r + 1:.1f}" '
+                f'fill="#111827"/>')
+    else:
+        arc = (f'<path d="M {cx - r:.1f} {cy:.1f} '
+               f'A {r:.1f} {r:.1f} 0 1 {sweep} {cx + r:.1f} {cy:.1f}" '
+               f'fill="none" stroke="#111827" stroke-width="1.5"/>')
+        head = (f'<polygon points="{cx + r + 4:.1f},{cy:.1f} '
+                f'{cx + r - 2:.1f},{cy - 3:.1f} {cx + r - 2:.1f},{cy + 3:.1f}" '
+                f'fill="#111827"/>')
+    if subtype == "spin":
+        # A spin keeps turning: a second, inner arc says the revolution
+        # continues past one turn.
+        amount_mark = (f'<path d="M {cx - disc_r - 1:.1f} {cy:.1f} '
+                       f'A {disc_r + 1:.1f} {disc_r + 1:.1f} 0 1 {sweep} '
+                       f'{cx + disc_r + 1:.1f} {cy:.1f}" '
+                       f'fill="none" stroke="#111827" stroke-width="1"/>')
+    elif subtype == "pivot":
+        # A pivot happens on one spot: a dot marks the axis it turns about.
+        amount_mark = (f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="1.6" '
+                       f'fill="#111827"/>')
+
     return (
         f'<g class="laban-annotation turn" data-level="{escape(level)}" '
+        f'data-turn-subtype="{escape(subtype)}" '
         f'data-symbol-id="{escape(symbol_id)}"{rotate_attr}>'
         f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{disc_r:.1f}" '
         f'fill="{style["fill"]}" stroke="{style["stroke"]}" stroke-width="1"/>'
-        f'<path d="M {cx - r:.1f} {cy:.1f} A {r:.1f} {r:.1f} 0 1 {sweep} {cx + r:.1f} {cy:.1f}" '
-        f'fill="none" stroke="#111827" stroke-width="1.5"/>'
-        f'<polygon points="{cx + r + 4:.1f},{cy:.1f} {cx + r - 2:.1f},{cy - 3:.1f} {cx + r - 2:.1f},{cy + 3:.1f}" '
-        f'fill="#111827"/>'
+        f'{arc}{head}{amount_mark}'
         f'</g>'
     )
 
@@ -1979,13 +2011,23 @@ def _render_motif_annotation(entry: dict) -> str:
     return f'<g class="laban-annotation motif" data-symbol-id="{escape(symbol_id)}">{content}</g>'
 
 
-def _render_pin_annotation(entry: dict) -> str:
-    """Render dedicated pin symbols with head variants.
+# The catalog states each pin's head in behavior.cap_shape; this is the only
+# place that spelling is translated to a drawing.
+_PIN_CAP_HEADS = {
+    "diamond_head": "diamond",
+    "round_head": "circle",
+    "hold_bar": "bar",
+}
 
-    Pin heads based on modifiers.pin_head:
-    - "circle": vertical line with open circle at top
-    - "diamond": vertical line with small rotated square at top
-    - default: vertical line with filled triangle arrowhead at top
+# pin.floorplan_exit carries no behavior block, so its head comes from the id.
+_PIN_ID_HEADS = {"pin.floorplan_exit": "open_square"}
+
+
+def _render_pin_annotation(entry: dict) -> str:
+    """Render a pin, with the head the catalog asks for.
+
+    Head selection order: an explicit ``modifiers.pin_head``, else the
+    catalog's ``behavior.cap_shape``, else a per-id fallback, else a triangle.
     """
     symbol = entry["symbol"]
     symbol_id = symbol.get("symbol_id", "")
@@ -1997,7 +2039,14 @@ def _render_pin_annotation(entry: dict) -> str:
     cy = (y_top + y_bottom) / 2
 
     modifiers = symbol.get("modifiers", {})
-    pin_head = modifiers.get("pin_head", "triangle")
+    # The head came from modifiers.pin_head, which nothing populates, so every
+    # pin drew the default triangle -- while the catalog's own
+    # behavior.cap_shape sat unread beside it. pin.entry declares
+    # "diamond_head" and pin.hold "hold_bar"; those now select the head, and an
+    # explicit modifier still overrides them.
+    cap_shape = (entry.get("spec") or {}).get("behavior", {}).get("cap_shape", "")
+    pin_head = modifiers.get("pin_head") or _PIN_CAP_HEADS.get(
+        cap_shape, _PIN_ID_HEADS.get(symbol_id, "triangle"))
     pin_length = modifiers.get("pin_length", 10)
     half_len = pin_length / 2
 
@@ -2026,6 +2075,19 @@ def _render_pin_annotation(entry: dict) -> str:
             f'L {cx - s:.1f} {head_y - s:.1f} Z" '
             f'fill="#111827" stroke="#111827" stroke-width="0.8"/>'
         )
+    elif pin_head == "bar":
+        # hold_bar: a crossbar rather than a point — the pin marks a place
+        # held, not a direction taken.
+        svg += (
+            f'<line x1="{cx - 4:.1f}" y1="{head_y - 2:.1f}" '
+            f'x2="{cx + 4:.1f}" y2="{head_y - 2:.1f}" '
+            f'stroke="#111827" stroke-width="2"/>'
+        )
+    elif pin_head == "open_square":
+        svg += (
+            f'<rect x="{cx - 3:.1f}" y="{head_y - 6:.1f}" width="6" height="6" '
+            f'fill="none" stroke="#111827" stroke-width="1.2"/>'
+        )
     else:
         # Default: filled triangle arrowhead
         svg += (
@@ -2053,7 +2115,11 @@ def _render_bow_annotation(entry: dict) -> str:
     cx = x + w / 2
 
     modifiers = symbol.get("modifiers", {})
-    bow_type = modifiers.get("bow_type", "hook")
+    # bow_type came from modifiers alone, defaulting to "hook", so the id's own
+    # subtype never reached the drawing: bow.horizontal (U+2322) and
+    # bow.vertical (U+22C2) are opposite orientations and both drew the hook.
+    bow_type = modifiers.get("bow_type") or (
+        symbol_id.split(".")[1] if "." in symbol_id else "hook")
 
     svg = f'<g class="laban-annotation bow" data-symbol-id="{escape(symbol_id)}">'
 
@@ -2062,7 +2128,32 @@ def _render_bow_annotation(entry: dict) -> str:
     base_y = y_bottom - 4
     peak_y = y_top + 4
 
-    if bow_type == "tie":
+    if bow_type == "vertical":
+        # U+22C2: the arc turns upright, spanning the two staff sides rather
+        # than two moments in time.
+        mid_y = (base_y + peak_y) / 2
+        svg += (
+            f'<path d="M {cx - 5:.1f} {mid_y + 6:.1f} '
+            f'C {cx + 6:.1f} {mid_y + 6:.1f} '
+            f'{cx + 6:.1f} {mid_y - 6:.1f} '
+            f'{cx - 5:.1f} {mid_y - 6:.1f}" '
+            f'fill="none" stroke="#111827" stroke-width="1.5"/>'
+        )
+        svg += '</g>'
+        return svg
+
+    if bow_type == "small":
+        # U+02D8: a breve — the same arc, drawn short and shallow.
+        mid_y = (base_y + peak_y) / 2
+        svg += (
+            f'<path d="M {cx - 4:.1f} {mid_y - 1:.1f} '
+            f'Q {cx:.1f} {mid_y + 4:.1f} {cx + 4:.1f} {mid_y - 1:.1f}" '
+            f'fill="none" stroke="#111827" stroke-width="1.4"/>'
+        )
+        svg += '</g>'
+        return svg
+
+    if bow_type in ("tie", "horizontal"):
         # Symmetric shallow arc for hold/legato
         svg += (
             f'<path d="M {left_x:.1f} {base_y:.1f} '

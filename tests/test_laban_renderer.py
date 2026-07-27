@@ -1128,6 +1128,67 @@ class QualityAliasIdentityTest(unittest.TestCase):
         self.assertNotIn("<text", group.group(0))
 
 
+class PinBowTurnSubtypeTest(unittest.TestCase):
+    """pin, bow and turn each name a subtype in the id that never reached the
+    drawing. Three instances of one defect, so they are asserted together.
+
+    pin is the clearest: ``_render_pin_annotation`` read
+    ``modifiers.pin_head``, which nothing populates, while the catalog's own
+    ``behavior.cap_shape`` sat unread beside it — pin.entry declares
+    "diamond_head" and still drew the default triangle.
+    """
+
+    FAMILIES = {
+        "pin": ["generic", "entry", "hold", "floorplan_exit"],
+        "bow": ["hook", "horizontal", "vertical", "small"],
+        "turn": ["pivot", "spin", "half", "full"],
+    }
+
+    def _markup(self, symbol_id, **extra):
+        symbol = {
+            "symbol_id": symbol_id,
+            "body_part": "torso",
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {},
+        }
+        symbol.update(extra)
+        svg = render_laban_svg(_minimal_ir([symbol]))
+        i = svg.find(f'data-symbol-id="{symbol_id}"')
+        self.assertNotEqual(i, -1, f"{symbol_id} not rendered")
+        start = svg.rfind("<g", 0, i)
+        return re.sub(r'data-symbol-id="[^"]*"', "",
+                      svg[start:svg.find("</g>", start)])
+
+    def test_each_subtype_renders_distinctly(self):
+        for family, subtypes in self.FAMILIES.items():
+            seen = {}
+            for subtype in subtypes:
+                shape = self._markup(f"{family}.{subtype}")
+                clash = seen.get(shape)
+                self.assertIsNone(
+                    clash, f"{family}.{subtype} renders like {family}.{clash}")
+                seen[shape] = subtype
+
+    def test_pin_head_comes_from_the_catalog_behavior(self):
+        # pin.entry declares cap_shape "diamond_head"; pin.hold "hold_bar".
+        self.assertNotEqual(self._markup("pin.entry"), self._markup("pin.generic"))
+        self.assertNotEqual(self._markup("pin.hold"), self._markup("pin.generic"))
+
+    def test_an_explicit_modifier_still_overrides_the_id(self):
+        for family, override in (("pin", {"pin_head": "diamond"}),
+                                 ("bow", {"bow_type": "vertical"})):
+            with self.subTest(family=family):
+                base = self._markup(f"{family}.{self.FAMILIES[family][0]}")
+                forced = self._markup(f"{family}.{self.FAMILIES[family][0]}",
+                                      modifiers=override)
+                self.assertNotEqual(base, forced)
+
+    def test_turn_amount_and_turn_type_are_separate_distinctions(self):
+        # half/full is how far; pivot/spin is what kind. Neither may collapse.
+        self.assertNotEqual(self._markup("turn.half"), self._markup("turn.full"))
+        self.assertNotEqual(self._markup("turn.pivot"), self._markup("turn.spin"))
+
+
 class SequentialKindTest(unittest.TestCase):
     """A sequential id names a kind; the renderer never read the id at all.
 
