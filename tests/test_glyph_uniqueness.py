@@ -49,8 +49,7 @@ EXPECTED_SHARED_GLYPH_FAMILIES = {"support", "gesture", "travel", "direction",
 # list, not an exemption — the assertion below requires the set to shrink and
 # fails if a family is added to it without being listed here first.
 #
-#   jump         5  subtype dropped; small == large == assemble == sissonne
-KNOWN_OPEN_COLLAPSES = {"jump"}
+KNOWN_OPEN_COLLAPSES: set[str] = set()
 
 _GROUP = re.compile(r"<(/?)g\b[^>]*?(/?)>")
 

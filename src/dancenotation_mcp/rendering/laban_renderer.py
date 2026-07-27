@@ -682,8 +682,16 @@ def _render_jump_annotation(entry: dict) -> str:
     bow_bottom = y_bottom - 4
 
     modifiers = symbol.get("modifiers", {})
-    is_spring = modifiers.get("spring_jump", False)
-    stretch = modifiers.get("stretch", 0)
+    # The id's subtype never reached the drawing and nothing injects these
+    # modifiers from it, so a score built from catalog ids engraved all five
+    # jumps identically. Explicit modifiers still win.
+    #
+    # Note what is NOT read here: a jump sign carries no compass direction.
+    # The travel direction lives in the direction symbols in the support
+    # columns, so jumps sharing one glyph across directions is correct.
+    subtype = symbol_id.split(".")[1] if "." in symbol_id else ""
+    is_spring = modifiers.get("spring_jump", subtype == "spring")
+    stretch = modifiers.get("stretch", 2 if subtype == "large" else 0)
     duration = symbol.get("timing", {}).get("duration_beats", 1.0) if isinstance(symbol.get("timing"), dict) else 1.0
 
     # The jump family is universally ``requires_level``; show level by filling
@@ -745,6 +753,28 @@ def _render_jump_annotation(entry: dict) -> str:
         f'<line x1="{cx:.1f}" y1="{bow_top:.1f}" x2="{cx:.1f}" y2="{bow_bottom - 4:.1f}" '
         f'stroke="#111827" stroke-width="1.2"/>'
     )
+
+    # Landing marks: what the feet do on the way down. assemble closes them
+    # together, sissonne parts them. Drawn at the base of the bow so they read
+    # against the landing, not the flight.
+    if subtype == "assemble":
+        svg += (
+            f'<line x1="{cx - 5:.1f}" y1="{bow_bottom + 3:.1f}" '
+            f'x2="{cx - 1:.1f}" y2="{bow_bottom:.1f}" '
+            f'stroke="#111827" stroke-width="1.2"/>'
+            f'<line x1="{cx + 5:.1f}" y1="{bow_bottom + 3:.1f}" '
+            f'x2="{cx + 1:.1f}" y2="{bow_bottom:.1f}" '
+            f'stroke="#111827" stroke-width="1.2"/>'
+        )
+    elif subtype == "sissonne":
+        svg += (
+            f'<line x1="{cx - 1:.1f}" y1="{bow_bottom:.1f}" '
+            f'x2="{cx - 5:.1f}" y2="{bow_bottom + 4:.1f}" '
+            f'stroke="#111827" stroke-width="1.2"/>'
+            f'<line x1="{cx + 1:.1f}" y1="{bow_bottom:.1f}" '
+            f'x2="{cx + 5:.1f}" y2="{bow_bottom + 4:.1f}" '
+            f'stroke="#111827" stroke-width="1.2"/>'
+        )
 
     svg += '</g>'
     return svg

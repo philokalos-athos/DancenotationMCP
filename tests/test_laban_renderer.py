@@ -1128,6 +1128,68 @@ class QualityAliasIdentityTest(unittest.TestCase):
         self.assertNotIn("<text", group.group(0))
 
 
+class JumpSubtypeTest(unittest.TestCase):
+    """A jump id names a subtype the renderer never read.
+
+    ``_render_jump_annotation`` read ``modifiers.spring_jump``,
+    ``modifiers.stretch`` and level, but not the id, and nothing injects those
+    modifiers from the id — so a score built from catalog ids engraved
+    jump.small, jump.large, jump.assemble, jump.sissonne and jump.spring
+    identically.
+
+    The boundary that must hold: a jump sign carries no compass direction. That
+    part of the collapse is correct notation — the travel direction lives in
+    the direction symbols in the support columns — and is asserted below so a
+    later pass cannot "fix" it by inventing signs.
+    """
+
+    SUBTYPES = ["small", "large", "assemble", "sissonne", "spring"]
+
+    def _markup(self, symbol_id, **extra):
+        symbol = {
+            "symbol_id": symbol_id,
+            "body_part": "torso",
+            "level": "middle",
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {},
+        }
+        symbol.update(extra)
+        svg = render_laban_svg(_minimal_ir([symbol]))
+        i = svg.find(f'data-symbol-id="{symbol_id}"')
+        self.assertNotEqual(i, -1, f"{symbol_id} not rendered")
+        start = svg.rfind("<g", 0, i)
+        return re.sub(r'data-symbol-id="[^"]*"', "",
+                      svg[start:svg.find("</g>", start)])
+
+    def test_each_jump_subtype_renders_distinctly(self):
+        seen = {}
+        for subtype in self.SUBTYPES:
+            shape = self._markup(f"jump.{subtype}")
+            clash = seen.get(shape)
+            self.assertIsNone(clash, f"jump.{subtype} renders like jump.{clash}")
+            seen[shape] = subtype
+        self.assertEqual(len(seen), len(self.SUBTYPES))
+
+    def test_a_jump_carries_no_compass_direction(self):
+        # Correct shared notation: the travel direction is in the support
+        # columns, not on the jump sign. These must stay identical.
+        for direction in ("forward", "backward", "left"):
+            with self.subTest(direction=direction):
+                self.assertEqual(
+                    self._markup("jump.small", direction=direction),
+                    self._markup("jump.small", direction="right"))
+
+    def test_level_still_reaches_the_jump_sign(self):
+        low = self._markup("jump.small", level="low")
+        high = self._markup("jump.small", level="high")
+        self.assertNotEqual(low, high)
+
+    def test_explicit_modifiers_still_win(self):
+        plain = self._markup("jump.small")
+        sprung = self._markup("jump.small", modifiers={"spring_jump": True})
+        self.assertNotEqual(plain, sprung)
+
+
 class PinBowTurnSubtypeTest(unittest.TestCase):
     """pin, bow and turn each name a subtype in the id that never reached the
     drawing. Three instances of one defect, so they are asserted together.
