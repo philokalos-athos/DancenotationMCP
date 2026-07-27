@@ -74,6 +74,34 @@ _EFFORT_POLE_TO_FACTOR = {
     for pole in poles
 }
 
+# Composite effort configurations: an effort graph is one action stroke with a
+# diagonal per participating element, so a composite is just the set of poles
+# that take part. Without these, effort.action.* fell through to the aggregate
+# diamond with nothing active and all eight engraved identically.
+#
+# The eight basic effort actions are the standard weight x time x space
+# combinations. The drives name which three factors participate (the fourth is
+# latent), and the two states in the catalog name a pair.
+_EFFORT_COMPOSITES = {
+    "action.dab":    [("weight", "light"),  ("time", "sudden"),    ("space", "direct")],
+    "action.flick":  [("weight", "light"),  ("time", "sudden"),    ("space", "indirect")],
+    "action.float":  [("weight", "light"),  ("time", "sustained"), ("space", "indirect")],
+    "action.glide":  [("weight", "light"),  ("time", "sustained"), ("space", "direct")],
+    "action.punch":  [("weight", "strong"), ("time", "sudden"),    ("space", "direct")],
+    "action.slash":  [("weight", "strong"), ("time", "sudden"),    ("space", "indirect")],
+    "action.press":  [("weight", "strong"), ("time", "sustained"), ("space", "direct")],
+    "action.wring":  [("weight", "strong"), ("time", "sustained"), ("space", "indirect")],
+    # Drives: three factors present, one absent. Poles are unspecified by the
+    # id, so each participating factor is drawn with its condensing pole.
+    "drive.action":  [("weight", "strong"), ("time", "sudden"),    ("space", "direct")],
+    "drive.passion": [("weight", "strong"), ("time", "sudden"),    ("flow", "bound")],
+    "drive.spell":   [("weight", "strong"), ("space", "direct"),   ("flow", "bound")],
+    "drive.vision":  [("time", "sudden"),   ("space", "direct"),   ("flow", "bound")],
+    # States: two factors.
+    "state.awake":     [("space", "direct"), ("time", "sudden")],
+    "state.dreamlike": [("weight", "strong"), ("flow", "bound")],
+}
+
 
 
 # ── Direction shape paths ─────────────────────────────────────────────
@@ -364,19 +392,19 @@ def _render_modifier_overlays(svg: str, modifiers: dict,
 
 def _render_body_action_mark(symbol_id: str, x_left: float, x_right: float,
                              y_top: float, y_bottom: float) -> str:
-    """Mark on a body-column symbol saying *which* body action it is.
+    """Mark on a staff symbol saying *which* action it is.
 
-    A body.* symbol used to draw its direction symbol and nothing else, so the
-    action — the point of the sign — was invisible: body.tilt.forward.high and
-    body.bend.forward.high engraved identically, and so did contract and
-    release. The catalog records the last two as mirror opposites (glyph
-    U+2282/U+2283) and bend/stretch likewise (U+2312/U+2322); the marks below
-    follow that pairing.
+    A body.* or floor.* symbol used to draw its direction symbol and nothing
+    else, so the action — the point of the sign — was invisible:
+    body.tilt.forward.high and body.bend.forward.high engraved identically, as
+    did contract and release, and so did fall, roll and slide. The catalog
+    records contract/release as mirror opposites (glyph U+2282/U+2283) and
+    bend/stretch likewise (U+2312/U+2322); the marks below follow that pairing.
 
     The exact ICKL form of these marks is not settled from a plate — see
     docs/labanwriter_parity_audit.md. What is settled is that they must differ.
     """
-    if not symbol_id.startswith("body."):
+    if not symbol_id.startswith(("body.", "floor.")):
         return ""
     parts = symbol_id.split(".")
     action = parts[1] if len(parts) > 1 else ""
@@ -409,6 +437,29 @@ def _render_body_action_mark(symbol_id: str, x_left: float, x_right: float,
             f'<line x1="{cx - r:.1f}" y1="{cy + r:.1f}" '
             f'x2="{cx + r:.1f}" y2="{cy - r:.1f}" '
             f'stroke="#111827" stroke-width="1.4"/>'
+        )
+    # floor.* actions, following the same catalog glyph hints:
+    # fall U+21A7 (downward), roll U+21B7 (turning), slide U+21AC (along).
+    if action == "fall":
+        return (
+            f'<line x1="{cx:.1f}" y1="{cy - r:.1f}" x2="{cx:.1f}" y2="{cy + r * 0.4:.1f}" '
+            f'stroke="#111827" stroke-width="1.4"/>'
+            f'<polygon points="{cx:.1f},{cy + r:.1f} {cx - r * 0.5:.1f},{cy + r * 0.3:.1f} '
+            f'{cx + r * 0.5:.1f},{cy + r * 0.3:.1f}" fill="#111827"/>'
+        )
+    if action == "roll":
+        return (
+            f'<path d="M {cx - r:.1f} {cy:.1f} A {r:.1f} {r:.1f} 0 1 1 {cx + r:.1f} {cy:.1f}" '
+            f'fill="none" stroke="#111827" stroke-width="1.4"/>'
+            f'<polygon points="{cx + r + 1.5:.1f},{cy:.1f} {cx + r - 1.5:.1f},{cy - 2.5:.1f} '
+            f'{cx + r - 1.5:.1f},{cy + 2.5:.1f}" fill="#111827"/>'
+        )
+    if action == "slide":
+        return (
+            f'<line x1="{cx - r:.1f}" y1="{cy:.1f}" x2="{cx + r * 0.5:.1f}" y2="{cy:.1f}" '
+            f'stroke="#111827" stroke-width="1.4"/>'
+            f'<polygon points="{cx + r:.1f},{cy:.1f} {cx + r * 0.4:.1f},{cy - 2.5:.1f} '
+            f'{cx + r * 0.4:.1f},{cy + 2.5:.1f}" fill="#111827"/>'
         )
     return ""
 
@@ -1158,6 +1209,32 @@ def _render_effort_diamond(entry: dict) -> str:
     factor = parts[1] if len(parts) > 1 else ""
     pole = parts[2] if len(parts) > 2 else ""
 
+    # Composite effort sign (basic effort action, drive, state): one action
+    # stroke with a diagonal per participating element.
+    composite = _EFFORT_COMPOSITES.get(f"{factor}.{pole}") if not active else None
+    if composite:
+        svg = (
+            f'<g class="laban-annotation effort" '
+            f'data-effort="{escape(factor)}.{escape(pole)}" '
+            f'data-symbol-id="{escape(identity_id)}">'
+            f'<line x1="{cx:.1f}" y1="{cy - s:.1f}" x2="{cx:.1f}" y2="{cy + s:.1f}" '
+            f'stroke="#111827" stroke-width="1.4"/>'
+        )
+        for el_factor, el_pole in composite:
+            dx, dy, filled = _EFFORT_STROKES[el_factor][el_pole]
+            tx = cx + dx * s
+            ty = (cy - s) + dy * s
+            svg += (
+                f'<line x1="{cx:.1f}" y1="{cy - s:.1f}" x2="{tx:.1f}" y2="{ty:.1f}" '
+                f'stroke="#111827" stroke-width="1.4"/>'
+            )
+            if filled:
+                svg += (
+                    f'<path d="M {cx:.1f} {cy - s:.1f} L {tx:.1f} {ty:.1f} '
+                    f'L {cx:.1f} {ty:.1f} Z" fill="#111827"/>'
+                )
+        return svg + '</g>'
+
     # Single-element effort sign: central action stroke + one factor stroke.
     if not active and factor in _EFFORT_STROKES and pole in _EFFORT_STROKES[factor]:
         dx, dy, filled = _EFFORT_STROKES[factor][pole]
@@ -1585,6 +1662,47 @@ def _render_music_rest_annotation(entry: dict) -> str:
     y_bottom = entry["y_bottom"]
     w = entry["width"]
     cx = x + w / 2
+
+    cy = (y_top + y_bottom) / 2
+
+    # Only the rest.* ids were handled; time signatures, tempo and cadence
+    # marks all fell through to the quarter-rest default, so music.time.3_4
+    # engraved as a quarter rest and every music symbol looked the same.
+    if symbol_id.startswith("music.time."):
+        numerator, _, denominator = symbol_id.rsplit(".", 1)[-1].partition("_")
+        content = (
+            f'<text x="{cx:.1f}" y="{cy - 1:.1f}" text-anchor="middle" '
+            f'font-size="9" font-family="serif" font-weight="700" '
+            f'fill="#111827">{escape(numerator)}</text>'
+            f'<text x="{cx:.1f}" y="{cy + 8:.1f}" text-anchor="middle" '
+            f'font-size="9" font-family="serif" font-weight="700" '
+            f'fill="#111827">{escape(denominator)}</text>'
+        )
+        return (f'<g class="laban-annotation music" '
+                f'data-symbol-id="{escape(symbol_id)}">{content}</g>')
+
+    if symbol_id.startswith("music.tempo"):
+        # Metronome mark: a filled note head with a stem.
+        content = (
+            f'<ellipse cx="{cx - 2:.1f}" cy="{cy + 4:.1f}" rx="3" ry="2.2" '
+            f'fill="#111827"/>'
+            f'<line x1="{cx + 1:.1f}" y1="{cy + 4:.1f}" x2="{cx + 1:.1f}" '
+            f'y2="{cy - 6:.1f}" stroke="#111827" stroke-width="1.2"/>'
+            f'<line x1="{cx + 4:.1f}" y1="{cy - 1:.1f}" x2="{cx + 9:.1f}" '
+            f'y2="{cy - 1:.1f}" stroke="#111827" stroke-width="1"/>'
+        )
+        return (f'<g class="laban-annotation music" '
+                f'data-symbol-id="{escape(symbol_id)}">{content}</g>')
+
+    if symbol_id.startswith("music.cadence"):
+        # Phrase close: a bracket turning down at both ends.
+        content = (
+            f'<path d="M {cx - 6:.1f} {cy + 4:.1f} L {cx - 6:.1f} {cy - 3:.1f} '
+            f'L {cx + 6:.1f} {cy - 3:.1f} L {cx + 6:.1f} {cy + 4:.1f}" '
+            f'fill="none" stroke="#111827" stroke-width="1.3"/>'
+        )
+        return (f'<g class="laban-annotation music" '
+                f'data-symbol-id="{escape(symbol_id)}">{content}</g>')
 
     if symbol_id.endswith("rest.sixteenth"):
         content = (
