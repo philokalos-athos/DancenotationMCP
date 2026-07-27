@@ -1128,6 +1128,68 @@ class QualityAliasIdentityTest(unittest.TestCase):
         self.assertNotIn("<text", group.group(0))
 
 
+class SequentialKindTest(unittest.TestCase):
+    """A sequential id names a kind; the renderer never read the id at all.
+
+    ``_render_sequential_annotation`` drew one wavy line plus an arrow whose
+    direction came from ``modifiers.wave_direction`` (default "upward"), a field
+    nothing populates. So a simultaneous movement, a successive one, a ripple
+    and a proximal-to-distal sequence all engraved as the same upward wave,
+    although the catalog gives each its own glyph.
+
+    ``wave.arm``/``body``/``leg`` are NOT part of this — the catalog gives all
+    three the same glyph U+223F, and the limb is carried by placement. Forcing
+    those apart would be inventing signs.
+    """
+
+    KINDS = [
+        "sequential.simultaneous",
+        "sequential.ripple",
+        "sequential.successive.upward",
+        "sequential.successive.downward",
+        "sequential.successive.lateral",
+        "sequential.sequential.proximal_to_distal",
+        "sequential.sequential.distal_to_proximal",
+        "sequential.wave.body",
+    ]
+
+    def _markup(self, symbol_id, **extra):
+        symbol = {
+            "symbol_id": symbol_id,
+            "body_part": "torso",
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {},
+        }
+        symbol.update(extra)
+        svg = render_laban_svg(_minimal_ir([symbol]))
+        i = svg.find(f'data-symbol-id="{symbol_id}"')
+        self.assertNotEqual(i, -1, f"{symbol_id} not rendered")
+        start = svg.rfind("<g", 0, i)
+        return re.sub(r'data-symbol-id="[^"]*"', "",
+                      svg[start:svg.find("</g>", start)])
+
+    def test_each_sequential_kind_renders_distinctly(self):
+        seen = {}
+        for symbol_id in self.KINDS:
+            shape = self._markup(symbol_id)
+            clash = seen.get(shape)
+            self.assertIsNone(clash, f"{symbol_id} renders like {clash}")
+            seen[shape] = symbol_id
+        self.assertEqual(len(seen), len(self.KINDS))
+
+    def test_the_wave_limbs_share_one_glyph_by_design(self):
+        # Same catalog glyph; the limb comes from placement, not the mark.
+        arm = self._markup("sequential.wave.arm")
+        leg = self._markup("sequential.wave.leg")
+        self.assertEqual(arm, leg)
+
+    def test_an_explicit_wave_direction_modifier_still_wins(self):
+        by_id = self._markup("sequential.successive.upward")
+        overridden = self._markup("sequential.successive.upward",
+                                  modifiers={"wave_direction": "downward"})
+        self.assertNotEqual(by_id, overridden)
+
+
 class ShapePoleTest(unittest.TestCase):
     """A shape id names a family AND a pole; both must reach the drawing.
 

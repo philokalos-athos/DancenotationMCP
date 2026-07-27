@@ -1647,7 +1647,17 @@ def _render_rotation_degree(entry: dict) -> str:
 
 
 def _render_sequential_annotation(entry: dict) -> str:
-    """Render sequential/successive movement marks."""
+    """Render a sequential / successive movement mark.
+
+    The id was never read. One wavy line was drawn, with an arrow whose
+    direction came from ``modifiers.wave_direction`` (default "upward") — a
+    field nothing populates — so a simultaneous movement, a ripple, a
+    successive one and a proximal-to-distal sequence all engraved identically,
+    although the catalog gives each its own glyph.
+
+    ``wave.arm``/``body``/``leg`` deliberately keep one shared glyph: the
+    catalog gives all three U+223F and the limb is carried by placement.
+    """
     symbol = entry["symbol"]
     symbol_id = symbol.get("symbol_id", "")
     x = entry["x"]
@@ -1655,36 +1665,103 @@ def _render_sequential_annotation(entry: dict) -> str:
     y_bottom = entry["y_bottom"]
     w = entry["width"]
     cx = x + w / 2
+    cy = (y_top + y_bottom) / 2
 
     modifiers = symbol.get("modifiers", {})
-    wave_dir = modifiers.get("wave_direction", "upward")
+    parts = symbol_id.split(".")
+    kind = parts[1] if len(parts) > 1 else ""
+    variant = parts[2] if len(parts) > 2 else ""
 
-    # Undulating wavy line
-    wave_h = y_bottom - y_top
-    amp = 3
-    svg = (
-        f'<g class="laban-annotation sequential" data-symbol-id="{escape(symbol_id)}">'
-        f'<path d="M {cx:.1f} {y_bottom - 2:.1f} '
-        f'Q {cx + amp:.1f} {y_bottom - wave_h * 0.25:.1f} {cx:.1f} {y_bottom - wave_h * 0.33:.1f} '
-        f'Q {cx - amp:.1f} {y_bottom - wave_h * 0.5:.1f} {cx:.1f} {y_bottom - wave_h * 0.67:.1f} '
-        f'Q {cx + amp:.1f} {y_bottom - wave_h * 0.75:.1f} {cx:.1f} {y_top + 2:.1f}" '
-        f'fill="none" stroke="#111827" stroke-width="1.2"/>'
-    )
+    def wrap(body: str) -> str:
+        return (f'<g class="laban-annotation sequential" '
+                f'data-symbol-id="{escape(symbol_id)}" '
+                f'data-sequential-kind="{escape(kind)}">{body}</g>')
 
-    # Arrow indicating direction
+    def arrowhead(tip_x, tip_y, dx, dy, size=3.0):
+        norm = (dx * dx + dy * dy) ** 0.5 or 1.0
+        ux, uy = dx / norm, dy / norm
+        px, py = -uy, ux
+        bx, by = tip_x - ux * size * 1.5, tip_y - uy * size * 1.5
+        return (f'<polygon points="{tip_x:.1f},{tip_y:.1f} '
+                f'{bx + px * size:.1f},{by + py * size:.1f} '
+                f'{bx - px * size:.1f},{by - py * size:.1f}" fill="#111827"/>')
+
+    def vertical_wave(amp=3.0, top=None, bottom=None):
+        top = y_top + 2 if top is None else top
+        bottom = y_bottom - 2 if bottom is None else bottom
+        span = bottom - top
+        return (f'<path d="M {cx:.1f} {bottom:.1f} '
+                f'Q {cx + amp:.1f} {bottom - span * 0.25:.1f} '
+                f'{cx:.1f} {bottom - span * 0.33:.1f} '
+                f'Q {cx - amp:.1f} {bottom - span * 0.5:.1f} '
+                f'{cx:.1f} {bottom - span * 0.67:.1f} '
+                f'Q {cx + amp:.1f} {bottom - span * 0.75:.1f} '
+                f'{cx:.1f} {top:.1f}" '
+                f'fill="none" stroke="#111827" stroke-width="1.2"/>')
+
+    # An explicit modifier still overrides the id.
+    wave_dir = modifiers.get("wave_direction")
+
+    if kind == "simultaneous":
+        # U+21D5: everything at once, so a double-headed vertical with no wave.
+        body = (f'<line x1="{cx:.1f}" y1="{y_top + 3:.1f}" '
+                f'x2="{cx:.1f}" y2="{y_bottom - 3:.1f}" '
+                f'stroke="#111827" stroke-width="1.4"/>'
+                + arrowhead(cx, y_top, 0, -1) + arrowhead(cx, y_bottom, 0, 1))
+        return wrap(body)
+
+    if kind == "ripple":
+        # U+224B: a ripple is repeated waves, so draw three side by side.
+        body = "".join(
+            f'<path d="M {cx + dx:.1f} {y_bottom - 3:.1f} '
+            f'Q {cx + dx + 2.5:.1f} {cy + 3:.1f} {cx + dx:.1f} {cy:.1f} '
+            f'Q {cx + dx - 2.5:.1f} {cy - 3:.1f} {cx + dx:.1f} {y_top + 3:.1f}" '
+            f'fill="none" stroke="#111827" stroke-width="1.1"/>'
+            for dx in (-4.5, 0.0, 4.5))
+        return wrap(body)
+
+    if kind == "sequential":
+        # U+21C7 / U+21C9: body-part order, so a horizontal doubled arrow.
+        outward = variant == "proximal_to_distal"
+        sign = 1 if outward else -1
+        body = "".join(
+            f'<line x1="{cx - sign * 6:.1f}" y1="{cy + dy:.1f}" '
+            f'x2="{cx + sign * 4:.1f}" y2="{cy + dy:.1f}" '
+            f'stroke="#111827" stroke-width="1.2"/>'
+            + arrowhead(cx + sign * 7, cy + dy, sign, 0, size=2.6)
+            for dy in (-3.0, 3.0))
+        return wrap(body)
+
+    if kind == "successive":
+        if variant == "lateral" and not wave_dir:
+            # U+21C4: across the body, so a horizontal pair pointing opposite
+            # ways rather than a vertical wave.
+            body = (f'<line x1="{cx - 7:.1f}" y1="{cy - 3:.1f}" '
+                    f'x2="{cx + 5:.1f}" y2="{cy - 3:.1f}" '
+                    f'stroke="#111827" stroke-width="1.2"/>'
+                    + arrowhead(cx + 8, cy - 3, 1, 0, size=2.6)
+                    + f'<line x1="{cx + 7:.1f}" y1="{cy + 3:.1f}" '
+                      f'x2="{cx - 5:.1f}" y2="{cy + 3:.1f}" '
+                      f'stroke="#111827" stroke-width="1.2"/>'
+                    + arrowhead(cx - 8, cy + 3, -1, 0, size=2.6))
+            return wrap(body)
+        # U+290A / U+290B: a wave travelling up or down the body.
+        downward = (wave_dir or variant) == "downward"
+        body = vertical_wave()
+        if downward:
+            body += arrowhead(cx, y_bottom, 0, 1)
+        else:
+            body += arrowhead(cx, y_top, 0, -1)
+        return wrap(body)
+
+    # wave.* and anything unrecognised: the plain undulating stroke. All three
+    # wave limbs share it on purpose.
+    body = vertical_wave()
     if wave_dir == "downward":
-        svg += (
-            f'<polygon points="{cx:.1f},{y_bottom:.1f} {cx - 3:.1f},{y_bottom - 5:.1f} '
-            f'{cx + 3:.1f},{y_bottom - 5:.1f}" fill="#111827"/>'
-        )
-    else:
-        svg += (
-            f'<polygon points="{cx:.1f},{y_top:.1f} {cx - 3:.1f},{y_top + 5:.1f} '
-            f'{cx + 3:.1f},{y_top + 5:.1f}" fill="#111827"/>'
-        )
-
-    svg += '</g>'
-    return svg
+        body += arrowhead(cx, y_bottom, 0, 1)
+    elif wave_dir:
+        body += arrowhead(cx, y_top, 0, -1)
+    return wrap(body)
 
 
 def _render_path_annotation(entry: dict) -> str:
