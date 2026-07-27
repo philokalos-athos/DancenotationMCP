@@ -1,12 +1,26 @@
 __pycache__/
 *.py[cod]
 
-# Large reference scan (188-page facsimile source, not project code)
-La vivandière Pas de six Saint-Léon, Arthur, 1821-1870.pdf
+# Large reference scan (188-page facsimile source, not project code).
+# Globbed around the accented characters on purpose: the file on disk carries
+# NFD-decomposed names (e + U+0300), while a literal rule typed here is NFC
+# (U+00E8), so a literal match silently never fires.
+La vivandi*re Pas de six*.pdf
 
 # Transient render scratch dirs
 tests/.tmp/
 dancenotation-pdf-*/
+
+# Generated score output. Renders accumulate every time generate_score runs;
+# only the checked-in sample-* fixtures and .gitkeep files are tracked.
+examples/svg/*.svg
+examples/pdf/*.pdf
+examples/pdf/*.png
+examples/tex/
+!examples/svg/sample-render.svg
+!examples/pdf/sample-render.pdf
+!examples/svg/.gitkeep
+!examples/pdf/.gitkeep
 
 # Local Claude Code session settings
 .claude/settings.local.json
