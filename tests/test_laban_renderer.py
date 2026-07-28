@@ -1134,6 +1134,74 @@ class QualityAliasIdentityTest(unittest.TestCase):
         self.assertNotIn("<text", group.group(0))
 
 
+class SupportPreSignTest(unittest.TestCase):
+    """A support whose distinction is carried by a pre-sign must draw it.
+
+    support.heel.forward and support.step.forward engrave the same direction
+    symbol, and that is correct — the direction symbol encodes direction and
+    level only. What tells them apart is a small sign attached beside it,
+    confirmed on Soirée musicale p58 where x marks, hooked signs and hatched
+    flags sit adjacent to the support symbols without replacing them.
+
+    Nothing is invented here: the signs already exist as their own catalog
+    family (foot.surface.heel, foot.action.stamp and the rest, each with its
+    own glyph and renderer). What was missing was the attachment.
+
+    kneel, pivot, balance, hop and lunge are deliberately NOT wired. Per the
+    plate research they are not foot pre-signs — kneeling puts the knee itself
+    down as the weight-bearing part, a pivot is a turn sign, and the others are
+    compound positions with no dedicated glyph. Guessing a sign for them would
+    be inventing notation.
+    """
+
+    WIRED = {
+        "support.heel": "foot.surface.heel",
+        "support.toe": "foot.surface.toe_tip",
+        "support.stamp": "foot.action.stamp",
+        "support.slide_support": "foot.action.slide",
+    }
+    NOT_WIRED = ["support.kneel", "support.balance", "support.lunge",
+                 "support.hop_support", "support.pivot_support"]
+
+    def _markup(self, symbol_id):
+        svg = render_laban_svg(_minimal_ir([{
+            "symbol_id": f"{symbol_id}.forward",
+            "body_part": "left_leg",
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {},
+        }]))
+        # Strip the id, or "does support.heel differ from support.step" is
+        # answered by the id alone and passes whatever the drawing does.
+        return re.sub(r'data-symbol-id="[^"]*"', "", svg)
+
+    def test_a_wired_support_differs_from_a_plain_step(self):
+        plain = self._markup("support.step")
+        for support in self.WIRED:
+            with self.subTest(support=support):
+                self.assertNotEqual(self._markup(support), plain)
+
+    def test_the_pre_sign_does_not_replace_the_direction_symbol(self):
+        # The direction glyph must survive; the pre-sign sits beside it.
+        for support in self.WIRED:
+            with self.subTest(support=support):
+                self.assertIn("laban-dir-forward-", self._markup(support))
+
+    def test_each_wired_support_draws_its_own_pre_sign(self):
+        seen = {}
+        for support in self.WIRED:
+            svg = self._markup(support)
+            m = re.search(r'<g class="laban-pre-sign"[^>]*>(.*?)</g>', svg, re.S)
+            self.assertIsNotNone(m, f"{support} drew no pre-sign")
+            clash = seen.get(m.group(1))
+            self.assertIsNone(clash, f"{support} pre-sign matches {clash}")
+            seen[m.group(1)] = support
+
+    def test_supports_without_a_settled_sign_get_none(self):
+        for support in self.NOT_WIRED:
+            with self.subTest(support=support):
+                self.assertNotIn("laban-pre-sign", self._markup(support))
+
+
 class CaptionPlacementTest(unittest.TestCase):
     """A caption belongs beside the staff, not across it.
 

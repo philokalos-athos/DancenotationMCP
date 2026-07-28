@@ -453,6 +453,43 @@ def _render_modifier_overlays(svg: str, modifiers: dict, caption_x: float | None
     return svg
 
 
+def _render_pre_sign(entry: dict, x_left: float, x_right: float,
+                     y_top: float, y_bottom: float) -> str:
+    """Draw the small sign a support declares beside its direction symbol.
+
+    support.heel.forward and support.step.forward engrave the same direction
+    symbol, and that is correct — the symbol encodes direction and level only.
+    What tells them apart is a sign attached beside it, seen on Soirée musicale
+    p58 where x marks, hooked signs and hatched flags sit adjacent to the
+    support symbols without replacing them.
+
+    Nothing is invented. The signs already exist as their own catalog family
+    with their own renderer; ``behavior.pre_sign`` names which one, and only
+    the four whose sign is settled carry it. Kneeling puts the knee down as the
+    weight-bearing part, a pivot is a turn sign, and balance, hop and lunge are
+    compound positions with no dedicated glyph — those declare nothing rather
+    than being given a guessed sign.
+    """
+    pre_sign_id = (entry.get("spec") or {}).get("behavior", {}).get("pre_sign")
+    if not pre_sign_id:
+        return ""
+    size = 12.0
+    # Just outside the column, level with the middle of the symbol. Anchoring
+    # it to the top put it a long way from the body of a multi-beat symbol,
+    # where it stopped reading as attached to anything.
+    px = x_right + 2
+    py = (y_top + y_bottom) / 2 - size / 2
+    inner = _render_foot_detail_annotation({
+        "symbol": {"symbol_id": pre_sign_id, "modifiers": {}},
+        "x": px,
+        "y_top": py,
+        "y_bottom": py + size,
+        "width": size,
+    })
+    return (f'<g class="laban-pre-sign" '
+            f'data-pre-sign="{escape(pre_sign_id)}">{inner}</g>')
+
+
 def _render_body_action_mark(symbol_id: str, x_left: float, x_right: float,
                              y_top: float, y_bottom: float) -> str:
     """Mark on a staff symbol saying *which* action it is.
@@ -646,6 +683,7 @@ def _render_staff_symbol(entry: dict, ctx: _RenderContext,
     svg = _render_modifier_overlays(svg, modifiers, entry.get("caption_x"),
                                     x_left, x_right, y_top, y_bottom)
     svg += _render_body_action_mark(symbol_id, x_left, x_right, y_top, y_bottom)
+    svg += _render_pre_sign(entry, x_left, x_right, y_top, y_bottom)
     if facing and facing != direction:
         svg += _render_facing_indicator(facing, x_right, y_top, y_bottom)
     svg += '</g>'
