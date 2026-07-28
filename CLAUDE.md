@@ -98,13 +98,35 @@ The catalog is the single source of truth for parser, validator, and renderer be
 
 ## Working Mode
 
-**Keep going. Do not stop after one item.**
+**Keep going. An empty task list is not a stopping condition.**
 
 Work through the task list continuously — finish one task and start the next
 immediately. Do not pause to ask whether to continue, and do not stop to report
-progress mid-way. Stop only when the task list is empty or you hit a usage
-limit. When something worth fixing turns up along the way, add it to the task
-list and carry on rather than breaking stride to raise it.
+progress mid-way. When something worth fixing turns up along the way, add it to
+the task list and carry on rather than breaking stride to raise it.
+
+**When the list empties, refill it.** The list is yours to maintain, so
+"finish the list" is not an ending — it is the point at which you go and find
+the next gap. Re-measure, compare against the sources, and open the tasks that
+measurement turns up. There is always a next gap while parity is short of
+LabanWriter; run the checks below and one will surface.
+
+- Re-measure the collapse ratio (`tests/test_glyph_uniqueness.py`) and look at
+  the largest remaining cluster.
+- Render the largest example score and look at it beside a plate.
+- Pick an open question from `docs/labanwriter_parity_audit.md` and settle it
+  against Knust or the published scores.
+- Take a family that renders but has never been checked against a plate, and
+  check it.
+
+Stop only on a usage limit, or when the user says so. If you genuinely cannot
+find further work after running those checks, say what you checked and why
+nothing surfaced — do not stop silently on an empty list.
+
+Note on what this file can and cannot do: it governs behaviour **within** a
+turn. It cannot resume you across turns — once a reply is sent, nothing
+re-invokes you. Unattended multi-turn work needs a scheduler (`/loop`, or a
+cron task); this file only ensures that each turn runs to its full extent.
 
 That autonomy rests on the guardrails below. They are not optional ceremony —
 each one was written after a defect got through.
