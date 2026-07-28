@@ -802,14 +802,20 @@ def _render_staff_symbol(entry: dict, ctx: _RenderContext,
     # four-beat step engraved exactly like a one-beat one. In Labanotation the
     # length of the symbol IS the duration, so anything longer than the
     # reference is drawn inline at its true height instead.
-    # The shared <symbol> stays in use for boxes close to its own proportion —
-    # a single beat — where the letterboxing is a few px and the defs reuse is
-    # worth keeping. Anything longer is drawn inline at its true height.
-    _REF_ASPECT = 40.0 / 20.0
+    # Direction symbols are always drawn inline. A <use> of a <symbol> scales
+    # uniformly, so its drawn height is capped by the reference glyph's own
+    # proportion however tall the box is — which made length monotonic in
+    # duration but not proportional to it (52, 118, 238 units for one, two and
+    # four beats: a ratio of 1 : 2.27 : 4.58).
+    #
+    # Knust's Third Principle does not allow that: "The length of the symbol
+    # indicates how long the movement lasts. For example, if a centimetre is
+    # chosen for the length of a crochet, a semi-breve will be 4 cm long, a
+    # minim 2 cm, a crochet 1 cm, a quaver 1/2 cm." The relation is linear, so
+    # the defs reuse has to go. The <symbol> definitions are still emitted for
+    # any other consumer of the markup.
     def_key = (direction or "place", level)
-    use_href = (use_defs.get(def_key)
-                if use_defs and not has_special_line and h <= w * _REF_ASPECT * 1.15
-                else None)
+    use_href = None
 
     svg = (
         f'<g class="laban-symbol" data-symbol-id="{escape(symbol_id)}" '

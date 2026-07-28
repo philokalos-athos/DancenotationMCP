@@ -576,8 +576,9 @@ class LabanRendererTests(unittest.TestCase):
             "modifiers": {},
         }])
         svg = render_laban_svg(ir)
+        # The <symbol> definition is still emitted for other consumers of the
+        # markup; the score itself draws inline so length can carry duration.
         self.assertIn('id="laban-dir-forward-middle"', svg)
-        self.assertIn('href="#laban-dir-forward-middle"', svg)
 
     def test_facing_indicator_rendered(self):
         """When facing differs from direction, a facing arrow should appear."""
@@ -1246,14 +1247,24 @@ class DurationIsSymbolLengthTest(unittest.TestCase):
         xs, ys = nums[0::2], nums[1::2]
         return max(ys) - min(ys), max(xs) - min(xs)
 
-    def test_a_longer_movement_draws_a_longer_symbol(self):
-        h1, _ = self._drawn_extent(1)
-        h2, _ = self._drawn_extent(2)
-        h4, _ = self._drawn_extent(4)
-        self.assertGreater(h2, h1 * 1.5,
-                           f"two beats drew {h2}, one beat {h1}")
-        self.assertGreater(h4, h2 * 1.5,
-                           f"four beats drew {h4}, two beats {h2}")
+    def test_symbol_length_is_strictly_proportional_to_duration(self):
+        """Knust's Third Principle, stated as a foundation of the system:
+
+            "The length of the symbol indicates how long the movement lasts.
+            For example, if a centimetre is chosen for the length of a crochet,
+            a semi-breve will be 4 cm long, a minim 2 cm, a crochet 1 cm, a
+            quaver 1/2 cm."
+
+        So the relation is not merely monotonic — it is linear. The first
+        implementation was monotonic but not proportional: one beat went
+        through a shared <symbol>, which scales uniformly and so capped the
+        drawn height, while longer ones were drawn inline at their true size.
+        """
+        heights = {d: self._drawn_extent(d)[0] for d in (1, 2, 4)}
+        self.assertAlmostEqual(heights[2] / heights[1], 2.0, delta=0.15,
+                               msg=f"two beats vs one: {heights}")
+        self.assertAlmostEqual(heights[4] / heights[1], 4.0, delta=0.3,
+                               msg=f"four beats vs one: {heights}")
 
     def test_a_long_symbol_keeps_its_level_marking(self):
         """The middle-level dot lives in the shared <symbol> def, so a symbol
@@ -1331,7 +1342,7 @@ class SupportPreSignTest(unittest.TestCase):
         # The direction glyph must survive; the pre-sign sits beside it.
         for support in self.WIRED:
             with self.subTest(support=support):
-                self.assertIn("laban-dir-forward-", self._markup(support))
+                self.assertIn('data-direction="forward"', self._markup(support))
 
     def test_each_wired_support_draws_its_own_pre_sign(self):
         seen = {}
@@ -1360,10 +1371,11 @@ class SupportPreSignTest(unittest.TestCase):
         """
         from dancenotation_mcp.rendering.laban_layout import COLUMN_WIDTHS
         svg = self._markup("support.heel")
-        use = re.search(r'<use [^>]*x="([\d.]+)"[^>]*width="([\d.]+)"', svg)
-        self.assertIsNotNone(use, "no direction symbol emitted")
-        sym_left, sym_w = float(use.group(1)), float(use.group(2))
-        sym_right = sym_left + sym_w
+        m = re.search(r'<g class="laban-symbol"[^>]*>.*?<path d="([^"]+)"',
+                      svg, re.S)
+        self.assertIsNotNone(m, "no direction symbol emitted")
+        xs = [float(n) for n in re.findall(r'-?\d+\.?\d*', m.group(1))][0::2]
+        sym_left, sym_right = min(xs), max(xs)
         pre = re.search(r'<g class="laban-pre-sign"[^>]*>(.*?)</g>', svg, re.S)
         self.assertIsNotNone(pre, "no pre-sign emitted")
         body = pre.group(1)
@@ -1719,9 +1731,9 @@ class InherentLevelTest(unittest.TestCase):
         }
         symbol.update(extra)
         svg = render_laban_svg(_minimal_ir([symbol]))
-        m = re.search(r'<use href="#laban-dir-([a-z_]+)-([a-z]+)"', svg)
+        m = re.search(r'data-direction="[a-z_]+" data-level="([a-z]+)"', svg)
         self.assertIsNotNone(m, f"no direction glyph for {symbol_id}")
-        return m.group(2)
+        return m.group(1)
 
     def test_plie_is_a_low_support(self):
         self.assertEqual(self._glyph("support.plie.forward"), "low")
@@ -2086,7 +2098,7 @@ class FlexionExtensionRoutingTest(unittest.TestCase):
                           "flexion.elbow.full", "extension.spine.90"):
             with self.subTest(symbol=symbol_id):
                 markup = self._markup(symbol_id)
-                self.assertNotIn("laban-dir-", markup,
+                self.assertNotIn('class="laban-symbol"', markup,
                                  "drawn as a direction glyph")
                 self.assertIn("laban-annotation flexion", markup)
 
@@ -2242,7 +2254,10 @@ class DirectionImpliedBySymbolIdTest(unittest.TestCase):
         }
         symbol.update(extra)
         svg = render_laban_svg(_minimal_ir([symbol]))
-        m = re.search(r'<use href="#laban-dir-([a-z_]+)-([a-z]+)"', svg)
+        # Read the data attributes, not the <use> href: direction symbols are
+        # drawn inline so their length can be proportional to duration, and
+        # there is no href to look for.
+        m = re.search(r'data-direction="([a-z_]+)" data-level="([a-z]+)"', svg)
         self.assertIsNotNone(m, f"no direction glyph emitted for {symbol_id}")
         return m.group(1), m.group(2)
 
@@ -2388,10 +2403,14 @@ class SupportSymbolTouchesCentreLineTest(unittest.TestCase):
             "modifiers": {},
         }])
         svg = render_laban_svg(ir)
-        use = re.search(
-            r'<use [^>]*x="([\d.]+)"[^>]*width="([\d.]+)"[^>]*/>', svg)
-        self.assertIsNotNone(use, "no <use> emitted for the support symbol")
-        x, w = float(use.group(1)), float(use.group(2))
+        # Direction symbols are drawn inline so their length can be
+        # proportional to duration, so the extent comes from the path.
+        m = re.search(r'<g class="laban-symbol"[^>]*>.*?<path d="([^"]+)"',
+                      svg, re.S)
+        self.assertIsNotNone(m, "no path emitted for the support symbol")
+        nums = [float(n) for n in re.findall(r'-?\d+\.?\d*', m.group(1))]
+        xs = nums[0::2]
+        x, w = min(xs), max(xs) - min(xs)
         centre = float(re.search(
             r'<line x1="([\d.]+)" y1="[\d.]+" x2="\1" y2="[\d.]+" '
             r'stroke="#111827" stroke-width="2.5"/>', svg).group(1))
