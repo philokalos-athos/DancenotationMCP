@@ -96,6 +96,47 @@ The catalog is the single source of truth for parser, validator, and renderer be
 - `fixtures/invalid_overlap_timing.json` — known-bad IR for validation tests
 - `fixtures/golden_official_family_score.{json,svg}` — golden regression fixture for engraving layout; tests compare rendered SVG against the golden file
 
+## Working Mode
+
+**Keep going. Do not stop after one item.**
+
+Work through the task list continuously — finish one task and start the next
+immediately. Do not pause to ask whether to continue, and do not stop to report
+progress mid-way. Stop only when the task list is empty or you hit a usage
+limit. When something worth fixing turns up along the way, add it to the task
+list and carry on rather than breaking stride to raise it.
+
+That autonomy rests on the guardrails below. They are not optional ceremony —
+each one was written after a defect got through.
+
+- **TDD, and watch the test fail for the right reason.** SVG assertions in this
+  project pass for the wrong reason with unusual ease. Keeping
+  `data-symbol-id` makes two identically-drawn symbols compare unequal;
+  blanking coordinates erases the very difference between an up arrow and a
+  down arrow; `width="([\d.]+)"` matches inside `stroke-width="1"` and turns an
+  assertion into `1 <= 64`. Each of those went green and proved nothing.
+- **A structural assertion cannot prove a shape is right.** Render new geometry
+  to PNG and look at it. `figure_eight` passed a distinctness assertion while
+  drawing a plain circle; `shape.flow`'s two poles passed while drawn
+  backwards; ten graded foot marks passed while rendering as identical nubs.
+- **Render the whole score, not just the symbol.** Twice a defect has been
+  invisible to every per-symbol test and obvious on the first full render:
+  systems stacking into a 1:20.6 column, and diagonals crossing the staff at
+  long durations. Both were green across 650+ tests.
+- **Full suite green before every commit.** Inspect a golden-fixture diff and
+  confirm it is what you intended before regenerating it.
+- **Settle engraving questions against the sources, in this order**: published
+  scores in the repo root (La vivandière, Soirée musicale) for layout; Knust's
+  *Dictionary of Kinetography Laban* for what a sign means and how it is
+  written; ICKL proceedings for orthography. Render page regions with PyMuPDF
+  and look. If a question cannot be settled, record it as open — never invent
+  a sign.
+- **Tell a renderer defect from shared notation.** Symbols that engrave
+  identically are not automatically a bug: a direction symbol encodes direction
+  and level only, so heel support and balance genuinely share one glyph.
+  Forcing those apart invents notation. `tests/test_glyph_uniqueness.py` records
+  which families share by design.
+
 ## Key Conventions
 
 - **Style**: 4-space indent, type hints where useful, `snake_case` for functions/vars, `PascalCase` for test classes. No formatter/linter configured — match surrounding code.
