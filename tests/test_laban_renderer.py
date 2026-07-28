@@ -1134,6 +1134,83 @@ class QualityAliasIdentityTest(unittest.TestCase):
         self.assertNotIn("<text", group.group(0))
 
 
+class DurationIsSymbolLengthTest(unittest.TestCase):
+    """The length of a direction symbol IS how long the movement lasts.
+
+    That is Labanotation's time encoding, and it was not happening. The <use>
+    box tracked duration — 58, 118, 238 units for one, two and four beats — but
+    the <symbol> viewBox is 24x44 with preserveAspectRatio unset, so SVG scaled
+    the glyph uniformly and centred it in the box. The drawn sign came out the
+    same size whatever the duration, floating in empty space, and a four-beat
+    step engraved exactly like a one-beat one.
+    """
+
+    def _drawn_extent(self, duration):
+        """(height, width) of the ink actually drawn for the symbol.
+
+        Measured from the emitted geometry rather than from the layout box: a
+        <use> box can be any height while the glyph inside it stays one size,
+        which is exactly the defect.
+        """
+        svg = render_laban_svg(_minimal_ir([{
+            "symbol_id": "support.step",
+            "body_part": "left_leg",
+            "direction": "forward",
+            "level": "middle",
+            "timing": {"measure": 1, "beat": 1, "duration_beats": duration},
+            "modifiers": {},
+        }]))
+        g = re.search(r'<g class="laban-symbol"[^>]*>(.*?)</g>', svg, re.S)
+        self.assertIsNotNone(g, "no direction symbol emitted")
+        body = g.group(1)
+        use = re.search(r'<use [^>]*x="([\d.]+)" y="([\d.]+)" '
+                        r'width="([\d.]+)" height="([\d.]+)"', body)
+        if use:
+            # Uniform scaling: the glyph can only be as tall as its own aspect
+            # allows, whatever the box says.
+            w = float(use.group(3))
+            return min(float(use.group(4)), w * (40.0 / 20.0)), w
+        path = re.search(r'<path d="([^"]+)"', body)
+        self.assertIsNotNone(path, "symbol drew neither a <use> nor a path")
+        nums = [float(n) for n in re.findall(r'-?\d+\.?\d*', path.group(1))]
+        xs, ys = nums[0::2], nums[1::2]
+        return max(ys) - min(ys), max(xs) - min(xs)
+
+    def test_a_longer_movement_draws_a_longer_symbol(self):
+        h1, _ = self._drawn_extent(1)
+        h2, _ = self._drawn_extent(2)
+        h4, _ = self._drawn_extent(4)
+        self.assertGreater(h2, h1 * 1.5,
+                           f"two beats drew {h2}, one beat {h1}")
+        self.assertGreater(h4, h2 * 1.5,
+                           f"four beats drew {h4}, two beats {h2}")
+
+    def test_a_long_symbol_keeps_its_level_marking(self):
+        """The middle-level dot lives in the shared <symbol> def, so a symbol
+        long enough to be drawn inline lost it silently — level marking is not
+        something a duration change may drop."""
+        for duration in (1, 2, 4):
+            with self.subTest(duration=duration):
+                svg = render_laban_svg(_minimal_ir([{
+                    "symbol_id": "support.step",
+                    "body_part": "left_leg",
+                    "direction": "forward",
+                    "level": "middle",
+                    "timing": {"measure": 1, "beat": 1,
+                               "duration_beats": duration},
+                    "modifiers": {},
+                }]))
+                self.assertIn("<circle", svg, "middle-level dot missing")
+
+    def test_the_head_does_not_stretch_with_the_body(self):
+        """A pentagon's point must stay a point, not become a spike."""
+        for duration in (1, 2, 4):
+            with self.subTest(duration=duration):
+                _, width = self._drawn_extent(duration)
+                self.assertAlmostEqual(width, 26.0, delta=1.0,
+                                       msg="symbol width drifted with duration")
+
+
 class SupportPreSignTest(unittest.TestCase):
     """A support whose distinction is carried by a pre-sign must draw it.
 
@@ -1200,6 +1277,34 @@ class SupportPreSignTest(unittest.TestCase):
         for support in self.NOT_WIRED:
             with self.subTest(support=support):
                 self.assertNotIn("laban-pre-sign", self._markup(support))
+
+    def test_the_pre_sign_flanks_the_direction_symbol(self):
+        """Knust puts these marks on the support sign, not beside the column.
+
+        Dictionary of Kinetography Laban §225-231, plate vol. II p27: the
+        part-of-foot marks are "hooks or dashes ... attached to the preceding
+        support sign", drawn flanking the direction symbol at its own edges.
+        The first implementation placed them clear of the column entirely,
+        where they read as a separate annotation rather than as part of the
+        support.
+        """
+        from dancenotation_mcp.rendering.laban_layout import COLUMN_WIDTHS
+        svg = self._markup("support.heel")
+        use = re.search(r'<use [^>]*x="([\d.]+)"[^>]*width="([\d.]+)"', svg)
+        self.assertIsNotNone(use, "no direction symbol emitted")
+        sym_left, sym_w = float(use.group(1)), float(use.group(2))
+        sym_right = sym_left + sym_w
+        pre = re.search(r'<g class="laban-pre-sign"[^>]*>(.*?)</g>', svg, re.S)
+        self.assertIsNotNone(pre, "no pre-sign emitted")
+        xs = [float(v) for v in re.findall(r'\b[cx]x?\d?="([\d.]+)"', pre.group(1))]
+        self.assertTrue(xs, "pre-sign has no x coordinates")
+        # Every part of the mark must sit within a hair of the symbol itself.
+        self.assertLessEqual(
+            max(xs), sym_right + 4,
+            f"pre-sign reaches x={max(xs)}, symbol ends at {sym_right}")
+        self.assertGreaterEqual(
+            min(xs), sym_left - 4,
+            f"pre-sign starts at x={min(xs)}, symbol starts at {sym_left}")
 
 
 class CaptionPlacementTest(unittest.TestCase):
@@ -1860,9 +1965,13 @@ class BodyActionMarkTest(unittest.TestCase):
                                     self._markup(f"body.{b}.place.middle"))
 
     def test_direction_and_level_still_reach_the_symbol(self):
-        # The action mark must not displace the direction symbol.
+        # The action mark must not displace the direction symbol. Asserted on
+        # the data attributes rather than the <use> href: a symbol longer than
+        # one beat is drawn inline so its length can carry its duration, and
+        # then there is no href to look for.
         markup = self._markup("body.tilt.forward.high")
-        self.assertIn("laban-dir-forward-high", markup)
+        self.assertIn('data-direction="forward"', markup)
+        self.assertIn('data-level="high"', markup)
 
 
 class FlexionExtensionRoutingTest(unittest.TestCase):

@@ -126,7 +126,11 @@ def _direction_path(direction: str | None, x_left: float, y_top: float,
     if direction == "forward":
         # Rectangle body with isosceles triangle point at top.
         # Triangle occupies ~27% of total height.
-        tri_h = h * 0.27
+        # The head is sized from the width, not the height. Taking it as
+        # a fraction of height turned a long-duration symbol's point
+        # into a spike; on the plates the head keeps its proportions
+        # while the body lengthens.
+        tri_h = min(h * 0.27, w * 0.55)
         rect_top = y_top + tri_h  # where rectangle starts below triangle
         return (
             f"M {cx:.1f} {y_top:.1f} "               # triangle apex
@@ -138,7 +142,11 @@ def _direction_path(direction: str | None, x_left: float, y_top: float,
 
     if direction == "backward":
         # Rectangle body with isosceles triangle point at bottom.
-        tri_h = h * 0.27
+        # The head is sized from the width, not the height. Taking it as
+        # a fraction of height turned a long-duration symbol's point
+        # into a spike; on the plates the head keeps its proportions
+        # while the body lengthens.
+        tri_h = min(h * 0.27, w * 0.55)
         rect_bottom = y_bottom - tri_h
         return (
             f"M {x_left:.1f} {y_top:.1f} "            # rectangle top-left
@@ -183,7 +191,11 @@ def _direction_path(direction: str | None, x_left: float, y_top: float,
     if direction in _DIAG_ANGLES:
         angle = _DIAG_ANGLES[direction]
         # Build base shape (forward for forward_*, backward for backward_*)
-        tri_h = h * 0.27
+        # The head is sized from the width, not the height. Taking it as
+        # a fraction of height turned a long-duration symbol's point
+        # into a spike; on the plates the head keeps its proportions
+        # while the body lengthens.
+        tri_h = min(h * 0.27, w * 0.55)
         if direction.startswith("diagonal_forward"):
             # Forward shape: triangle at top
             rect_top = y_top + tri_h
@@ -473,21 +485,50 @@ def _render_pre_sign(entry: dict, x_left: float, x_right: float,
     pre_sign_id = (entry.get("spec") or {}).get("behavior", {}).get("pre_sign")
     if not pre_sign_id:
         return ""
-    size = 12.0
-    # Just outside the column, level with the middle of the symbol. Anchoring
-    # it to the top put it a long way from the body of a multi-beat symbol,
-    # where it stopped reading as attached to anything.
-    px = x_right + 2
-    py = (y_top + y_bottom) / 2 - size / 2
-    inner = _render_foot_detail_annotation({
-        "symbol": {"symbol_id": pre_sign_id, "modifiers": {}},
-        "x": px,
-        "y_top": py,
-        "y_bottom": py + size,
-        "width": size,
-    })
-    return (f'<g class="laban-pre-sign" '
-            f'data-pre-sign="{escape(pre_sign_id)}">{inner}</g>')
+    # Knust, Dictionary of Kinetography Laban §225-231 and plate vol. II p27:
+    # these are "hooks or dashes ... attached to the preceding support sign",
+    # drawn flanking the direction symbol at its own edges and at its upper
+    # part. The first implementation placed the mark clear of the column
+    # entirely, where it read as a separate annotation rather than as part of
+    # the support.
+    #
+    # What is drawn here is the mark's placement, not yet Knust's graded set:
+    # he writes the part of the foot as a fraction of "point" (1/1 whole point
+    # through 1/8), the same marks appearing on black signs for a knee bend.
+    # See docs/labanwriter_parity_audit.md.
+    w = x_right - x_left
+    reach = min(w * 0.26, 4.0)
+    top = y_top + 3
+    marks = []
+    for side, x in ((-1, x_left), (1, x_right)):
+        d = side * reach
+        if pre_sign_id.endswith("toe_tip"):
+            # Plate 225a,b: a curl, for the point of the foot.
+            marks.append(
+                f'<path d="M {x:.1f} {top:.1f} q {d:.1f} 0 {d:.1f} {reach:.1f} '
+                f'q 0 {reach:.1f} {-d * 0.6:.1f} {reach * 0.4:.1f}" '
+                f'fill="none" stroke="#111827" stroke-width="1.1"/>')
+        elif pre_sign_id.endswith("heel"):
+            # Plate 225l,n: a straight dash, for the heel.
+            marks.append(
+                f'<line x1="{x:.1f}" y1="{top:.1f}" '
+                f'x2="{x + d:.1f}" y2="{top:.1f}" '
+                f'stroke="#111827" stroke-width="1.3"/>')
+        elif "stamp" in pre_sign_id:
+            # Plate 225e,j: a hook ending in a filled dot, for an accented
+            # contact.
+            marks.append(
+                f'<path d="M {x:.1f} {top:.1f} q {d:.1f} 0 {d:.1f} {reach:.1f}" '
+                f'fill="none" stroke="#111827" stroke-width="1.1"/>'
+                f'<circle cx="{x + d:.1f}" cy="{top + reach:.1f}" r="1.3" '
+                f'fill="#111827"/>')
+        else:
+            # Sliding and anything else: a hook.
+            marks.append(
+                f'<path d="M {x:.1f} {top:.1f} q {d:.1f} 0 {d:.1f} {reach:.1f}" '
+                f'fill="none" stroke="#111827" stroke-width="1.2"/>')
+    return (f'<g class="laban-pre-sign" data-pre-sign="{escape(pre_sign_id)}">'
+            f'{"".join(marks)}</g>')
 
 
 def _render_body_action_mark(symbol_id: str, x_left: float, x_right: float,
@@ -656,11 +697,23 @@ def _render_staff_symbol(entry: dict, ctx: _RenderContext,
     has_special_line = line_style not in ("single",)
     has_modifiers = bool(modifiers) and not (len(modifiers) == 1 and "line_style" in modifiers and line_style == "single")
 
-    def_key = (direction or "place", level)
-    use_href = use_defs.get(def_key) if use_defs and not has_special_line else None
-
     w = x_right - x_left
     h = y_bottom - y_top
+
+    # A <use> of a <symbol> scales uniformly and centres what is left over, so
+    # a box taller than the reference glyph letterboxed it: the sign came out
+    # the same size whatever its duration, floating in empty space, and a
+    # four-beat step engraved exactly like a one-beat one. In Labanotation the
+    # length of the symbol IS the duration, so anything longer than the
+    # reference is drawn inline at its true height instead.
+    # The shared <symbol> stays in use for boxes close to its own proportion —
+    # a single beat — where the letterboxing is a few px and the defs reuse is
+    # worth keeping. Anything longer is drawn inline at its true height.
+    _REF_ASPECT = 40.0 / 20.0
+    def_key = (direction or "place", level)
+    use_href = (use_defs.get(def_key)
+                if use_defs and not has_special_line and h <= w * _REF_ASPECT * 1.15
+                else None)
 
     svg = (
         f'<g class="laban-symbol" data-symbol-id="{escape(symbol_id)}" '
@@ -679,6 +732,14 @@ def _render_staff_symbol(entry: dict, ctx: _RenderContext,
             svg += (
                 f'<path d="{path_d}" fill="none" stroke="{style["stroke"]}" '
                 f'stroke-width="3.5" opacity="0.3"{dash_attr}/>'
+            )
+        # Middle level's centre dot. It lives in the shared <symbol> def, so
+        # the inline branch has to draw it too -- otherwise a symbol long
+        # enough to be drawn inline silently loses its level marking.
+        if level == "middle":
+            svg += (
+                f'<circle cx="{(x_left + x_right) / 2:.1f}" '
+                f'cy="{(y_top + y_bottom) / 2:.1f}" r="2.5" fill="#111827"/>'
             )
     svg = _render_modifier_overlays(svg, modifiers, entry.get("caption_x"),
                                     x_left, x_right, y_top, y_bottom)
