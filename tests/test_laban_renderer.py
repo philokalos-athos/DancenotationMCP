@@ -1283,6 +1283,53 @@ class DurationIsSymbolLengthTest(unittest.TestCase):
                 }]))
                 self.assertIn("<circle", svg, "middle-level dot missing")
 
+    DIAGONALS = ["diagonal_forward_left", "diagonal_forward_right",
+                 "diagonal_backward_left", "diagonal_backward_right"]
+
+    def _extent_for(self, direction, duration):
+        svg = render_laban_svg(_minimal_ir([{
+            "symbol_id": "support.step",
+            "body_part": "left_leg",
+            "direction": direction,
+            "level": "middle",
+            "timing": {"measure": 1, "beat": 1, "duration_beats": duration},
+            "modifiers": {},
+        }]))
+        m = re.search(r'<g class="laban-symbol"[^>]*>.*?<path d="([^"]+)"',
+                      svg, re.S)
+        self.assertIsNotNone(m, f"no path for {direction}")
+        nums = [float(n) for n in re.findall(r'-?\d+\.?\d*', m.group(1))]
+        xs, ys = nums[0::2], nums[1::2]
+        return max(ys) - min(ys), max(xs) - min(xs)
+
+    def test_a_diagonal_stays_inside_its_column_however_long_it_is(self):
+        """Diagonals were built by rotating the whole shape 45 degrees, so a
+        tall box spread far sideways: in the 33-measure score they became giant
+        slanted bars crossing the staff and the page was unreadable.
+
+        Length carries duration; width is the column and must not move with it.
+        Every per-symbol test was green when this shipped — only rendering the
+        whole score showed it.
+        """
+        from dancenotation_mcp.rendering.laban_layout import COLUMN_WIDTHS
+        column = COLUMN_WIDTHS["left_support"]
+        for direction in self.DIAGONALS:
+            for duration in (1, 2, 4):
+                with self.subTest(direction=direction, duration=duration):
+                    _, width = self._extent_for(direction, duration)
+                    self.assertLessEqual(
+                        width, column + 1,
+                        f"{direction} at {duration} beats is {width:.0f} wide, "
+                        f"column is {column}")
+
+    def test_a_diagonal_still_lengthens_with_duration(self):
+        for direction in self.DIAGONALS:
+            with self.subTest(direction=direction):
+                h1, _ = self._extent_for(direction, 1)
+                h4, _ = self._extent_for(direction, 4)
+                self.assertGreater(h4, h1 * 3.0,
+                                   f"{direction}: {h1} -> {h4}")
+
     def test_the_head_does_not_stretch_with_the_body(self):
         """A pentagon's point must stay a point, not become a spike."""
         for duration in (1, 2, 4):

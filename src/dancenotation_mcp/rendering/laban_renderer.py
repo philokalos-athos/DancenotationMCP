@@ -180,54 +180,39 @@ def _direction_path(direction: str | None, x_left: float, y_top: float,
             f"L {body_left:.1f} {y_top:.1f} Z"
         )
 
-    # Diagonals: rotate the forward/backward shape by ±45°.
-    import math
-    _DIAG_ANGLES = {
-        "diagonal_forward_right": -math.pi / 4,    # 45° CW (upper-right)
-        "diagonal_forward_left": math.pi / 4,       # 45° CCW (upper-left)
-        "diagonal_backward_right": math.pi / 4,     # 45° CCW from backward (lower-right)
-        "diagonal_backward_left": -math.pi / 4,     # 45° CW from backward (lower-left)
+    # Diagonals stay upright in their column; what makes them diagonal is an
+    # asymmetric head, its apex pushed to the named side, not the whole shape
+    # rotated. Rotating spread the symbol sideways in proportion to its height,
+    # so once length carried duration a four-beat diagonal came out 177 units
+    # wide against a 26-unit column and crossed the whole staff. Length is the
+    # duration; the width is the column and does not move with it.
+    _DIAG_SIDES = {
+        "diagonal_forward_right": (1, "forward"),
+        "diagonal_forward_left": (-1, "forward"),
+        "diagonal_backward_right": (1, "backward"),
+        "diagonal_backward_left": (-1, "backward"),
     }
-    if direction in _DIAG_ANGLES:
-        angle = _DIAG_ANGLES[direction]
-        # Build base shape (forward for forward_*, backward for backward_*)
-        # The head is sized from the width, not the height. Taking it as
-        # a fraction of height turned a long-duration symbol's point
-        # into a spike; on the plates the head keeps its proportions
-        # while the body lengthens.
+    if direction in _DIAG_SIDES:
+        side, base = _DIAG_SIDES[direction]
         tri_h = min(h * 0.27, w * 0.55)
-        if direction.startswith("diagonal_forward"):
-            # Forward shape: triangle at top
-            rect_top = y_top + tri_h
-            pts = [
-                (cx, y_top),                # apex
-                (x_right, rect_top),        # triangle right base
-                (x_right, y_bottom),        # bottom-right
-                (x_left, y_bottom),         # bottom-left
-                (x_left, rect_top),         # triangle left base
-            ]
-        else:
-            # Backward shape: triangle at bottom
-            rect_bottom = y_bottom - tri_h
-            pts = [
-                (x_left, y_top),            # top-left
-                (x_right, y_top),           # top-right
-                (x_right, rect_bottom),     # triangle right base
-                (cx, y_bottom),             # apex
-                (x_left, rect_bottom),      # triangle left base
-            ]
-        # Rotate all points around center
-        cos_a, sin_a = math.cos(angle), math.sin(angle)
-        rotated = []
-        for px, py in pts:
-            dx, dy = px - cx, py - cy
-            rotated.append((cx + dx * cos_a - dy * sin_a,
-                            cy + dx * sin_a + dy * cos_a))
-        parts = [f"M {rotated[0][0]:.1f} {rotated[0][1]:.1f}"]
-        for rx, ry in rotated[1:]:
-            parts.append(f"L {rx:.1f} {ry:.1f}")
-        parts.append("Z")
-        return " ".join(parts)
+        apex_x = x_right if side > 0 else x_left
+        if base == "forward":
+            # Head at the top, its apex over the named side.
+            return (
+                f"M {apex_x:.1f} {y_top:.1f} "
+                f"L {x_right:.1f} {y_top + tri_h:.1f} "
+                f"L {x_right:.1f} {y_bottom:.1f} "
+                f"L {x_left:.1f} {y_bottom:.1f} "
+                f"L {x_left:.1f} {y_top + tri_h:.1f} Z"
+            )
+        # Head at the bottom, its apex over the named side.
+        return (
+            f"M {x_left:.1f} {y_top:.1f} "
+            f"L {x_right:.1f} {y_top:.1f} "
+            f"L {x_right:.1f} {y_bottom - tri_h:.1f} "
+            f"L {apex_x:.1f} {y_bottom:.1f} "
+            f"L {x_left:.1f} {y_bottom - tri_h:.1f} Z"
+        )
 
     # place / unknown → full-width rectangle (no triangle point)
     return (
