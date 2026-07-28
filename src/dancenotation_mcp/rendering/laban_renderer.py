@@ -465,70 +465,166 @@ def _render_modifier_overlays(svg: str, modifiers: dict, caption_x: float | None
     return svg
 
 
+# Which part of the foot takes the weight, as Knust grades it (Dictionary of
+# Kinetography Laban §225, plate vol. II p27). One ordered scale running from
+# the front of the foot down and then up the heel:
+#
+#   point_1_1  full point, on the tips of the toes, instep arched
+#   point_3_4  on the whole of the toes, instep arched
+#   point_1_2  demi-pointe, toes and ball, heel at 45 degrees -- the normal
+#              high support
+#   point_1_4  quarter point
+#   point_1_8  ball and toes, heel only slightly raised
+#   whole_foot understood by default in medium and low supports, so drawn only
+#              when explicitly asked for
+#   heel_1..4  on the heels, by how far the toes are lifted from the floor
+#
+# Knust's note: the marks "indicate, first, which part of the foot takes the
+# weight, and second, how far the toes are lifted away from the floor". The
+# scale is orthogonal to level -- the same marks appear on hatched, white and
+# black signs (his a-f against g-k, l-p against q-u).
+_FOOT_PART_GRADES = (
+    "point_1_1", "point_3_4", "point_1_2", "point_1_4", "point_1_8",
+    "whole_foot", "heel_1", "heel_2", "heel_3", "heel_4",
+)
+
+# Existing catalog foot signs mapped onto the scale, so a support declaring
+# behavior.pre_sign still resolves without a second vocabulary.
+_PRE_SIGN_TO_GRADE = {
+    "foot.surface.toe_tip": "point_1_1",
+    "foot.surface.demi_pointe": "point_1_2",
+    "foot.surface.ball": "point_1_8",
+    "foot.surface.full_sole": "whole_foot",
+    "foot.surface.heel": "heel_1",
+    "foot.surface.instep": "point_3_4",
+    "foot.surface.metatarsal": "point_1_4",
+    # Actions rather than parts of the foot. Knust writes stamping and sliding
+    # with their own signs (§720 and following); they are not points on the
+    # foot-part scale and keep marks of their own until those forms are
+    # sourced from the plates.
+    "foot.action.stamp": "action_stamp",
+    "foot.action.slide": "action_slide",
+}
+
+
+def _foot_part_mark(grade: str, x: float, y: float, side: int,
+                    reach: float) -> str:
+    """One half of a foot-part mark, on the given side of the support sign.
+
+    ``side`` is -1 on the left of the sign and +1 on the right; the two halves
+    mirror each other, as the plate shows.
+    """
+    d = side * reach
+
+    if grade == "point_1_1":
+        # 225a: a broad shallow curve sweeping out and down.
+        return (f'<path d="M {x:.1f} {y - reach * 0.6:.1f} '
+                f'q {d:.1f} {reach * 0.4:.1f} {d:.1f} {reach * 1.2:.1f}" '
+                f'fill="none" stroke="#111827" stroke-width="1.1"/>')
+    if grade == "point_3_4":
+        # 225b: a curl at the corner.
+        return (f'<path d="M {x:.1f} {y:.1f} q {d:.1f} 0 {d:.1f} {reach:.1f} '
+                f'q 0 {reach * 0.7:.1f} {-d * 0.7:.1f} {reach * 0.3:.1f}" '
+                f'fill="none" stroke="#111827" stroke-width="1.1"/>')
+    if grade == "point_1_2":
+        # 225c,d: the plain hook of the normal high support.
+        return (f'<path d="M {x:.1f} {y:.1f} q {d:.1f} 0 {d:.1f} {reach:.1f}" '
+                f'fill="none" stroke="#111827" stroke-width="1.1"/>')
+    if grade == "point_1_4":
+        # 225e: a hook ending in a filled dot.
+        return (f'<path d="M {x:.1f} {y:.1f} q {d:.1f} 0 {d:.1f} {reach:.1f}" '
+                f'fill="none" stroke="#111827" stroke-width="1.1"/>'
+                f'<circle cx="{x + d:.1f}" cy="{y + reach:.1f}" r="1.3" '
+                f'fill="#111827"/>')
+    if grade == "point_1_8":
+        # 225f: a short straight dash.
+        return (f'<line x1="{x:.1f}" y1="{y:.1f}" '
+                f'x2="{x + d:.1f}" y2="{y:.1f}" '
+                f'stroke="#111827" stroke-width="1.3"/>')
+    if grade == "whole_foot":
+        # 225l: an arrowhead pointing away from the sign.
+        return (f'<path d="M {x:.1f} {y - reach * 0.7:.1f} '
+                f'L {x + d:.1f} {y:.1f} '
+                f'L {x:.1f} {y + reach * 0.7:.1f}" '
+                f'fill="none" stroke="#111827" stroke-width="1.1"/>')
+    if grade == "heel_1":
+        # 225m: a hook curving down to a filled dot.
+        return (f'<path d="M {x:.1f} {y - reach * 0.5:.1f} '
+                f'q {d:.1f} 0 {d:.1f} {reach:.1f}" '
+                f'fill="none" stroke="#111827" stroke-width="1.1"/>'
+                f'<circle cx="{x + d:.1f}" cy="{y + reach * 0.5:.1f}" r="1.5" '
+                f'fill="#111827"/>')
+    if grade == "heel_2":
+        # 225n: an angled hook turning up and out.
+        return (f'<path d="M {x:.1f} {y + reach * 0.4:.1f} '
+                f'L {x + d * 0.8:.1f} {y + reach * 0.4:.1f} '
+                f'L {x + d:.1f} {y - reach * 0.5:.1f}" '
+                f'fill="none" stroke="#111827" stroke-width="1.1"/>')
+    if grade == "heel_3":
+        # 225o: a hook with a small loop, and a dot.
+        return (f'<path d="M {x:.1f} {y:.1f} q {d:.1f} 0 {d:.1f} {-reach:.1f} '
+                f'q 0 {-reach * 0.6:.1f} {-d * 0.6:.1f} {-reach * 0.2:.1f}" '
+                f'fill="none" stroke="#111827" stroke-width="1.1"/>'
+                f'<circle cx="{x + d * 0.5:.1f}" cy="{y + reach * 0.6:.1f}" '
+                f'r="1.2" fill="#111827"/>')
+    if grade == "heel_4":
+        # 225p: a shallow hook curving up.
+        return (f'<path d="M {x:.1f} {y + reach * 0.5:.1f} '
+                f'q {d:.1f} 0 {d:.1f} {-reach:.1f}" '
+                f'fill="none" stroke="#111827" stroke-width="1.1"/>')
+    if grade == "action_stamp":
+        # An accented contact: a wedge driven in towards the sign.
+        return (f'<path d="M {x + d:.1f} {y - reach * 0.6:.1f} '
+                f'L {x:.1f} {y:.1f} '
+                f'L {x + d:.1f} {y + reach * 0.6:.1f} Z" fill="#111827"/>')
+    # action_slide: a long flat stroke, for travel along the floor.
+    return (f'<line x1="{x:.1f}" y1="{y - reach * 0.35:.1f}" '
+            f'x2="{x + d * 1.2:.1f}" y2="{y - reach * 0.35:.1f}" '
+            f'stroke="#111827" stroke-width="1.2"/>'
+            f'<line x1="{x:.1f}" y1="{y + reach * 0.35:.1f}" '
+            f'x2="{x + d * 1.2:.1f}" y2="{y + reach * 0.35:.1f}" '
+            f'stroke="#111827" stroke-width="1.2"/>')
+
+
 def _render_pre_sign(entry: dict, x_left: float, x_right: float,
                      y_top: float, y_bottom: float) -> str:
-    """Draw the small sign a support declares beside its direction symbol.
+    """Draw the foot-part mark flanking a support sign.
 
-    support.heel.forward and support.step.forward engrave the same direction
-    symbol, and that is correct — the symbol encodes direction and level only.
-    What tells them apart is a sign attached beside it, seen on Soirée musicale
-    p58 where x marks, hooked signs and hatched flags sit adjacent to the
-    support symbols without replacing them.
+    Knust §225-231 and plate vol. II p27: these are "hooks or dashes ...
+    attached to the preceding support sign", drawn on both sides of the
+    direction symbol and mirrored. Which mark is drawn says which part of the
+    foot takes the weight, on the graded scale in ``_FOOT_PART_GRADES``.
 
-    Nothing is invented. The signs already exist as their own catalog family
-    with their own renderer; ``behavior.pre_sign`` names which one, and only
-    the four whose sign is settled carry it. Kneeling puts the knee down as the
-    weight-bearing part, a pivot is a turn sign, and balance, hop and lunge are
-    compound positions with no dedicated glyph — those declare nothing rather
-    than being given a guessed sign.
+    The grade comes from ``modifiers.foot_part`` if the score states one, else
+    from the support's own ``behavior.pre_sign`` in the catalog.
     """
-    pre_sign_id = (entry.get("spec") or {}).get("behavior", {}).get("pre_sign")
-    if not pre_sign_id:
+    symbol = entry["symbol"]
+    modifiers = symbol.get("modifiers", {})
+    grade = modifiers.get("foot_part")
+    if not grade:
+        pre_sign_id = (entry.get("spec") or {}).get("behavior", {}).get("pre_sign")
+        grade = _PRE_SIGN_TO_GRADE.get(pre_sign_id or "")
+    if not grade or grade not in _FOOT_PART_GRADES + ("action_stamp", "action_slide"):
         return ""
-    # Knust, Dictionary of Kinetography Laban §225-231 and plate vol. II p27:
-    # these are "hooks or dashes ... attached to the preceding support sign",
-    # drawn flanking the direction symbol at its own edges and at its upper
-    # part. The first implementation placed the mark clear of the column
-    # entirely, where it read as a separate annotation rather than as part of
-    # the support.
-    #
-    # What is drawn here is the mark's placement, not yet Knust's graded set:
-    # he writes the part of the foot as a fraction of "point" (1/1 whole point
-    # through 1/8), the same marks appearing on black signs for a knee bend.
-    # See docs/labanwriter_parity_audit.md.
+
+    # "Standing on the whole foot ... is only used in exceptional cases,
+    # because in medium level and low supports standing on the whole foot is
+    # understood." So it draws nothing unless the score insists.
+    if grade == "whole_foot" and not modifiers.get("foot_part_explicit"):
+        return ""
+
     w = x_right - x_left
-    reach = min(w * 0.26, 4.0)
-    top = y_top + 3
-    marks = []
-    for side, x in ((-1, x_left), (1, x_right)):
-        d = side * reach
-        if pre_sign_id.endswith("toe_tip"):
-            # Plate 225a,b: a curl, for the point of the foot.
-            marks.append(
-                f'<path d="M {x:.1f} {top:.1f} q {d:.1f} 0 {d:.1f} {reach:.1f} '
-                f'q 0 {reach:.1f} {-d * 0.6:.1f} {reach * 0.4:.1f}" '
-                f'fill="none" stroke="#111827" stroke-width="1.1"/>')
-        elif pre_sign_id.endswith("heel"):
-            # Plate 225l,n: a straight dash, for the heel.
-            marks.append(
-                f'<line x1="{x:.1f}" y1="{top:.1f}" '
-                f'x2="{x + d:.1f}" y2="{top:.1f}" '
-                f'stroke="#111827" stroke-width="1.3"/>')
-        elif "stamp" in pre_sign_id:
-            # Plate 225e,j: a hook ending in a filled dot, for an accented
-            # contact.
-            marks.append(
-                f'<path d="M {x:.1f} {top:.1f} q {d:.1f} 0 {d:.1f} {reach:.1f}" '
-                f'fill="none" stroke="#111827" stroke-width="1.1"/>'
-                f'<circle cx="{x + d:.1f}" cy="{top + reach:.1f}" r="1.3" '
-                f'fill="#111827"/>')
-        else:
-            # Sliding and anything else: a hook.
-            marks.append(
-                f'<path d="M {x:.1f} {top:.1f} q {d:.1f} 0 {d:.1f} {reach:.1f}" '
-                f'fill="none" stroke="#111827" stroke-width="1.2"/>')
-    return (f'<g class="laban-pre-sign" data-pre-sign="{escape(pre_sign_id)}">'
-            f'{"".join(marks)}</g>')
+    # Sized from the plate: the hooks reach out about a third of the sign's
+    # width. A 4px cap made every grade an indistinguishable nub -- the marks
+    # were textually distinct and visually identical.
+    reach = max(w * 0.34, 6.0)
+    cy = (y_top + y_bottom) / 2
+    marks = "".join(
+        _foot_part_mark(grade, x, cy, side, reach)
+        for side, x in ((-1, x_left), (1, x_right))
+    )
+    return (f'<g class="laban-pre-sign" data-foot-part="{escape(grade)}">'
+            f'{marks}</g>')
 
 
 def _render_body_action_mark(symbol_id: str, x_left: float, x_right: float,

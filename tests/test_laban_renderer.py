@@ -1134,6 +1134,76 @@ class QualityAliasIdentityTest(unittest.TestCase):
         self.assertNotIn("<text", group.group(0))
 
 
+class FootPartGradeTest(unittest.TestCase):
+    """The part of the foot taking weight is a graded scale, not a list.
+
+    Knust §225 (plate vol. II p27) runs it from the front of the foot down and
+    then up the heel: 1/1 full point (tips of toes), 3/4, 1/2 demi-pointe (the
+    normal high support), 1/4, 1/8 (heel only slightly raised), the whole foot,
+    then four heel gradations by how far the toes are lifted. His note: the
+    marks "indicate, first, which part of the foot takes the weight, and
+    second, how far the toes are lifted away from the floor".
+
+    Two things follow that the first implementation did not have. The scale is
+    ordered, so neighbouring degrees must differ; and it is orthogonal to
+    level — the same marks appear on hatched, white and black signs (a-f
+    against g-k, l-p against q-u).
+    """
+
+    GRADES = ["point_1_1", "point_3_4", "point_1_2", "point_1_4", "point_1_8",
+              "whole_foot", "heel_1", "heel_2", "heel_3", "heel_4"]
+
+    def _mark(self, grade, level="middle"):
+        svg = render_laban_svg(_minimal_ir([{
+            "symbol_id": "support.step",
+            "body_part": "left_leg",
+            "direction": "forward",
+            "level": level,
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {"foot_part": grade},
+        }]))
+        m = re.search(r'<g class="laban-pre-sign"[^>]*>(.*?)</g>', svg, re.S)
+        return m.group(1) if m else None
+
+    def test_every_grade_on_the_scale_draws_a_distinct_mark(self):
+        seen = {}
+        for grade in self.GRADES:
+            if grade == "whole_foot":
+                continue          # understood by default, see below
+            mark = self._mark(grade)
+            self.assertIsNotNone(mark, f"{grade} drew no mark")
+            clash = seen.get(mark)
+            self.assertIsNone(clash, f"{grade} renders like {clash}")
+            seen[mark] = grade
+
+    def test_the_whole_foot_is_understood_and_draws_nothing(self):
+        # Knust: "This contact symbol is only used in exceptional cases,
+        # because in medium level and low supports standing on the whole foot
+        # is understood."
+        for level in ("middle", "low"):
+            with self.subTest(level=level):
+                self.assertIsNone(self._mark("whole_foot", level))
+
+    def test_an_explicit_whole_foot_mark_can_still_be_asked_for(self):
+        svg = render_laban_svg(_minimal_ir([{
+            "symbol_id": "support.step",
+            "body_part": "left_leg",
+            "direction": "forward",
+            "level": "middle",
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {"foot_part": "whole_foot", "foot_part_explicit": True},
+        }]))
+        self.assertIn("laban-pre-sign", svg)
+
+    def test_the_mark_is_the_same_at_every_level(self):
+        # The scale is orthogonal to level: a-f and g-k are the same marks on
+        # hatched and black signs.
+        marks = {lvl: self._mark("point_1_4", lvl)
+                 for lvl in ("high", "middle", "low")}
+        self.assertEqual(len(set(marks.values())), 1,
+                         f"mark changed with level: {marks}")
+
+
 class DurationIsSymbolLengthTest(unittest.TestCase):
     """The length of a direction symbol IS how long the movement lasts.
 
@@ -1296,15 +1366,22 @@ class SupportPreSignTest(unittest.TestCase):
         sym_right = sym_left + sym_w
         pre = re.search(r'<g class="laban-pre-sign"[^>]*>(.*?)</g>', svg, re.S)
         self.assertIsNotNone(pre, "no pre-sign emitted")
-        xs = [float(v) for v in re.findall(r'\b[cx]x?\d?="([\d.]+)"', pre.group(1))]
-        self.assertTrue(xs, "pre-sign has no x coordinates")
-        # Every part of the mark must sit within a hair of the symbol itself.
-        self.assertLessEqual(
-            max(xs), sym_right + 4,
-            f"pre-sign reaches x={max(xs)}, symbol ends at {sym_right}")
-        self.assertGreaterEqual(
-            min(xs), sym_left - 4,
-            f"pre-sign starts at x={min(xs)}, symbol starts at {sym_left}")
+        body = pre.group(1)
+        # What matters is that the mark is *attached*: it starts on the sign's
+        # own edges. It then reaches outward, which the plate shows plainly —
+        # the hooks in 225 l-p extend well clear of the sign. An earlier
+        # version of this test demanded the mark stay inside the sign's bounds,
+        # which the plate contradicts.
+        starts = [float(m.group(1)) for m in
+                  re.finditer(r'[ML] ([\d.]+) [\d.]+', body)]
+        starts += [float(m.group(1)) for m in
+                   re.finditer(r'x1="([\d.]+)"', body)]
+        self.assertTrue(starts, "pre-sign has no start coordinates")
+        for x in starts:
+            self.assertTrue(
+                abs(x - sym_left) < 0.6 or abs(x - sym_right) < 0.6,
+                f"mark starts at x={x}, detached from the sign "
+                f"({sym_left}-{sym_right})")
 
 
 class CaptionPlacementTest(unittest.TestCase):
