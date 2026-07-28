@@ -1322,6 +1322,43 @@ class DurationIsSymbolLengthTest(unittest.TestCase):
                         f"{direction} at {duration} beats is {width:.0f} wide, "
                         f"column is {column}")
 
+    def _corners(self, direction):
+        svg = render_laban_svg(_minimal_ir([{
+            "symbol_id": "support.step",
+            "body_part": "left_leg",
+            "direction": direction,
+            "level": "middle",
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {},
+        }]))
+        m = re.search(r'<g class="laban-symbol"[^>]*>.*?<path d="([^"]+)"',
+                      svg, re.S)
+        self.assertIsNotNone(m, f"no path for {direction}")
+        nums = [float(n) for n in re.findall(r'-?\d+\.?\d*', m.group(1))]
+        return list(zip(nums[0::2], nums[1::2]))
+
+    def test_a_diagonal_is_a_quadrilateral_with_a_slanted_edge(self):
+        """Knust Fig. 13 (vol. II p3): the diagonal sign is a rectangle with
+        one edge cut as a straight slant — a quadrilateral whose two sides are
+        different heights. It was drawn as a pentagon: both sides equal, with a
+        point pushed to one corner. That is the forward shape with its apex
+        moved, not the third basic shape the figure gives.
+        """
+        for direction in self.DIAGONALS:
+            with self.subTest(direction=direction):
+                corners = self._corners(direction)
+                self.assertEqual(
+                    len(corners), 4,
+                    f"{direction} has {len(corners)} corners, Fig. 13 has 4")
+                xs = sorted({round(x, 1) for x, _ in corners})
+                self.assertEqual(len(xs), 2, "corners should sit on two sides")
+                left_ys = [y for x, y in corners if round(x, 1) == xs[0]]
+                right_ys = [y for x, y in corners if round(x, 1) == xs[1]]
+                self.assertNotAlmostEqual(
+                    max(left_ys) - min(left_ys), max(right_ys) - min(right_ys),
+                    delta=0.5,
+                    msg="both sides are the same height, so nothing slants")
+
     def test_a_diagonal_still_lengthens_with_duration(self):
         for direction in self.DIAGONALS:
             with self.subTest(direction=direction):

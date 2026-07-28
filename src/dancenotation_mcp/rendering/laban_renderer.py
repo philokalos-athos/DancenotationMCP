@@ -194,24 +194,31 @@ def _direction_path(direction: str | None, x_left: float, y_top: float,
     }
     if direction in _DIAG_SIDES:
         side, base = _DIAG_SIDES[direction]
-        tri_h = min(h * 0.27, w * 0.55)
-        apex_x = x_right if side > 0 else x_left
+        # Knust Fig. 13: the diagonal sign is a rectangle with one edge cut as
+        # a straight slant -- a quadrilateral whose two sides are different
+        # heights. Not the forward shape with its apex moved, which is a
+        # pentagon and a different basic shape.
+        slant = min(h * 0.3, w * 0.9)
         if base == "forward":
-            # Head at the top, its apex over the named side.
+            # Top edge slants; the named side is the tall one.
+            tall_y, short_y = y_top, y_top + slant
+            left_y = tall_y if side < 0 else short_y
+            right_y = short_y if side < 0 else tall_y
             return (
-                f"M {apex_x:.1f} {y_top:.1f} "
-                f"L {x_right:.1f} {y_top + tri_h:.1f} "
+                f"M {x_left:.1f} {left_y:.1f} "
+                f"L {x_right:.1f} {right_y:.1f} "
                 f"L {x_right:.1f} {y_bottom:.1f} "
-                f"L {x_left:.1f} {y_bottom:.1f} "
-                f"L {x_left:.1f} {y_top + tri_h:.1f} Z"
+                f"L {x_left:.1f} {y_bottom:.1f} Z"
             )
-        # Head at the bottom, its apex over the named side.
+        # Bottom edge slants; the named side reaches lowest.
+        tall_y, short_y = y_bottom, y_bottom - slant
+        left_y = tall_y if side < 0 else short_y
+        right_y = short_y if side < 0 else tall_y
         return (
             f"M {x_left:.1f} {y_top:.1f} "
             f"L {x_right:.1f} {y_top:.1f} "
-            f"L {x_right:.1f} {y_bottom - tri_h:.1f} "
-            f"L {apex_x:.1f} {y_bottom:.1f} "
-            f"L {x_left:.1f} {y_bottom - tri_h:.1f} Z"
+            f"L {x_right:.1f} {right_y:.1f} "
+            f"L {x_left:.1f} {left_y:.1f} Z"
         )
 
     # place / unknown → full-width rectangle (no triangle point)
