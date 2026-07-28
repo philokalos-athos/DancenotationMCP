@@ -156,28 +156,23 @@ def _direction_path(direction: str | None, x_left: float, y_top: float,
             f"L {x_left:.1f} {rect_bottom:.1f} Z"     # triangle left base
         )
 
-    if direction == "right":
-        # Pentagon: rectangular body (~73% width) with triangle point at right.
-        body_w = w * 0.73
-        body_right = x_left + body_w
+    if direction in ("left", "right"):
+        # Knust Fig. 12: the sideways sign is a plain triangle, its apex toward
+        # the named side and its base the opposite edge. His examples 220a and
+        # 221a show exactly that in the support column. It was drawn as a
+        # pentagon -- a rectangular body with a point added on one side, which
+        # is the forward shape wearing a sideways point rather than the second
+        # basic shape.
+        if direction == "left":
+            return (
+                f"M {x_right:.1f} {y_top:.1f} "
+                f"L {x_right:.1f} {y_bottom:.1f} "
+                f"L {x_left:.1f} {cy:.1f} Z"
+            )
         return (
             f"M {x_left:.1f} {y_top:.1f} "
-            f"L {body_right:.1f} {y_top:.1f} "
             f"L {x_right:.1f} {cy:.1f} "
-            f"L {body_right:.1f} {y_bottom:.1f} "
             f"L {x_left:.1f} {y_bottom:.1f} Z"
-        )
-
-    if direction == "left":
-        # Pentagon: rectangular body (~73% width) with triangle point at left.
-        body_w = w * 0.73
-        body_left = x_right - body_w
-        return (
-            f"M {x_right:.1f} {y_top:.1f} "
-            f"L {x_right:.1f} {y_bottom:.1f} "
-            f"L {body_left:.1f} {y_bottom:.1f} "
-            f"L {x_left:.1f} {cy:.1f} "
-            f"L {body_left:.1f} {y_top:.1f} Z"
         )
 
     # Diagonals stay upright in their column; what makes them diagonal is an

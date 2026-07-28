@@ -1359,6 +1359,36 @@ class DurationIsSymbolLengthTest(unittest.TestCase):
                     delta=0.5,
                     msg="both sides are the same height, so nothing slants")
 
+    def test_a_sideways_sign_is_a_triangle(self):
+        """Knust Fig. 12 (vol. II p3) gives the sideways sign as a plain
+        triangle, apex toward the named side, and his examples 220a and 221a
+        show exactly that in the support column. It was drawn as a pentagon —
+        a rectangular body with a point added on one side.
+        """
+        for direction in ("left", "right"):
+            with self.subTest(direction=direction):
+                corners = self._corners(direction)
+                self.assertEqual(
+                    len(corners), 3,
+                    f"{direction} has {len(corners)} corners, Fig. 12 has 3")
+                # Two corners share the base edge and one is the apex
+                # opposite. Which side the base is on depends on the
+                # direction, so do not assume it is the left pair.
+                xs = sorted(x for x, _ in corners)
+                self.assertTrue(
+                    abs(xs[0] - xs[1]) < 0.5 or abs(xs[1] - xs[2]) < 0.5,
+                    f"no shared base edge in {xs}")
+
+    def test_the_sideways_apex_points_to_the_named_side(self):
+        left_x = [x for x, _ in self._corners("left")]
+        right_x = [x for x, _ in self._corners("right")]
+        # The apex is the lone corner; for "left" it is the smallest x.
+        self.assertEqual(min(left_x), sorted(left_x)[0])
+        self.assertEqual(sorted(left_x)[1], sorted(left_x)[2],
+                         "left's base should be the right-hand edge")
+        self.assertEqual(sorted(right_x)[0], sorted(right_x)[1],
+                         "right's base should be the left-hand edge")
+
     def test_a_diagonal_still_lengthens_with_duration(self):
         for direction in self.DIAGONALS:
             with self.subTest(direction=direction):
