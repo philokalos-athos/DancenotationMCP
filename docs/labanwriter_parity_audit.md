@@ -10,9 +10,9 @@ capability have drifted apart badly, and only the second one is parity.
 | Metric | Baseline | Now |
 |---|---|---|
 | Catalog symbols | 1122 | 906 |
-| Distinct glyphs actually produced | 159 | **490** |
-| Visual collapse ratio | 7.1 : 1 | **1.85 : 1** |
-| Symbols with a wholly unique glyph | — | **436** |
+| Distinct glyphs actually produced | 159 | **526** |
+| Visual collapse ratio | 7.1 : 1 | **1.72 : 1** |
+| Symbols with a wholly unique glyph | — | **472** |
 | Symbols whose authored id was lost in the SVG | 8 | 0 |
 
 Adding a catalog entry raises the first row and not the second. Treat the
@@ -83,9 +83,18 @@ scores, and Dance Notation Bureau Fundamentals — "the shapes of the symbols
 indicate nine different directions in space", with part-of-foot carried by a
 separate attached touch sign.
 
-Distinguishing them properly means modelling the attached signs, not drawing
-new direction glyphs. That is the next parity frontier, and it needs catalog
-metadata that does not exist yet.
+Distinguishing them means modelling the attached signs, not drawing new
+direction glyphs. Partly done: `behavior.pre_sign` now names the sign a support
+carries and the renderer attaches it, for the four whose sign is settled —
+heel, toe, stamp and slide.
+
+Kneel, pivot, balance, hop and lunge are deliberately left declaring nothing.
+They are not foot pre-signs: kneeling puts the knee down as the weight-bearing
+part, a pivot is a turn sign, and the rest are compound positions with no
+dedicated glyph. A test asserts they stay unsigned, so a later pass cannot give
+them a guessed one. Settling those needs a source for the forms that neither
+the plates nor the ICKL documents provide — Knust's *Handbook of Kinetography
+Laban* is the likely one.
 
 Two smaller cases share by design and are asserted to stay identical, so a
 later pass cannot "fix" them by inventing signs:
