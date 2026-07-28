@@ -313,6 +313,38 @@ def _with_resolved_direction(symbol: dict, spec: dict | None = None) -> dict:
     return resolved
 
 
+CAPTION_LANE_WIDTH = 9      # horizontal step between caption lanes
+CAPTION_MIN_SEPARATION = 40  # vertical clearance two captions need to share one
+
+
+def _assign_caption_lanes(placed_symbols: list[dict]) -> None:
+    """Spread captions across lanes so they stop stacking on each other.
+
+    Every caption took the same margin x, so several falling at the same
+    height overlapped into an unreadable pile. A caption runs vertically, so
+    only its y matters: two may share a lane when they are far enough apart,
+    and are pushed outward when they are not.
+
+    Mutates ``placed_symbols`` in place, which is a private list this function
+    owns — the caller's IR is untouched.
+    """
+    captioned = [e for e in placed_symbols
+                 if e["symbol"].get("modifiers", {}).get("label")
+                 and e.get("caption_x") is not None]
+    lanes: dict[tuple[int, int], list[float]] = {}
+    for entry in sorted(captioned, key=lambda e: (e["system_index"], e["y_top"])):
+        y = (entry["y_top"] + entry["y_bottom"]) / 2
+        lane = 0
+        while True:
+            key = (entry["system_index"], lane)
+            used = lanes.setdefault(key, [])
+            if all(abs(y - other) >= CAPTION_MIN_SEPARATION for other in used):
+                used.append(y)
+                break
+            lane += 1
+        entry["caption_x"] += lane * CAPTION_LANE_WIDTH
+
+
 def compute_laban_layout(ir: dict) -> dict:
     """Compute full standard Labanotation layout from IR.
 
@@ -537,6 +569,8 @@ def compute_laban_layout(ir: dict) -> dict:
             # drawn at the symbol's own x and landed across the notation.
             "caption_x": s_col_positions[STAFF_COLUMNS[-1]][1] + ANNOTATION_GAP,
         })
+
+    _assign_caption_lanes(placed_symbols)
 
     # ── Route computation ────────────────────────────────────────────
     bridge_routes = _compute_laban_bridge_routes(annotation_entries)

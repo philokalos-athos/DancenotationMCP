@@ -1198,6 +1198,39 @@ class CaptionPlacementTest(unittest.TestCase):
         self.assertIn("grand plie 2nd", svg)
         self.assertIn("flat-back table", svg)
 
+    def test_captions_at_the_same_moment_do_not_sit_on_each_other(self):
+        """Captions all took one margin x, so where several fall at the same
+        height their vertical strips overlapped into an unreadable stack.
+
+        Only y matters for a rotated caption: two at the same x are fine if
+        they are far apart vertically, and collide if they are not.
+        """
+        svg = render_laban_svg(_minimal_ir([
+            {
+                "symbol_id": "support.step",
+                "body_part": part,
+                "direction": "forward",
+                "level": "middle",
+                "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+                "modifiers": {"label": f"caption {i}"},
+            }
+            for i, part in enumerate(["left_leg", "right_leg", "left_arm",
+                                      "right_arm", "torso"])
+        ]))
+        placed = [
+            (float(re.search(r'\sx="([\d.]+)"', m.group(1)).group(1)),
+             float(re.search(r'\sy="([\d.]+)"', m.group(1)).group(1)))
+            for m in re.finditer(
+                r'<text([^>]*class="laban-caption"[^>]*)>', svg)
+        ]
+        self.assertEqual(len(placed), 5, "not every caption was rendered")
+        for i, a in enumerate(placed):
+            for b in placed[i + 1:]:
+                if abs(a[0] - b[0]) < 6:      # same lane
+                    self.assertGreaterEqual(
+                        abs(a[1] - b[1]), 30,
+                        f"captions at {a} and {b} overlap in the same lane")
+
 
 class SystemLayoutTest(unittest.TestCase):
     """Systems run side by side across the page, not stacked into one column.
