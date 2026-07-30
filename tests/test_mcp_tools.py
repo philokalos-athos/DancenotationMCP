@@ -710,7 +710,7 @@ class TestAddRetention(unittest.TestCase):
         # catalog, so every add_retention symbol used to fail validation
         # with "Unknown symbol id". The real catalog family is
         # "retention.{type}.{body_category}".
-        self.assertEqual(sym["symbol_id"], "retention.hold.arm")
+        self.assertEqual(sym["symbol_id"], "retention.hold")
         self.assertEqual(sym["retention"], "hold")
         self.assertEqual(sym["body_part"], "left_arm")
         self.assertEqual(sym["timing"]["duration_beats"], 2.0)
@@ -732,7 +732,7 @@ class TestAddRetention(unittest.TestCase):
             "measure": 2, "beat": 1.0,
         }))
         sym = result["symbols"][0]
-        self.assertEqual(sym["symbol_id"], "retention.release.leg")
+        self.assertEqual(sym["symbol_id"], "retention.release")
         self.assertEqual(sym["retention"], "release")
 
     def test_cancel(self):

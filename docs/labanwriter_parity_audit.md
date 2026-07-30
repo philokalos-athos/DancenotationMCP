@@ -9,9 +9,9 @@ capability have drifted apart badly, and only the second one is parity.
 
 | Metric | Baseline | Now |
 |---|---|---|
-| Catalog symbols | 1122 | 906 |
-| Distinct glyphs actually produced | 159 | **526** |
-| Visual collapse ratio | 7.1 : 1 | **1.72 : 1** |
+| Catalog symbols | 1122 | 890 |
+| Distinct glyphs actually produced | 159 | **527** |
+| Visual collapse ratio | 7.1 : 1 | **1.69 : 1** |
 | Symbols with a wholly unique glyph | — | **472** |
 | Symbols whose authored id was lost in the SVG | 8 | 0 |
 

@@ -262,8 +262,8 @@ sym("direction.forward", "right_leg", "forward", "high", 10, 1, 3.5,
 sym("direction.forward", "left_arm", "left", "high", 10, 1, 3.5)
 sym("direction.forward", "right_arm", "right", "high", 10, 1, 3.5)
 # Hold
-sym("retention.hold.arm", "left_arm", None, None, 10, 4, 1, retention="hold")
-sym("retention.hold.arm", "right_arm", None, None, 10, 4, 1, retention="hold")
+sym("retention.hold", "left_arm", None, None, 10, 4, 1, retention="hold")
+sym("retention.hold", "right_arm", None, None, 10, 4, 1, retention="hold")
 # Fall
 sym("support.step.forward", "right_leg", "forward", "low", 10, 4.5, 3.5,
     modifiers={"label": "controlled fall"})
@@ -334,8 +334,8 @@ sym("support.step.forward", "right_leg", "place", "low", 16, 1, 7,
     modifiers={"contact_type": "touch"})
 sym("direction.forward", "torso", "forward", "low", 16, 1, 7,
     modifiers={"label": "curled"})
-sym("retention.hold.arm", "left_arm", None, None, 16, 1, 7, retention="hold")
-sym("retention.hold.arm", "right_arm", None, None, 16, 1, 7, retention="hold")
+sym("retention.hold", "left_arm", None, None, 16, 1, 7, retention="hold")
+sym("retention.hold", "right_arm", None, None, 16, 1, 7, retention="hold")
 
 # ══════════════════════════════════════════════════════════════════════
 # SECTION B — "Tessellation" (Measures 17–24, Figure-8 path)
@@ -418,8 +418,8 @@ sym("support.step.forward", "right_leg", "place", "middle", 24, 1, 7)
 sym("direction.forward", "left_arm", "left", "high", 24, 1, 3.5,
     modifiers={"label": "2nd position"})
 sym("direction.forward", "right_arm", "right", "high", 24, 1, 3.5)
-sym("retention.hold.leg", "left_leg", None, None, 24, 4.5, 3.5, retention="hold")
-sym("retention.hold.leg", "right_leg", None, None, 24, 4.5, 3.5, retention="hold")
+sym("retention.hold", "left_leg", None, None, 24, 4.5, 3.5, retention="hold")
+sym("retention.hold", "right_leg", None, None, 24, 4.5, 3.5, retention="hold")
 
 # ══════════════════════════════════════════════════════════════════════
 # SECTION C — "Dissolution" (Measures 25–32, Final)
@@ -534,10 +534,10 @@ sym("direction.forward", "torso", "diagonal_forward_right", "middle", 31, 1, 7,
 sym("direction.forward", "head", "diagonal_backward_left", "middle", 31, 1, 7,
     modifiers={"label": "gaze USL corner"})
 # Hold all
-sym("retention.hold.arm", "left_arm", None, None, 31, 1, 4, retention="hold")
-sym("retention.hold.arm", "right_arm", None, None, 31, 1, 4, retention="hold")
-sym("retention.hold.leg", "left_leg", None, None, 31, 1, 4, retention="hold")
-sym("retention.hold.leg", "right_leg", None, None, 31, 1, 4, retention="hold")
+sym("retention.hold", "left_arm", None, None, 31, 1, 4, retention="hold")
+sym("retention.hold", "right_arm", None, None, 31, 1, 4, retention="hold")
+sym("retention.hold", "left_leg", None, None, 31, 1, 4, retention="hold")
+sym("retention.hold", "right_leg", None, None, 31, 1, 4, retention="hold")
 
 # M32: Closing gestures — fist close, hand open, blackout
 sym("support.step.forward", "left_leg", "place", "middle", 32, 1, 7,

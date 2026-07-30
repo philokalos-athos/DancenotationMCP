@@ -2463,6 +2463,55 @@ class RetentionColumnTest(unittest.TestCase):
             f"{columns}")
 
 
+class RetentionIdsAreNotCombinatorialTest(unittest.TestCase):
+    """One id per retention sign, not one per sign-and-body-part pair.
+
+    The family held 35 entries: five types crossed with seven body categories
+    (arm, leg, torso, head, hand, shoulder, full_body). The category in the id
+    duplicated the IR's own body_part field, which is what actually places the
+    sign — BODY_TO_COLUMN reads body_part, never the id suffix.
+
+    Same padding that was pruned out of actions.json when 216 turn and jump
+    entries went: turn.right duplicated the direction field the way
+    retention.hold.arm duplicated body_part. The glyph metric scored the family
+    as 35 entries producing 4 glyphs, and that reading was right.
+    """
+
+    def test_the_catalog_has_one_entry_per_sign(self):
+        catalog = load_symbol_catalog()
+        retention = sorted(s for s in catalog if s.startswith("retention."))
+        self.assertEqual(
+            retention,
+            ["retention.cancel", "retention.hold", "retention.release",
+             "retention.space_hold", "retention.spot_hold"],
+            "retention ids still name a body category")
+
+    def test_one_id_serves_every_body_part_it_may_attach_to(self):
+        catalog = load_symbol_catalog()
+        allowed = set(catalog["retention.hold"].get("allowed_body_parts", []))
+        for body_part in ("left_arm", "right_leg", "torso", "head",
+                          "left_hand", "right_shoulder", "whole_body"):
+            with self.subTest(body_part=body_part):
+                self.assertIn(body_part, allowed)
+
+    def test_the_body_part_still_decides_the_column(self):
+        """Dropping it from the id must not drop it from the engraving."""
+        columns = {}
+        for body_part in ("left_leg", "left_arm", "head", "left_hand"):
+            layout = compute_laban_layout({
+                "schema_version": "1.0",
+                "metadata": {"title": "prune probe"},
+                "symbols": [{"symbol_id": "retention.hold",
+                             "body_part": body_part,
+                             "timing": {"measure": 1, "beat": 1,
+                                        "duration_beats": 1},
+                             "modifiers": {}}],
+            })
+            columns[body_part] = layout["placed_symbols"][0]["column"]
+        self.assertEqual(len(set(columns.values())), len(columns),
+                         f"body parts share a column: {columns}")
+
+
 class RetentionInsideADirectionSymbolTest(unittest.TestCase):
     """A retention sign written inside a direction symbol makes it undeviating.
 

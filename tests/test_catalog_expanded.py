@@ -201,8 +201,20 @@ class CatalogExpandedTests(unittest.TestCase):
 
     # ---- Bonus: minimum symbol counts per new file ----
 
-    def test_retention_has_minimum_symbols(self):
-        self._assert_min_symbols("retention.json", 15)
+    def test_retention_has_every_sign_knust_names(self):
+        """Not a count. The family was 35 entries and is now 5, because the
+        old ones crossed each sign with seven body categories that duplicated
+        the symbol's own body_part field. A minimum-count assertion would
+        have called that a regression; what matters is whether each sign
+        Knust names is present (vol 2, Fig. 78-79)."""
+        items = json.loads((CATALOG_DIR / "retention.json").read_text())
+        ids = {e["id"] for e in items}
+        for sign in ("retention.hold",        # 78a round
+                     "retention.space_hold",  # 78b diamond
+                     "retention.spot_hold",   # 78c diamond with a dot
+                     "retention.cancel"):     # 79a decrease sign
+            with self.subTest(sign=sign):
+                self.assertIn(sign, ids)
 
     def test_contact_has_minimum_symbols(self):
         self._assert_min_symbols("contact.json", 30)

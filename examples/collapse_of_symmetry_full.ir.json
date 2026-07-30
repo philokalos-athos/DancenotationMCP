@@ -1413,7 +1413,7 @@
       "retention": null
     },
     {
-      "symbol_id": "retention.hold.arm",
+      "symbol_id": "retention.hold",
       "body_part": "left_arm",
       "direction": null,
       "level": null,
@@ -1430,7 +1430,7 @@
       "retention": "hold"
     },
     {
-      "symbol_id": "retention.hold.arm",
+      "symbol_id": "retention.hold",
       "body_part": "right_arm",
       "direction": null,
       "level": null,
@@ -2036,7 +2036,7 @@
       "retention": null
     },
     {
-      "symbol_id": "retention.hold.arm",
+      "symbol_id": "retention.hold",
       "body_part": "left_arm",
       "direction": null,
       "level": null,
@@ -2053,7 +2053,7 @@
       "retention": "hold"
     },
     {
-      "symbol_id": "retention.hold.arm",
+      "symbol_id": "retention.hold",
       "body_part": "right_arm",
       "direction": null,
       "level": null,
@@ -2811,7 +2811,7 @@
       "retention": null
     },
     {
-      "symbol_id": "retention.hold.leg",
+      "symbol_id": "retention.hold",
       "body_part": "left_leg",
       "direction": null,
       "level": null,
@@ -2828,7 +2828,7 @@
       "retention": "hold"
     },
     {
-      "symbol_id": "retention.hold.leg",
+      "symbol_id": "retention.hold",
       "body_part": "right_leg",
       "direction": null,
       "level": null,
@@ -3731,7 +3731,7 @@
       "retention": null
     },
     {
-      "symbol_id": "retention.hold.arm",
+      "symbol_id": "retention.hold",
       "body_part": "left_arm",
       "direction": null,
       "level": null,
@@ -3748,7 +3748,7 @@
       "retention": "hold"
     },
     {
-      "symbol_id": "retention.hold.arm",
+      "symbol_id": "retention.hold",
       "body_part": "right_arm",
       "direction": null,
       "level": null,
@@ -3765,7 +3765,7 @@
       "retention": "hold"
     },
     {
-      "symbol_id": "retention.hold.leg",
+      "symbol_id": "retention.hold",
       "body_part": "left_leg",
       "direction": null,
       "level": null,
@@ -3782,7 +3782,7 @@
       "retention": "hold"
     },
     {
-      "symbol_id": "retention.hold.leg",
+      "symbol_id": "retention.hold",
       "body_part": "right_leg",
       "direction": null,
       "level": null,
@@ -3935,7 +3935,7 @@
       "level": null,
       "timing": {
         "measure": 16,
-        "beat": 4.0,
+        "beat": 3.5,
         "duration_beats": 0.5
       },
       "modifiers": {},
@@ -3971,7 +3971,7 @@
       "level": null,
       "timing": {
         "measure": 24,
-        "beat": 4.0,
+        "beat": 3.5,
         "duration_beats": 0.5
       },
       "modifiers": {},
@@ -4007,7 +4007,7 @@
       "level": null,
       "timing": {
         "measure": 32,
-        "beat": 4.0,
+        "beat": 3.5,
         "duration_beats": 0.5
       },
       "modifiers": {},
