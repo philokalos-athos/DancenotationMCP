@@ -6,6 +6,7 @@ import json
 
 from dancenotation_mcp.ir.catalog import load_symbol_catalog
 from dancenotation_mcp.ir.models import BODY_PARTS, STAGE_FACINGS, STAGE_ZONES
+from dancenotation_mcp.ir.time_signatures import build_measure_beats_map
 
 PRIMARY_MOTION_COLUMNS = {"support", "direction", "path", "gesture", "body", "flexion", "foothook", "digit", "turn", "travel", "jump", "floor"}
 ATTACHABLE_SOURCE_COLUMNS = {"pin", "surface", "music", "repeat", "quality", "level", "timing"}
@@ -474,26 +475,55 @@ def _validate_symbol_constraints(sym: dict, catalog_entry: dict, path: str) -> l
     return issues
 
 
-def _measure_beats_by_measure(symbols: list[dict]) -> dict[int, float]:
-    explicit: dict[int, float] = {}
+def _measure_beats_by_measure(data: dict) -> dict[int, float]:
+    """Beats per measure, from both places a score may declare them.
+
+    A time signature can be declared two ways, and they are not alternatives
+    -- one is the data, the other is the sign engraved on the page:
+
+      extensions.time_signatures   the canonical declaration. The schema
+                                   defines it, with measure/numerator/
+                                   denominator and per-measure changes; the
+                                   schema defines no time_signature on
+                                   metadata at all.
+      a music.time.* symbol        carrying modifiers.measure_header, which is
+                                   what the reader actually sees.
+
+    This read only the second, and fell back to a hardcoded 4.0 when there was
+    none -- so the check was in effect pinned to 4/4 whatever the score said.
+    It was wrong in both directions: a 5/4 measure had every beat past 4
+    reported as exceeding it (57 such false errors on the example score), and
+    beat 4 of a 3/4 measure was accepted in silence.
+
+    extensions comes from ir.time_signatures, the same module the layout uses,
+    rather than from a second copy of the mapping here. An engraved header
+    wins at its own measure: it is what the page says.
+    """
+    beats_map = dict(build_measure_beats_map(data))
+
+    symbols = data.get("symbols", [])
     for sym in symbols:
         if not sym.get("modifiers", {}).get("measure_header"):
             continue
         beats = TIME_SIGNATURE_BEATS.get(sym.get("symbol_id", ""))
         if beats is None:
             continue
-        measure = int(sym.get("timing", {}).get("measure", 1))
-        explicit[measure] = beats
-    if not explicit:
+        beats_map[int(sym.get("timing", {}).get("measure", 1))] = beats
+
+    if not beats_map:
         return {}
+
+    # Propagate each signature forward to the measures it governs, so a lookup
+    # is a plain dict hit rather than a search back through change points.
+    max_measure = max(
+        [int(sym.get("timing", {}).get("measure", 1)) for sym in symbols]
+        + list(beats_map.keys())
+    )
     derived: dict[int, float] = {}
     current = MEASURE_BEATS
-    max_measure = max(
-        [int(sym.get("timing", {}).get("measure", 1)) for sym in symbols] + list(explicit.keys())
-    )
     for measure in range(1, max_measure + 1):
-        if measure in explicit:
-            current = explicit[measure]
+        if measure in beats_map:
+            current = beats_map[measure]
         derived[measure] = current
     return derived
 
@@ -508,12 +538,20 @@ def validate_semantic(data: dict) -> list[ValidationIssue]:
     issues: list[ValidationIssue] = []
     symbols = data.get("symbols", [])
     catalog = load_symbol_catalog()
-    measure_beats_by_measure = _measure_beats_by_measure(symbols)
+    measure_beats_by_measure = _measure_beats_by_measure(data)
     symbol_index = {sym.get("symbol_id"): (idx, sym) for idx, sym in enumerate(symbols) if sym.get("symbol_id")}
     primary_body_entries: list[tuple[int, dict, dict]] = []
     measure_headers_by_measure: dict[int, list[tuple[int, dict]]] = {}
 
-    last_end_by_measure: dict[int, float] = {}
+    # Keyed by (measure, column), not by measure alone. A staff exists so that
+    # limbs can move at the same time; one cursor per measure shared across
+    # every primary motion column made simultaneity itself an overlap -- a
+    # left-leg step and a right-arm gesture on the same beat were reported as
+    # one starting before the other ended, 128 times on the example score.
+    # The column is the one the renderer places the symbol in, which is
+    # decided by body part; see the note on COLUMN_CONFLICT below for why the
+    # catalog's family name will not serve as a column key.
+    last_end_by_column: dict[tuple[int, str], float] = {}
     for idx, sym in enumerate(symbols):
         p = f"/symbols/{idx}"
         sid = sym.get("symbol_id")
@@ -554,18 +592,23 @@ def validate_semantic(data: dict) -> list[ValidationIssue]:
                 )
             )
         if staff_column in PRIMARY_MOTION_COLUMNS:
-            last_end = last_end_by_measure.get(measure, 0.0)
+            column_key = (
+                _BODY_TO_COLUMN.get(sym.get("body_part") or "") or staff_column
+            )
+            last_end = last_end_by_column.get((measure, column_key), 0.0)
             if beat < last_end:
                 issues.append(
                     ValidationIssue(
                         "TIMING_OVERLAP",
-                        "symbol starts before previous symbol ended",
+                        f"symbol starts before the previous symbol in the "
+                        f"'{column_key}' column ended",
                         f"{p}/timing/beat",
                         "warning",
-                        {"prev_end": last_end},
+                        {"prev_end": last_end, "column": column_key},
                     )
                 )
-            last_end_by_measure[measure] = max(last_end, beat + dur)
+            last_end_by_column[(measure, column_key)] = max(
+                last_end, beat + dur)
 
         # ── Extended field validations ────────────────────────────────
         rotation_degrees = sym.get("rotation_degrees")
@@ -681,8 +724,18 @@ def validate_semantic(data: dict) -> list[ValidationIssue]:
                     )
                 )
 
-        # Beat exceeds beats-per-measure check
-        if beat > measure_beats + 0.01:
+        # Beat falls outside the measure it claims.
+        #
+        # Beats are 1-based, so a measure of N beats runs [1.0, 1.0 + N) and a
+        # symbol must start strictly before the end. Subtracting the 1.0 first
+        # is what makes this agree with the span check above, which reads
+        # `beat + duration - 1.0 > measure_beats`. Comparing the raw beat
+        # against measure_beats -- as this did -- puts a 1-based position and a
+        # 0-based count on the two sides of the same inequality. In 4/4 the two
+        # forms coincide at the boundary and the error is invisible; anywhere
+        # else it rejects legal notation, including "four and" in every 4/4 bar
+        # and every beat past the third in 7/8.
+        if beat - 1.0 > measure_beats - 0.01:
             issues.append(
                 ValidationIssue(
                     "BEAT_EXCEEDS_MEASURE",
@@ -1683,17 +1736,39 @@ def validate_semantic(data: dict) -> list[ValidationIssue]:
             )
 
     # ── COLUMN_CONFLICT: overlapping symbols in the same staff column ───
+    #
+    # Two symbols collide only if they are engraved in the same column, so the
+    # bucket key has to be the column the renderer will actually put them in.
+    # That is decided by body part -- the layout places by _BODY_TO_COLUMN --
+    # and the catalog's geometry.staff_column is a family name, not a column:
+    # "support", "gesture", "direction" and the rest each span a left and a
+    # right column, and "body" covers centre and head.
+    #
+    # Keying on the family name made two vocabularies meet in one comparison,
+    # and broke the check both ways. A support symbol's family name is in
+    # PRIMARY_MOTION_COLUMNS, so the body-part refinement below it never ran
+    # and the two legs were compared against each other -- standing on both
+    # feet, the most ordinary thing in the notation, came out as 99 conflicts
+    # on the example score. And every name _BODY_TO_COLUMN can return is
+    # outside PRIMARY_MOTION_COLUMNS, so on the occasions the refinement did
+    # run, the gate that followed dropped the symbol from the check entirely.
+    #
+    # So two gates are needed, and they answer different questions. The family
+    # says whether the symbol is engraved in a motion column at all -- a tempo
+    # mark, an effort annotation and a repeat sign all carry a body part of
+    # torso or whole_body, and would otherwise resolve into the centre column
+    # and collide with the movement written there, though the renderer puts
+    # them in the header row, the margin and the staff edge. The body part
+    # then says which motion column. TIMING_OVERLAP above gates the same way.
     column_entries: dict[str, list[tuple[int, dict]]] = {}
     for idx, sym in enumerate(symbols):
         sid = sym.get("symbol_id", "")
         spec = catalog.get(sid, {})
-        staff_col = spec.get("geometry", {}).get("staff_column")
-        if staff_col not in PRIMARY_MOTION_COLUMNS:
-            body_part = sym.get("body_part")
-            if body_part:
-                staff_col = _BODY_TO_COLUMN.get(body_part)
-        if staff_col and staff_col in PRIMARY_MOTION_COLUMNS:
-            column_entries.setdefault(staff_col, []).append((idx, sym))
+        family_col = spec.get("geometry", {}).get("staff_column")
+        if family_col not in PRIMARY_MOTION_COLUMNS:
+            continue
+        staff_col = _BODY_TO_COLUMN.get(sym.get("body_part") or "") or family_col
+        column_entries.setdefault(staff_col, []).append((idx, sym))
     for col, entries in column_entries.items():
         for i, (idx_a, sym_a) in enumerate(entries):
             ta = sym_a.get("timing", {})
