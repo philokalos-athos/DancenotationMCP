@@ -71,8 +71,23 @@ defect. They are not: the rule is length, not text as such. Soirée musicale
 p58 runs a full sentence up the left margin, rotated —
 "(LET HER BALANCE HERSELF AS MUCH AS POSSIBLE - SUPPORT WHERE NEEDED)" —
 while its measure numbers and its C and MC dancer labels stay horizontal on
-the same page. Short identifiers horizontal, prose vertical. What we do not
-yet do is keep short labels horizontal; every caption is rotated.
+the same page. Short identifiers horizontal, prose vertical.
+
+We already do both, which was checked rather than assumed: of the 128 text
+elements in the example score, the 89 carrying `class="laban-caption"` are
+prose from `modifiers.label` and all rotate, and the 39 structural ones —
+measure numbers, title, system labels — are all horizontal. There is no gap
+here. Those 39 carry no class, so
+`test_no_caption_is_written_across_a_staff` does not see them — but most are
+glyph text drawn at a symbol's own centre, where they belong, and the measure
+numbers are placed at a fixed margin x by the layout rather than tracking a
+symbol. Nothing shows them landing on a staff; the gap is in what the test
+can observe, not in what is drawn.
+
+The plates offer no example of a *short prose* annotation, so there is
+nothing to check our "jeté" and "hold" against. Whether a four-letter caption
+should rotate like a sentence or sit horizontal like an identifier is
+unsettled, and unimportant until a plate shows one.
 
 Since settled: captions are assigned lanes in the margin and no longer stack
 on each other. Still open: the trailing system of a score can come out nearly
