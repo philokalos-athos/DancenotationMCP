@@ -48,7 +48,7 @@ COLUMN_WIDTHS = {
     "right_arm_gesture": 16,
     "right_path":        14,
 }
-BEAT_HEIGHT = 60
+BEAT_HEIGHT = 102
 ANNOTATION_WIDTH = 22
 ANNOTATION_GAP = 6
 

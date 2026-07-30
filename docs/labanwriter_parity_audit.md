@@ -409,88 +409,63 @@ weight, a slide says the weight stays on the foot while it travels.
 
 ### Staff proportions
 
-Open, and the measurement is harder than it looks.
+Settled, after getting it wrong once. **The earlier figure in this section —
+"the staff is 2.3 times too wide for its beat" — was measured against the
+wrong object and is withdrawn.**
 
-Our staff is wider than every plate that could be measured cleanly, but not
-by a figure firm enough to move a constant on.
+The error: the pixel detector finds a *three-line staff box*, the support
+columns and their outer rules. On our side the number compared against it was
+`staff_left..staff_right` = 184, which is the span of all ten columns
+including path, arm-gesture, arm and body. Our three-line box is 154..206 =
+52. Box against ten-column span is not a comparison.
 
-Method: detect vertical rules on the page, keep triples spaced 80–260 units
-apart whose middle line is centred — that is a three-line staff — then take
-bar lines as dark rows within that staff's own x-range. On La vivandière:
+Measured properly, on Hutchinson Guest's *Labanotation* — the standard modern
+textbook, and a vector figure that survives a 7x zoom, unlike the scanned
+plates. Fig. 162a: staff box x 308..507 = 199, ruled into four columns, so
+49.8 a column; the arm-gesture blocks beside it are 203, 194, 194 and 196
+tall, one movement each, median 195.
 
-| plate | staff width | median measure height | width / measure height |
-|-------|-------------|-----------------------|------------------------|
-| p72   | 112         | 268                   | 0.42                   |
-| p84   | 105         | 236                   | 0.44                   |
-| p90   | 142         | 206                   | 0.69                   |
-| ours  | 184         | 240                   | 0.77                   |
+| source                      | column width | beat height | column / beat |
+|-----------------------------|--------------|-------------|---------------|
+| Hutchinson Guest, fig. 162a | 49.8         | 195         | 0.255         |
+| ours, before                | 26           | 60          | 0.433         |
+| ours, after                 | 26           | 102         | 0.255         |
 
-Two agree closely and one does not, which is the clue: **width over measure
-height is not an invariant of the engraving.** Under the Third Principle a
-measure's height is its beat count times the chosen unit, so the ratio moves
-with the time signature. p90 is not evidence of a looser staff; it is
-probably evidence of a shorter measure.
+**1.70 times, not 2.3.** Column width over beat height is the invariant worth
+comparing: a column is a well-defined object on both sides, where "the staff"
+is not — it may or may not include the arm columns, and the plate detectors
+cannot tell.
 
-The invariant to compare is staff width over the length of one beat, which
-needs each plate's beats per measure.
+Closed by raising `BEAT_HEIGHT` 60 -> 102 rather than narrowing the columns to
+15.3, which is the other way to the same ratio. A 15-unit column cannot hold
+the ten graded foot marks, whose reach is already capped at 4px, nor the
+interior area a level fill needs.
 
-Two ways to get it, and the second is much better:
+One consequence, recorded rather than fixed: the example score's canvas goes
+from 1 : 1.08 to 1 : 2.16, against the plates' 1 : 1.37. A taller beat makes
+each system taller, and we tile four systems across one canvas where the
+plates give each system its own page. Whether to reduce
+`LABAN_SYSTEM_CAPACITY` from 8, or to emit multiple pages, is the page
+composition question and is still open. The plates use 8 measures to a system,
+so the capacity is not obviously the thing to change.
 
-- Read the piano reduction engraved alongside the Laban staff on the same
-  vertical time axis, counting beamed groups between bar lines. Works, but
-  needs a plate that carries the music and a render large enough to align
-  them. La vivandière p72 and p84 come out at three beats, p90 at two.
-- **Count the beat ticks the notation draws on its own centre line.** They
-  are there in both publications and they answer the question directly, with
-  no music and no eye: sample a narrow band at the staff's centre x, take
-  dark runs, and the median gap is the beat height. On Soirée musicale p58
-  this gives 97 units against a 290-unit measure — three beats — without
-  reading anything.
+The scanned-plate measurements are left below for the record. They are
+consistent with each other and with Hutchinson once read as box-to-box, but
+their column counts were never established, so they cannot produce a
+column-to-beat figure:
 
-| plate                | staff width | beats | beat height | width / beat |
-|----------------------|-------------|-------|-------------|--------------|
-| La vivandière p72    | 112         | 3     | 89.3        | 1.25         |
-| La vivandière p84    | 105         | 3     | 78.7        | 1.33         |
-| La vivandière p90    | 142         | 2     | 103.0       | 1.38         |
-| Soirée musicale p58  | 129         | 3     | 97.0        | 1.33         |
-| ours                 | 184         | 4     | 60.0        | 3.07         |
+| plate                | box width | beat height | box / beat |
+|----------------------|-----------|-------------|------------|
+| La vivandiere p72    | 112       | 89.3        | 1.25       |
+| La vivandiere p84    | 105       | 78.7        | 1.33       |
+| La vivandiere p90    | 142       | 103.0       | 1.38       |
+| Soiree musicale p58  | 129       | 97.0        | 1.33       |
 
-Four plates across two publications and two notators agree at 1.25–1.38,
-mean 1.32. **Our staff is 2.3 times too wide for its beat.**
-
-Getting there took two corrections, both the same mistake. Width over
-*measure* height is not an invariant — under the Third Principle a measure's
-height is its beat count times the unit, so the ratio moves with the time
-signature; measured that way the plates read 0.42, 0.44 and 0.69 and looked
-scattered. And p90's apparent outlier at 2.07 came from assuming three beats
-when it has two. Assume the beat count and the data disagrees with itself.
-
-Either constant can carry the correction, and they are not equivalent:
-
-- `BEAT_HEIGHT` 60 → 139. Keeps column widths, so symbol geometry is
-  untouched. Makes a four-beat measure 556 units, and an eight-measure system
-  about 4450 — which is roughly one system to a page, and that is what the
-  plates do. Also changes how long a symbol is for its duration, the quantity
-  Knust fixes at a centimetre to the crotchet, so it is the constant that
-  ought to be anchored to a source rather than to a ratio.
-- Staff width 184 → 79, about 7.9 units a column. Every symbol would be
-  drawn in a third of its current width; the ten graded foot marks and the
-  level fills are unlikely to survive that legibly.
-
-Both regenerate every golden fixture, and the first changes how many systems
-fit on a page. Neither should be applied without the change being wanted.
-
-An earlier revision of this section reported 0.49 from p84 alone as though it
-were settled. It was one page, and the measure height was estimated from the
-fraction of page height the staff occupied rather than measured from bar
-lines. Both numbers moved when done properly.
-
-To settle: read the time signature off three single-staff plates by eye,
-compute staff width over beat height for each, and compare against ours
-(184 over BEAT_HEIGHT 60 = 3.07). Only then decide whether the correction
-belongs in COLUMN_WIDTHS or in BEAT_HEIGHT — they move the ratio the same
-way, but BEAT_HEIGHT also sets how long a symbol is for its duration, which
-Knust fixes at a centimetre to the crotchet.
+Method note worth keeping: beats per measure came from counting the beat ticks
+the notation draws on its own centre line -- sample a narrow band at the
+staff's centre x, take dark runs, and the median gap is the beat height. No
+music and no eye. It was reading beats off the piano reduction, and assuming
+three where p90 has two, that made those four plates look scattered at first.
 
 Next parity priorities:
 1. Shift more renderer branching from symbol-id checks to catalog behavior

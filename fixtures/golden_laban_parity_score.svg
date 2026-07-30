@@ -1,149 +1,149 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="720" height="2178" viewBox="0 0 720 2178">
-<rect x="0" y="0" width="720" height="2178" fill="#fefefe"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="3522" viewBox="0 0 720 3522">
+<rect x="0" y="0" width="720" height="3522" fill="#fefefe"/>
 <defs>  <pattern id="laban-hatch" patternUnits="userSpaceOnUse" width="4" height="4"    patternTransform="rotate(45)">    <line x1="0" y1="0" x2="0" y2="4" stroke="#555" stroke-width="1.5"/>  </pattern>  <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5"    markerWidth="6" markerHeight="6" orient="auto-start-reverse">    <path d="M 0 0 L 10 5 L 0 10 Z" fill="#111827"/>  </marker><symbol id="laban-dir-backward-high" viewBox="-2.0 -2.0 24.0 44.0"><path d="M 0.0 0.0 L 20.0 0.0 L 20.0 29.2 L 10.0 40.0 L 0.0 29.2 Z" fill="url(#laban-hatch)" stroke="#111827" stroke-width="1.5"/></symbol><symbol id="laban-dir-backward-low" viewBox="-2.0 -2.0 24.0 44.0"><path d="M 0.0 0.0 L 20.0 0.0 L 20.0 29.2 L 10.0 40.0 L 0.0 29.2 Z" fill="#111827" stroke="#111827" stroke-width="1.5"/></symbol><symbol id="laban-dir-diagonal_backward_left-middle" viewBox="-2.0 -2.0 24.0 44.0"><path d="M 0.0 0.0 L 20.0 0.0 L 20.0 28.0 L 0.0 40.0 Z" fill="#ffffff" stroke="#111827" stroke-width="1.5"/><circle cx="10.0" cy="20.0" r="2.5" fill="#111827"/></symbol><symbol id="laban-dir-diagonal_backward_right-high" viewBox="-2.0 -2.0 24.0 44.0"><path d="M 0.0 0.0 L 20.0 0.0 L 20.0 40.0 L 0.0 28.0 Z" fill="url(#laban-hatch)" stroke="#111827" stroke-width="1.5"/></symbol><symbol id="laban-dir-diagonal_forward_left-low" viewBox="-2.0 -2.0 24.0 44.0"><path d="M 0.0 0.0 L 20.0 12.0 L 20.0 40.0 L 0.0 40.0 Z" fill="#111827" stroke="#111827" stroke-width="1.5"/></symbol><symbol id="laban-dir-diagonal_forward_right-high" viewBox="-2.0 -2.0 24.0 44.0"><path d="M 0.0 12.0 L 20.0 0.0 L 20.0 40.0 L 0.0 40.0 Z" fill="url(#laban-hatch)" stroke="#111827" stroke-width="1.5"/></symbol><symbol id="laban-dir-forward-high" viewBox="-2.0 -2.0 24.0 44.0"><path d="M 10.0 0.0 L 20.0 10.8 L 20.0 40.0 L 0.0 40.0 L 0.0 10.8 Z" fill="url(#laban-hatch)" stroke="#111827" stroke-width="1.5"/></symbol><symbol id="laban-dir-forward-low" viewBox="-2.0 -2.0 24.0 44.0"><path d="M 10.0 0.0 L 20.0 10.8 L 20.0 40.0 L 0.0 40.0 L 0.0 10.8 Z" fill="#111827" stroke="#111827" stroke-width="1.5"/></symbol><symbol id="laban-dir-forward-middle" viewBox="-2.0 -2.0 24.0 44.0"><path d="M 10.0 0.0 L 20.0 10.8 L 20.0 40.0 L 0.0 40.0 L 0.0 10.8 Z" fill="#ffffff" stroke="#111827" stroke-width="1.5"/><circle cx="10.0" cy="20.0" r="2.5" fill="#111827"/></symbol><symbol id="laban-dir-left-high" viewBox="-2.0 -2.0 24.0 44.0"><path d="M 20.0 0.0 L 20.0 40.0 L 0.0 20.0 Z" fill="url(#laban-hatch)" stroke="#111827" stroke-width="1.5"/></symbol><symbol id="laban-dir-place-low" viewBox="-2.0 -2.0 24.0 44.0"><path d="M 0.0 0.0 L 20.0 0.0 L 20.0 40.0 L 0.0 40.0 Z" fill="#111827" stroke="#111827" stroke-width="1.5"/></symbol><symbol id="laban-dir-place-middle" viewBox="-2.0 -2.0 24.0 44.0"><path d="M 0.0 0.0 L 20.0 0.0 L 20.0 40.0 L 0.0 40.0 Z" fill="#ffffff" stroke="#111827" stroke-width="1.5"/><circle cx="10.0" cy="20.0" r="2.5" fill="#111827"/></symbol><symbol id="laban-dir-right-low" viewBox="-2.0 -2.0 24.0 44.0"><path d="M 0.0 0.0 L 20.0 20.0 L 0.0 40.0 Z" fill="#111827" stroke="#111827" stroke-width="1.5"/></symbol><symbol id="laban-dir-right-middle" viewBox="-2.0 -2.0 24.0 44.0"><path d="M 0.0 0.0 L 20.0 20.0 L 0.0 40.0 Z" fill="#ffffff" stroke="#111827" stroke-width="1.5"/><circle cx="10.0" cy="20.0" r="2.5" fill="#111827"/></symbol></defs>
 <text x="360.0" y="28" text-anchor="middle" font-size="16" font-weight="700" font-family="serif" fill="#111827">LabanWriter Parity Golden Test</text>
 <text x="360.0" y="44" text-anchor="middle" font-size="9" font-family="serif" fill="#6b7280">Labanotation Score</text>
 <g class="laban-system" data-system="1" data-measures="1-8">
-<line x1="154.0" y1="106.0" x2="154.0" y2="2034.0" stroke="#111827" stroke-width="2"/>
-<line x1="206.0" y1="106.0" x2="206.0" y2="2034.0" stroke="#111827" stroke-width="2"/>
-<line x1="180.0" y1="106.0" x2="180.0" y2="2034.0" stroke="#111827" stroke-width="2.5"/>
-<line x1="154.0" y1="2030.0" x2="206.0" y2="2030.0" stroke="#111827" stroke-width="1.2"/>
-<line x1="88.0" y1="2030.0" x2="154.0" y2="2030.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
-<line x1="206.0" y1="2030.0" x2="272.0" y2="2030.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
-<line x1="177.0" y1="1970.0" x2="183.0" y2="1970.0" stroke="#666" stroke-width="0.8"/>
-<line x1="177.0" y1="1910.0" x2="183.0" y2="1910.0" stroke="#666" stroke-width="0.8"/>
-<line x1="177.0" y1="1850.0" x2="183.0" y2="1850.0" stroke="#666" stroke-width="0.8"/>
-<line x1="154.0" y1="1790.0" x2="206.0" y2="1790.0" stroke="#111827" stroke-width="1.2"/>
-<line x1="88.0" y1="1790.0" x2="154.0" y2="1790.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
-<line x1="206.0" y1="1790.0" x2="272.0" y2="1790.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
-<line x1="177.0" y1="1730.0" x2="183.0" y2="1730.0" stroke="#666" stroke-width="0.8"/>
-<line x1="177.0" y1="1670.0" x2="183.0" y2="1670.0" stroke="#666" stroke-width="0.8"/>
-<line x1="177.0" y1="1610.0" x2="183.0" y2="1610.0" stroke="#666" stroke-width="0.8"/>
-<line x1="154.0" y1="1550.0" x2="206.0" y2="1550.0" stroke="#111827" stroke-width="1.2"/>
-<line x1="88.0" y1="1550.0" x2="154.0" y2="1550.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
-<line x1="206.0" y1="1550.0" x2="272.0" y2="1550.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
-<line x1="177.0" y1="1490.0" x2="183.0" y2="1490.0" stroke="#666" stroke-width="0.8"/>
-<line x1="177.0" y1="1430.0" x2="183.0" y2="1430.0" stroke="#666" stroke-width="0.8"/>
-<line x1="177.0" y1="1370.0" x2="183.0" y2="1370.0" stroke="#666" stroke-width="0.8"/>
-<line x1="154.0" y1="1310.0" x2="206.0" y2="1310.0" stroke="#111827" stroke-width="1.2"/>
-<line x1="88.0" y1="1310.0" x2="154.0" y2="1310.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
-<line x1="206.0" y1="1310.0" x2="272.0" y2="1310.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
-<line x1="177.0" y1="1250.0" x2="183.0" y2="1250.0" stroke="#666" stroke-width="0.8"/>
-<line x1="177.0" y1="1190.0" x2="183.0" y2="1190.0" stroke="#666" stroke-width="0.8"/>
+<line x1="154.0" y1="106.0" x2="154.0" y2="3378.0" stroke="#111827" stroke-width="2"/>
+<line x1="206.0" y1="106.0" x2="206.0" y2="3378.0" stroke="#111827" stroke-width="2"/>
+<line x1="180.0" y1="106.0" x2="180.0" y2="3378.0" stroke="#111827" stroke-width="2.5"/>
+<line x1="154.0" y1="3374.0" x2="206.0" y2="3374.0" stroke="#111827" stroke-width="1.2"/>
+<line x1="88.0" y1="3374.0" x2="154.0" y2="3374.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
+<line x1="206.0" y1="3374.0" x2="272.0" y2="3374.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
+<line x1="177.0" y1="3272.0" x2="183.0" y2="3272.0" stroke="#666" stroke-width="0.8"/>
+<line x1="177.0" y1="3170.0" x2="183.0" y2="3170.0" stroke="#666" stroke-width="0.8"/>
+<line x1="177.0" y1="3068.0" x2="183.0" y2="3068.0" stroke="#666" stroke-width="0.8"/>
+<line x1="154.0" y1="2966.0" x2="206.0" y2="2966.0" stroke="#111827" stroke-width="1.2"/>
+<line x1="88.0" y1="2966.0" x2="154.0" y2="2966.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
+<line x1="206.0" y1="2966.0" x2="272.0" y2="2966.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
+<line x1="177.0" y1="2864.0" x2="183.0" y2="2864.0" stroke="#666" stroke-width="0.8"/>
+<line x1="177.0" y1="2762.0" x2="183.0" y2="2762.0" stroke="#666" stroke-width="0.8"/>
+<line x1="177.0" y1="2660.0" x2="183.0" y2="2660.0" stroke="#666" stroke-width="0.8"/>
+<line x1="154.0" y1="2558.0" x2="206.0" y2="2558.0" stroke="#111827" stroke-width="1.2"/>
+<line x1="88.0" y1="2558.0" x2="154.0" y2="2558.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
+<line x1="206.0" y1="2558.0" x2="272.0" y2="2558.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
+<line x1="177.0" y1="2456.0" x2="183.0" y2="2456.0" stroke="#666" stroke-width="0.8"/>
+<line x1="177.0" y1="2354.0" x2="183.0" y2="2354.0" stroke="#666" stroke-width="0.8"/>
+<line x1="177.0" y1="2252.0" x2="183.0" y2="2252.0" stroke="#666" stroke-width="0.8"/>
+<line x1="154.0" y1="2150.0" x2="206.0" y2="2150.0" stroke="#111827" stroke-width="1.2"/>
+<line x1="88.0" y1="2150.0" x2="154.0" y2="2150.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
+<line x1="206.0" y1="2150.0" x2="272.0" y2="2150.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
+<line x1="177.0" y1="2048.0" x2="183.0" y2="2048.0" stroke="#666" stroke-width="0.8"/>
+<line x1="177.0" y1="1946.0" x2="183.0" y2="1946.0" stroke="#666" stroke-width="0.8"/>
+<line x1="177.0" y1="1844.0" x2="183.0" y2="1844.0" stroke="#666" stroke-width="0.8"/>
+<line x1="154.0" y1="1742.0" x2="206.0" y2="1742.0" stroke="#111827" stroke-width="1.2"/>
+<line x1="88.0" y1="1742.0" x2="154.0" y2="1742.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
+<line x1="206.0" y1="1742.0" x2="272.0" y2="1742.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
+<line x1="177.0" y1="1640.0" x2="183.0" y2="1640.0" stroke="#666" stroke-width="0.8"/>
+<line x1="177.0" y1="1538.0" x2="183.0" y2="1538.0" stroke="#666" stroke-width="0.8"/>
+<line x1="177.0" y1="1436.0" x2="183.0" y2="1436.0" stroke="#666" stroke-width="0.8"/>
+<line x1="154.0" y1="1334.0" x2="206.0" y2="1334.0" stroke="#111827" stroke-width="1.2"/>
+<line x1="88.0" y1="1334.0" x2="154.0" y2="1334.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
+<line x1="206.0" y1="1334.0" x2="272.0" y2="1334.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
+<line x1="177.0" y1="1232.0" x2="183.0" y2="1232.0" stroke="#666" stroke-width="0.8"/>
 <line x1="177.0" y1="1130.0" x2="183.0" y2="1130.0" stroke="#666" stroke-width="0.8"/>
-<line x1="154.0" y1="1070.0" x2="206.0" y2="1070.0" stroke="#111827" stroke-width="1.2"/>
-<line x1="88.0" y1="1070.0" x2="154.0" y2="1070.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
-<line x1="206.0" y1="1070.0" x2="272.0" y2="1070.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
-<line x1="177.0" y1="1010.0" x2="183.0" y2="1010.0" stroke="#666" stroke-width="0.8"/>
-<line x1="177.0" y1="950.0" x2="183.0" y2="950.0" stroke="#666" stroke-width="0.8"/>
-<line x1="177.0" y1="890.0" x2="183.0" y2="890.0" stroke="#666" stroke-width="0.8"/>
-<line x1="154.0" y1="830.0" x2="206.0" y2="830.0" stroke="#111827" stroke-width="1.2"/>
-<line x1="88.0" y1="830.0" x2="154.0" y2="830.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
-<line x1="206.0" y1="830.0" x2="272.0" y2="830.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
-<line x1="177.0" y1="770.0" x2="183.0" y2="770.0" stroke="#666" stroke-width="0.8"/>
-<line x1="177.0" y1="710.0" x2="183.0" y2="710.0" stroke="#666" stroke-width="0.8"/>
-<line x1="177.0" y1="650.0" x2="183.0" y2="650.0" stroke="#666" stroke-width="0.8"/>
-<line x1="154.0" y1="590.0" x2="206.0" y2="590.0" stroke="#111827" stroke-width="1.2"/>
-<line x1="88.0" y1="590.0" x2="154.0" y2="590.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
-<line x1="206.0" y1="590.0" x2="272.0" y2="590.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
-<line x1="177.0" y1="530.0" x2="183.0" y2="530.0" stroke="#666" stroke-width="0.8"/>
-<line x1="177.0" y1="470.0" x2="183.0" y2="470.0" stroke="#666" stroke-width="0.8"/>
-<line x1="177.0" y1="410.0" x2="183.0" y2="410.0" stroke="#666" stroke-width="0.8"/>
-<line x1="154.0" y1="350.0" x2="206.0" y2="350.0" stroke="#111827" stroke-width="1.2"/>
-<line x1="88.0" y1="350.0" x2="154.0" y2="350.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
-<line x1="206.0" y1="350.0" x2="272.0" y2="350.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
+<line x1="177.0" y1="1028.0" x2="183.0" y2="1028.0" stroke="#666" stroke-width="0.8"/>
+<line x1="154.0" y1="926.0" x2="206.0" y2="926.0" stroke="#111827" stroke-width="1.2"/>
+<line x1="88.0" y1="926.0" x2="154.0" y2="926.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
+<line x1="206.0" y1="926.0" x2="272.0" y2="926.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
+<line x1="177.0" y1="824.0" x2="183.0" y2="824.0" stroke="#666" stroke-width="0.8"/>
+<line x1="177.0" y1="722.0" x2="183.0" y2="722.0" stroke="#666" stroke-width="0.8"/>
+<line x1="177.0" y1="620.0" x2="183.0" y2="620.0" stroke="#666" stroke-width="0.8"/>
+<line x1="154.0" y1="518.0" x2="206.0" y2="518.0" stroke="#111827" stroke-width="1.2"/>
+<line x1="88.0" y1="518.0" x2="154.0" y2="518.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
+<line x1="206.0" y1="518.0" x2="272.0" y2="518.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
 <line x1="154.0" y1="110.0" x2="206.0" y2="110.0" stroke="#111827" stroke-width="1.2"/>
 <line x1="88.0" y1="110.0" x2="154.0" y2="110.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
 <line x1="206.0" y1="110.0" x2="272.0" y2="110.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
-<line x1="177.0" y1="290.0" x2="183.0" y2="290.0" stroke="#666" stroke-width="0.8"/>
-<line x1="177.0" y1="230.0" x2="183.0" y2="230.0" stroke="#666" stroke-width="0.8"/>
-<line x1="177.0" y1="170.0" x2="183.0" y2="170.0" stroke="#666" stroke-width="0.8"/>
-<line x1="154.0" y1="2034.0" x2="206.0" y2="2034.0" stroke="#111827" stroke-width="3"/>
-<line x1="154.0" y1="2031.0" x2="206.0" y2="2031.0" stroke="#111827" stroke-width="1"/>
+<line x1="177.0" y1="416.0" x2="183.0" y2="416.0" stroke="#666" stroke-width="0.8"/>
+<line x1="177.0" y1="314.0" x2="183.0" y2="314.0" stroke="#666" stroke-width="0.8"/>
+<line x1="177.0" y1="212.0" x2="183.0" y2="212.0" stroke="#666" stroke-width="0.8"/>
+<line x1="154.0" y1="3378.0" x2="206.0" y2="3378.0" stroke="#111827" stroke-width="3"/>
+<line x1="154.0" y1="3375.0" x2="206.0" y2="3375.0" stroke="#111827" stroke-width="1"/>
 <line x1="154.0" y1="109.0" x2="206.0" y2="109.0" stroke="#111827" stroke-width="1"/>
 <line x1="154.0" y1="106.0" x2="206.0" y2="106.0" stroke="#111827" stroke-width="3"/>
 <g class="laban-starting-position">
-<line x1="154.0" y1="2030.0" x2="154.0" y2="2090.0" stroke="#111827" stroke-width="2"/>
-<line x1="180.0" y1="2030.0" x2="180.0" y2="2090.0" stroke="#111827" stroke-width="2.5"/>
-<line x1="206.0" y1="2030.0" x2="206.0" y2="2090.0" stroke="#111827" stroke-width="2"/>
-<line x1="154.0" y1="2090.0" x2="206.0" y2="2090.0" stroke="#111827" stroke-width="1.2"/>
+<line x1="154.0" y1="3374.0" x2="154.0" y2="3434.0" stroke="#111827" stroke-width="2"/>
+<line x1="180.0" y1="3374.0" x2="180.0" y2="3434.0" stroke="#111827" stroke-width="2.5"/>
+<line x1="206.0" y1="3374.0" x2="206.0" y2="3434.0" stroke="#111827" stroke-width="2"/>
+<line x1="154.0" y1="3434.0" x2="206.0" y2="3434.0" stroke="#111827" stroke-width="1.2"/>
 </g>
-<text x="52.0" y="2026.0" text-anchor="end" font-size="9" fill="#999">1</text>
-<text x="52.0" y="1786.0" text-anchor="end" font-size="9" fill="#999">2</text>
-<text x="52.0" y="1546.0" text-anchor="end" font-size="9" fill="#999">3</text>
-<text x="52.0" y="1306.0" text-anchor="end" font-size="9" fill="#999">4</text>
-<text x="52.0" y="1066.0" text-anchor="end" font-size="9" fill="#999">5</text>
-<text x="52.0" y="826.0" text-anchor="end" font-size="9" fill="#999">6</text>
-<text x="52.0" y="586.0" text-anchor="end" font-size="9" fill="#999">7</text>
-<text x="52.0" y="346.0" text-anchor="end" font-size="9" fill="#999">8</text>
-<text x="180.0" y="2052.0" text-anchor="middle" font-size="9" font-style="italic" fill="#999">System 1</text>
+<text x="52.0" y="3370.0" text-anchor="end" font-size="9" fill="#999">1</text>
+<text x="52.0" y="2962.0" text-anchor="end" font-size="9" fill="#999">2</text>
+<text x="52.0" y="2554.0" text-anchor="end" font-size="9" fill="#999">3</text>
+<text x="52.0" y="2146.0" text-anchor="end" font-size="9" fill="#999">4</text>
+<text x="52.0" y="1738.0" text-anchor="end" font-size="9" fill="#999">5</text>
+<text x="52.0" y="1330.0" text-anchor="end" font-size="9" fill="#999">6</text>
+<text x="52.0" y="922.0" text-anchor="end" font-size="9" fill="#999">7</text>
+<text x="52.0" y="514.0" text-anchor="end" font-size="9" fill="#999">8</text>
+<text x="180.0" y="3396.0" text-anchor="middle" font-size="9" font-style="italic" fill="#999">System 1</text>
 </g>
-<line x1="180.0" y1="2042.0" x2="180.0" y2="102.0" stroke="#999" stroke-width="1" stroke-dasharray="3,3"/>
-<polygon points="176.0,1068.0 184.0,1068.0 180.0,1076.0" fill="#999"/>
+<line x1="180.0" y1="3386.0" x2="180.0" y2="102.0" stroke="#999" stroke-width="1" stroke-dasharray="3,3"/>
+<polygon points="176.0,1740.0 184.0,1740.0 180.0,1748.0" fill="#999"/>
 <g class="laban-system" data-system="2" data-measures="9-10">
-<line x1="514.0" y1="106.0" x2="514.0" y2="594.0" stroke="#111827" stroke-width="2"/>
-<line x1="566.0" y1="106.0" x2="566.0" y2="594.0" stroke="#111827" stroke-width="2"/>
-<line x1="540.0" y1="106.0" x2="540.0" y2="594.0" stroke="#111827" stroke-width="2.5"/>
-<line x1="514.0" y1="590.0" x2="566.0" y2="590.0" stroke="#111827" stroke-width="1.2"/>
-<line x1="448.0" y1="590.0" x2="514.0" y2="590.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
-<line x1="566.0" y1="590.0" x2="632.0" y2="590.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
-<line x1="537.0" y1="530.0" x2="543.0" y2="530.0" stroke="#666" stroke-width="0.8"/>
-<line x1="537.0" y1="470.0" x2="543.0" y2="470.0" stroke="#666" stroke-width="0.8"/>
-<line x1="537.0" y1="410.0" x2="543.0" y2="410.0" stroke="#666" stroke-width="0.8"/>
-<line x1="514.0" y1="350.0" x2="566.0" y2="350.0" stroke="#111827" stroke-width="1.2"/>
-<line x1="448.0" y1="350.0" x2="514.0" y2="350.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
-<line x1="566.0" y1="350.0" x2="632.0" y2="350.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
+<line x1="514.0" y1="106.0" x2="514.0" y2="930.0" stroke="#111827" stroke-width="2"/>
+<line x1="566.0" y1="106.0" x2="566.0" y2="930.0" stroke="#111827" stroke-width="2"/>
+<line x1="540.0" y1="106.0" x2="540.0" y2="930.0" stroke="#111827" stroke-width="2.5"/>
+<line x1="514.0" y1="926.0" x2="566.0" y2="926.0" stroke="#111827" stroke-width="1.2"/>
+<line x1="448.0" y1="926.0" x2="514.0" y2="926.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
+<line x1="566.0" y1="926.0" x2="632.0" y2="926.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
+<line x1="537.0" y1="824.0" x2="543.0" y2="824.0" stroke="#666" stroke-width="0.8"/>
+<line x1="537.0" y1="722.0" x2="543.0" y2="722.0" stroke="#666" stroke-width="0.8"/>
+<line x1="537.0" y1="620.0" x2="543.0" y2="620.0" stroke="#666" stroke-width="0.8"/>
+<line x1="514.0" y1="518.0" x2="566.0" y2="518.0" stroke="#111827" stroke-width="1.2"/>
+<line x1="448.0" y1="518.0" x2="514.0" y2="518.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
+<line x1="566.0" y1="518.0" x2="632.0" y2="518.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
 <line x1="514.0" y1="110.0" x2="566.0" y2="110.0" stroke="#111827" stroke-width="1.2"/>
 <line x1="448.0" y1="110.0" x2="514.0" y2="110.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
 <line x1="566.0" y1="110.0" x2="632.0" y2="110.0" stroke="#111827" stroke-width="1" stroke-dasharray="5,4"/>
-<line x1="537.0" y1="290.0" x2="543.0" y2="290.0" stroke="#666" stroke-width="0.8"/>
-<line x1="537.0" y1="230.0" x2="543.0" y2="230.0" stroke="#666" stroke-width="0.8"/>
-<line x1="537.0" y1="170.0" x2="543.0" y2="170.0" stroke="#666" stroke-width="0.8"/>
-<line x1="514.0" y1="594.0" x2="566.0" y2="594.0" stroke="#111827" stroke-width="3"/>
-<line x1="514.0" y1="591.0" x2="566.0" y2="591.0" stroke="#111827" stroke-width="1"/>
+<line x1="537.0" y1="416.0" x2="543.0" y2="416.0" stroke="#666" stroke-width="0.8"/>
+<line x1="537.0" y1="314.0" x2="543.0" y2="314.0" stroke="#666" stroke-width="0.8"/>
+<line x1="537.0" y1="212.0" x2="543.0" y2="212.0" stroke="#666" stroke-width="0.8"/>
+<line x1="514.0" y1="930.0" x2="566.0" y2="930.0" stroke="#111827" stroke-width="3"/>
+<line x1="514.0" y1="927.0" x2="566.0" y2="927.0" stroke="#111827" stroke-width="1"/>
 <line x1="514.0" y1="109.0" x2="566.0" y2="109.0" stroke="#111827" stroke-width="1"/>
 <line x1="514.0" y1="106.0" x2="566.0" y2="106.0" stroke="#111827" stroke-width="3"/>
-<text x="412.0" y="586.0" text-anchor="end" font-size="9" fill="#999">9</text>
-<text x="412.0" y="346.0" text-anchor="end" font-size="9" fill="#999">10</text>
-<text x="540.0" y="612.0" text-anchor="middle" font-size="9" font-style="italic" fill="#999">System 2</text>
+<text x="412.0" y="922.0" text-anchor="end" font-size="9" fill="#999">9</text>
+<text x="412.0" y="514.0" text-anchor="end" font-size="9" fill="#999">10</text>
+<text x="540.0" y="948.0" text-anchor="middle" font-size="9" font-style="italic" fill="#999">System 2</text>
 </g>
-<g class="laban-symbol" data-symbol-id="support.step.forward" data-direction="forward" data-level="high"><path d="M 167.0 1911.0 L 180.0 1925.3 L 180.0 2029.0 L 154.0 2029.0 L 154.0 1925.3 Z" fill="url(#laban-hatch)" stroke="#111827" stroke-width="1.5"/></g>
-<g class="laban-symbol" data-symbol-id="support.step.forward" data-direction="backward" data-level="low"><path d="M 180.0 1911.0 L 206.0 1911.0 L 206.0 2014.7 L 193.0 2029.0 L 180.0 2014.7 Z" fill="#111827" stroke="#111827" stroke-width="1.5"/></g>
-<g class="laban-symbol" data-symbol-id="direction.forward" data-direction="forward" data-level="middle"><path d="M 127.0 1851.0 L 136.0 1860.9 L 136.0 1909.0 L 118.0 1909.0 L 118.0 1860.9 Z" fill="#ffffff" stroke="#111827" stroke-width="1.5"/><circle cx="127.0" cy="1880.0" r="2.5" fill="#111827"/></g>
-<g class="laban-symbol" data-symbol-id="direction.left" data-direction="left" data-level="high"><path d="M 242.0 1851.0 L 242.0 1909.0 L 224.0 1880.0 Z" fill="url(#laban-hatch)" stroke="#111827" stroke-width="1.5"/></g>
-<g class="laban-symbol" data-symbol-id="support.step.forward" data-direction="right" data-level="middle"><path d="M 180.0 1731.0 L 206.0 1760.0 L 180.0 1789.0 Z" fill="#ffffff" stroke="#111827" stroke-width="1.5"/><circle cx="193.0" cy="1760.0" r="2.5" fill="#111827"/></g>
-<g class="laban-symbol" data-symbol-id="support.step.forward" data-direction="diagonal_forward_left" data-level="low"><path d="M 154.0 1731.0 L 180.0 1748.4 L 180.0 1789.0 L 154.0 1789.0 Z" fill="#111827" stroke="#111827" stroke-width="1.5"/></g>
-<g class="laban-symbol" data-symbol-id="direction.forward" data-direction="diagonal_forward_right" data-level="high"><path d="M 118.0 1627.2 L 136.0 1611.0 L 136.0 1729.0 L 118.0 1729.0 Z" fill="url(#laban-hatch)" stroke="#111827" stroke-width="1.5"/></g>
-<g class="laban-symbol" data-symbol-id="direction.forward" data-direction="diagonal_backward_left" data-level="middle"><path d="M 224.0 1611.0 L 242.0 1611.0 L 242.0 1712.8 L 224.0 1729.0 Z" fill="#ffffff" stroke="#111827" stroke-width="1.5"/><circle cx="233.0" cy="1670.0" r="2.5" fill="#111827"/></g>
-<g class="laban-symbol" data-symbol-id="support.step.forward" data-direction="diagonal_backward_right" data-level="high"><path d="M 154.0 1431.0 L 180.0 1431.0 L 180.0 1549.0 L 154.0 1525.6 Z" fill="url(#laban-hatch)" stroke="#111827" stroke-width="1.5"/></g>
-<g class="laban-symbol" data-symbol-id="support.step.forward" data-direction="place" data-level="low"><path d="M 180.0 1431.0 L 206.0 1431.0 L 206.0 1549.0 L 180.0 1549.0 Z" fill="#111827" stroke="#111827" stroke-width="1.5"/></g>
-<g class="laban-symbol" data-symbol-id="support.step.forward" data-direction="forward" data-level="middle"><defs><clipPath id="upper-clip-0"><rect x="154.0" y="1371.0" width="26.0" height="29.0"/></clipPath><clipPath id="lower-clip-0"><rect x="154.0" y="1400.0" width="26.0" height="29.0"/></clipPath></defs><path d="M 167.0 1371.0 L 180.0 1385.3 L 180.0 1429.0 L 154.0 1429.0 L 154.0 1385.3 Z" clip-path="url(#upper-clip-0)" fill="url(#laban-hatch)" stroke="#111827" stroke-width="1.5"/><path d="M 167.0 1371.0 L 180.0 1385.3 L 180.0 1429.0 L 154.0 1429.0 L 154.0 1385.3 Z" clip-path="url(#lower-clip-0)" fill="#111827" stroke="#111827" stroke-width="1.5"/><line x1="154.0" y1="1400.0" x2="180.0" y2="1400.0" stroke="#111827" stroke-width="0.8"/><path d="M 167.0 1371.0 L 180.0 1385.3 L 180.0 1429.0 L 154.0 1429.0 L 154.0 1385.3 Z" fill="none" stroke="#111827" stroke-width="1.5"/></g>
-<g class="laban-symbol retention" data-symbol-id="retention.hold.arm"><circle cx="127.0" cy="620.0" r="3.5" fill="none" stroke="#111827" stroke-width="1.2"/></g>
-<g class="laban-symbol retention" data-symbol-id="retention.hold.arm"><line x1="233.0" y1="615.0" x2="230.0" y2="625.0" stroke="#111827" stroke-width="1.2"/><line x1="233.0" y1="615.0" x2="236.0" y2="625.0" stroke="#111827" stroke-width="1.2"/></g>
-<g class="laban-symbol whitespace" data-symbol-id="support.step.forward"><rect x="154" y="351.0" width="26" height="238.0" fill="white" stroke="#ccc" stroke-width="0.8" stroke-dasharray="4,3"/></g>
-<g class="laban-symbol" data-symbol-id="support.step.forward" data-direction="forward" data-level="middle"><path d="M 193.0 471.0 L 206.0 485.3 L 206.0 589.0 L 180.0 589.0 L 180.0 485.3 Z" fill="#ffffff" stroke="#111827" stroke-width="1.5"/><circle cx="193.0" cy="530.0" r="2.5" fill="#111827"/><polyline points="180.0,530.0 184.3,533.0 188.7,527.0 193.0,533.0 197.3,527.0 201.7,533.0 206.0,527.0" fill="none" stroke="#111827" stroke-width="1"/></g>
-<g class="laban-symbol" data-symbol-id="direction.forward" data-direction="forward" data-level="high"><path d="M 127.0 471.0 L 136.0 480.9 L 136.0 589.0 L 118.0 589.0 L 118.0 480.9 Z" fill="url(#laban-hatch)" stroke="#111827" stroke-width="1.5"/><line x1="127.0" y1="471.0" x2="127.0" y2="467.0" stroke="#111827" stroke-width="1"/><line x1="118.0" y1="530.0" x2="114.0" y2="530.0" stroke="#111827" stroke-width="1"/></g>
-<g class="laban-symbol" data-symbol-id="direction.forward" data-direction="right" data-level="low"><path d="M 224.0 471.0 L 242.0 530.0 L 224.0 589.0 Z" fill="#111827" stroke="#111827" stroke-width="1.5"/><text x="233.0" y="468.0" text-anchor="middle" font-size="6" font-style="italic" fill="#666">elbow</text><circle cx="230.5" cy="530.0" r="1.5" fill="#111827"/><circle cx="235.5" cy="530.0" r="1.5" fill="#111827"/></g>
-<g class="laban-symbol" data-symbol-id="support.step.forward" data-direction="forward" data-level="middle"><path d="M 167.0 231.0 L 180.0 245.3 L 180.0 349.0 L 154.0 349.0 L 154.0 245.3 Z" fill="#ffffff" stroke="#111827" stroke-width="1.5" stroke-dasharray="3,3"/><circle cx="167.0" cy="290.0" r="2.5" fill="#111827"/></g>
-<g class="laban-symbol" data-symbol-id="support.step.forward" data-direction="backward" data-level="high"><path d="M 180.0 231.0 L 206.0 231.0 L 206.0 334.7 L 193.0 349.0 L 180.0 334.7 Z" fill="url(#laban-hatch)" stroke="#111827" stroke-width="1.5"/><path d="M 180.0 231.0 L 206.0 231.0 L 206.0 334.7 L 193.0 349.0 L 180.0 334.7 Z" fill="none" stroke="#111827" stroke-width="3.5" opacity="0.3"/></g>
-<g class="laban-symbol" data-symbol-id="support.step.forward" data-direction="forward" data-level="high"><path d="M 527.0 231.0 L 540.0 245.3 L 540.0 349.0 L 514.0 349.0 L 514.0 245.3 Z" fill="url(#laban-hatch)" stroke="#111827" stroke-width="1.5"/><text class="laban-caption" x="638.0" y="290.0" text-anchor="start" font-size="7" fill="#475569" transform="rotate(-90, 638.0, 290.0)">plié</text></g>
-<g class="laban-symbol" data-symbol-id="support.step.forward" data-direction="forward" data-level="low"><path d="M 553.0 231.0 L 566.0 245.3 L 566.0 349.0 L 540.0 349.0 L 540.0 245.3 Z" fill="#111827" stroke="#111827" stroke-width="1.5"/><text x="553.0" y="367.0" text-anchor="middle" font-size="6" font-style="italic" fill="#999">relevé</text></g>
-<g class="laban-annotation turn" data-level="middle" data-turn-subtype="right" data-symbol-id="turn.right" transform="rotate(180, 71.0, 1250.0)"><circle cx="71.0" cy="1250.0" r="5.0" fill="#ffffff" stroke="#111827" stroke-width="1"/><path d="M 63.0 1250.0 A 8.0 8.0 0 1 1 79.0 1250.0" fill="none" stroke="#111827" stroke-width="1.5"/><polygon points="83.0,1250.0 77.0,1247.0 77.0,1253.0" fill="#111827"/></g>
-<g class="laban-annotation jump" data-level="middle" data-symbol-id="jump.basic"><path d="M 283.0 1186.0 C 283.0 1128.0 295.0 1128.0 295.0 1186.0 Z" fill="#ffffff" stroke="#111827" stroke-width="1.5"/><line x1="289.0" y1="1134.0" x2="289.0" y2="1182.0" stroke="#111827" stroke-width="1.2"/></g>
-<g class="laban-annotation jump" data-level="middle" data-symbol-id="jump.basic"><path d="M 289.0 1126.0 L 293.0 1123.2 L 285.0 1120.5 L 293.0 1117.8 L 285.0 1115.0 L 293.0 1112.2 L 285.0 1109.5 L 293.0 1106.8 L 285.0 1104.0 L 289.0 1104.0" fill="none" stroke="#111827" stroke-width="1.5"/><circle cx="289.0" cy="1126.0" r="2.5" fill="#ffffff" stroke="#111827" stroke-width="1"/><line x1="289.0" y1="1104.0" x2="289.0" y2="1122.0" stroke="#111827" stroke-width="1.2"/></g>
-<g class="laban-annotation effort" data-symbol-id="effort.weight.strong"><path d="M 289.0 1002.0 L 297.0 1010.0 L 289.0 1018.0 L 281.0 1010.0 Z" fill="none" stroke="#111827" stroke-width="1.2"/><line x1="289.0" y1="1002.0" x2="289.0" y2="1018.0" stroke="#111827" stroke-width="0.8"/><line x1="281.0" y1="1010.0" x2="297.0" y2="1010.0" stroke="#111827" stroke-width="0.8"/><path d="M 289.0 1002.0 L 281.0 1010.0 L 289.0 1010.0 Z" fill="#111827" opacity="0.6"/><path d="M 289.0 1002.0 L 297.0 1010.0 L 289.0 1010.0 Z" fill="#111827" opacity="0.6"/></g>
-<g class="laban-annotation contact" data-symbol-id="contact.touch"><path d="M 307.0 1044.0 L 313.0 1036.0 L 319.0 1044.0" fill="none" stroke="#111827" stroke-width="1.5" stroke-linejoin="miter"/></g>
-<g class="laban-annotation contact" data-symbol-id="contact.grasp"><path d="M 284.0 975.0 L 284.0 985.0 L 294.0 985.0 L 294.0 975.0" fill="none" stroke="#111827" stroke-width="1.5" stroke-linejoin="miter"/></g>
-<g class="laban-annotation contact" data-symbol-id="contact.slide"><path d="M 283.0 924.0 L 289.0 916.0 L 295.0 924.0" fill="none" stroke="#111827" stroke-width="1.5" stroke-linejoin="miter"/><line x1="284.0" y1="913.0" x2="293.0" y2="913.0" stroke="#111827" stroke-width="1"/><polygon points="295.0,913.0 292.0,911.0 292.0,915.0" fill="#111827"/></g>
-<g class="laban-annotation contact" data-symbol-id="contact.strike"><path d="M 283.0 864.0 L 289.0 856.0 L 295.0 864.0" fill="none" stroke="#111827" stroke-width="1.5" stroke-linejoin="miter"/><line x1="289.0" y1="853.0" x2="289.0" y2="867.0" stroke="#111827" stroke-width="1.2"/></g>
-<g class="laban-annotation flexion" data-symbol-id="flexion.knee.90"><line x1="289.0" y1="800.0" x2="293.2" y2="795.8" stroke="#111827" stroke-width="1.2"/><line x1="292.0" y1="797.0" x2="293.7" y2="798.8" stroke="#111827" stroke-width="1.2"/><line x1="289.0" y1="800.0" x2="293.2" y2="804.2" stroke="#111827" stroke-width="1.2"/><line x1="292.0" y1="803.0" x2="290.2" y2="804.7" stroke="#111827" stroke-width="1.2"/><line x1="289.0" y1="800.0" x2="284.8" y2="804.2" stroke="#111827" stroke-width="1.2"/><line x1="286.0" y1="803.0" x2="284.3" y2="801.2" stroke="#111827" stroke-width="1.2"/><line x1="289.0" y1="800.0" x2="284.8" y2="795.8" stroke="#111827" stroke-width="1.2"/><line x1="286.0" y1="797.0" x2="287.8" y2="795.3" stroke="#111827" stroke-width="1.2"/></g>
-<g class="laban-annotation flexion" data-symbol-id="flexion.knee.90"><line x1="289.0" y1="740.0" x2="293.2" y2="735.8" stroke="#111827" stroke-width="1.2"/><line x1="292.0" y1="737.0" x2="293.7" y2="738.8" stroke="#111827" stroke-width="1.2"/><line x1="290.7" y1="738.3" x2="292.5" y2="740.1" stroke="#111827" stroke-width="1.2"/><line x1="289.0" y1="740.0" x2="293.2" y2="744.2" stroke="#111827" stroke-width="1.2"/><line x1="292.0" y1="743.0" x2="290.2" y2="744.7" stroke="#111827" stroke-width="1.2"/><line x1="290.7" y1="741.7" x2="288.9" y2="743.5" stroke="#111827" stroke-width="1.2"/><line x1="289.0" y1="740.0" x2="284.8" y2="744.2" stroke="#111827" stroke-width="1.2"/><line x1="286.0" y1="743.0" x2="284.3" y2="741.2" stroke="#111827" stroke-width="1.2"/><line x1="287.3" y1="741.7" x2="285.5" y2="739.9" stroke="#111827" stroke-width="1.2"/><line x1="289.0" y1="740.0" x2="284.8" y2="735.8" stroke="#111827" stroke-width="1.2"/><line x1="286.0" y1="737.0" x2="287.8" y2="735.3" stroke="#111827" stroke-width="1.2"/><line x1="287.3" y1="738.3" x2="289.1" y2="736.5" stroke="#111827" stroke-width="1.2"/></g>
-<g class="laban-annotation flexion" data-symbol-id="flexion.hip.90"><line x1="289.0" y1="680.0" x2="293.2" y2="675.8" stroke="#111827" stroke-width="1.2"/><line x1="292.0" y1="677.0" x2="293.7" y2="678.8" stroke="#111827" stroke-width="1.2"/><line x1="290.7" y1="678.3" x2="292.5" y2="680.1" stroke="#111827" stroke-width="1.2"/><line x1="289.4" y1="679.6" x2="291.2" y2="681.3" stroke="#111827" stroke-width="1.2"/><line x1="289.0" y1="680.0" x2="293.2" y2="684.2" stroke="#111827" stroke-width="1.2"/><line x1="292.0" y1="683.0" x2="290.2" y2="684.7" stroke="#111827" stroke-width="1.2"/><line x1="290.7" y1="681.7" x2="288.9" y2="683.5" stroke="#111827" stroke-width="1.2"/><line x1="289.4" y1="680.4" x2="287.7" y2="682.2" stroke="#111827" stroke-width="1.2"/><line x1="289.0" y1="680.0" x2="284.8" y2="684.2" stroke="#111827" stroke-width="1.2"/><line x1="286.0" y1="683.0" x2="284.3" y2="681.2" stroke="#111827" stroke-width="1.2"/><line x1="287.3" y1="681.7" x2="285.5" y2="679.9" stroke="#111827" stroke-width="1.2"/><line x1="288.6" y1="680.4" x2="286.8" y2="678.7" stroke="#111827" stroke-width="1.2"/><line x1="289.0" y1="680.0" x2="284.8" y2="675.8" stroke="#111827" stroke-width="1.2"/><line x1="286.0" y1="677.0" x2="287.8" y2="675.3" stroke="#111827" stroke-width="1.2"/><line x1="287.3" y1="678.3" x2="289.1" y2="676.5" stroke="#111827" stroke-width="1.2"/><line x1="288.6" y1="679.6" x2="290.3" y2="677.8" stroke="#111827" stroke-width="1.2"/></g>
-<g class="laban-annotation repeat" data-symbol-id="repeat.start"><line x1="71.0" y1="292.0" x2="71.0" y2="348.0" stroke="#111827" stroke-width="2.5"/></g>
-<g class="laban-annotation repeat" data-symbol-id="repeat.end"><line x1="71.0" y1="112.0" x2="71.0" y2="168.0" stroke="#111827" stroke-width="1.5"/><circle cx="71.0" cy="135.0" r="2" fill="#111827"/><circle cx="71.0" cy="145.0" r="2" fill="#111827"/></g>
-<g class="laban-annotation sequential" data-symbol-id="sequential.successive" data-sequential-kind="successive"><path d="M 431.0 588.0 Q 434.0 529.0 431.0 510.1 Q 428.0 470.0 431.0 429.9 Q 434.0 411.0 431.0 352.0" fill="none" stroke="#111827" stroke-width="1.2"/><polygon points="431.0,350.0 434.0,354.5 428.0,354.5" fill="#111827"/></g>
-<g class="laban-annotation shape" data-symbol-id="shape.pin" data-shape-pole=""><line x1="649.0" y1="554.0" x2="649.0" y2="565.0" stroke="#111827" stroke-width="1.5"/><polygon points="649.0,568.0 646.0,563.8 652.0,563.8" fill="#111827"/></g>
-<g class="laban-annotation shape" data-symbol-id="shape.wall" data-shape-pole=""><line x1="642.0" y1="500.0" x2="656.0" y2="500.0" stroke="#111827" stroke-width="1.5"/><polygon points="640.0,500.0 644.2,497.0 644.2,503.0" fill="#111827"/><polygon points="658.0,500.0 653.8,503.0 653.8,497.0" fill="#111827"/></g>
-<line x1="71.0" y1="230.0" x2="71.0" y2="230.0" stroke="#111827" stroke-width="1.5"/>
-<path class="repeat-span" d="M 54.0 350.0 L 54.0 110.0 M 54.0 350.0 L 63.0 350.0 M 54.0 110.0 L 63.0 110.0" fill="none" stroke="#111827" stroke-width="1.4"/>
+<g class="laban-symbol" data-symbol-id="support.step.forward" data-direction="forward" data-level="high"><path d="M 167.0 3171.0 L 180.0 3185.3 L 180.0 3373.0 L 154.0 3373.0 L 154.0 3185.3 Z" fill="url(#laban-hatch)" stroke="#111827" stroke-width="1.5"/></g>
+<g class="laban-symbol" data-symbol-id="support.step.forward" data-direction="backward" data-level="low"><path d="M 180.0 3171.0 L 206.0 3171.0 L 206.0 3358.7 L 193.0 3373.0 L 180.0 3358.7 Z" fill="#111827" stroke="#111827" stroke-width="1.5"/></g>
+<g class="laban-symbol" data-symbol-id="direction.forward" data-direction="forward" data-level="middle"><path d="M 127.0 3069.0 L 136.0 3078.9 L 136.0 3169.0 L 118.0 3169.0 L 118.0 3078.9 Z" fill="#ffffff" stroke="#111827" stroke-width="1.5"/><circle cx="127.0" cy="3119.0" r="2.5" fill="#111827"/></g>
+<g class="laban-symbol" data-symbol-id="direction.left" data-direction="left" data-level="high"><path d="M 242.0 3069.0 L 242.0 3169.0 L 224.0 3119.0 Z" fill="url(#laban-hatch)" stroke="#111827" stroke-width="1.5"/></g>
+<g class="laban-symbol" data-symbol-id="support.step.forward" data-direction="right" data-level="middle"><path d="M 180.0 2865.0 L 206.0 2915.0 L 180.0 2965.0 Z" fill="#ffffff" stroke="#111827" stroke-width="1.5"/><circle cx="193.0" cy="2915.0" r="2.5" fill="#111827"/></g>
+<g class="laban-symbol" data-symbol-id="support.step.forward" data-direction="diagonal_forward_left" data-level="low"><path d="M 154.0 2865.0 L 180.0 2888.4 L 180.0 2965.0 L 154.0 2965.0 Z" fill="#111827" stroke="#111827" stroke-width="1.5"/></g>
+<g class="laban-symbol" data-symbol-id="direction.forward" data-direction="diagonal_forward_right" data-level="high"><path d="M 118.0 2677.2 L 136.0 2661.0 L 136.0 2863.0 L 118.0 2863.0 Z" fill="url(#laban-hatch)" stroke="#111827" stroke-width="1.5"/></g>
+<g class="laban-symbol" data-symbol-id="direction.forward" data-direction="diagonal_backward_left" data-level="middle"><path d="M 224.0 2661.0 L 242.0 2661.0 L 242.0 2846.8 L 224.0 2863.0 Z" fill="#ffffff" stroke="#111827" stroke-width="1.5"/><circle cx="233.0" cy="2762.0" r="2.5" fill="#111827"/></g>
+<g class="laban-symbol" data-symbol-id="support.step.forward" data-direction="diagonal_backward_right" data-level="high"><path d="M 154.0 2355.0 L 180.0 2355.0 L 180.0 2557.0 L 154.0 2533.6 Z" fill="url(#laban-hatch)" stroke="#111827" stroke-width="1.5"/></g>
+<g class="laban-symbol" data-symbol-id="support.step.forward" data-direction="place" data-level="low"><path d="M 180.0 2355.0 L 206.0 2355.0 L 206.0 2557.0 L 180.0 2557.0 Z" fill="#111827" stroke="#111827" stroke-width="1.5"/></g>
+<g class="laban-symbol" data-symbol-id="support.step.forward" data-direction="forward" data-level="middle"><defs><clipPath id="upper-clip-0"><rect x="154.0" y="2253.0" width="26.0" height="50.0"/></clipPath><clipPath id="lower-clip-0"><rect x="154.0" y="2303.0" width="26.0" height="50.0"/></clipPath></defs><path d="M 167.0 2253.0 L 180.0 2267.3 L 180.0 2353.0 L 154.0 2353.0 L 154.0 2267.3 Z" clip-path="url(#upper-clip-0)" fill="url(#laban-hatch)" stroke="#111827" stroke-width="1.5"/><path d="M 167.0 2253.0 L 180.0 2267.3 L 180.0 2353.0 L 154.0 2353.0 L 154.0 2267.3 Z" clip-path="url(#lower-clip-0)" fill="#111827" stroke="#111827" stroke-width="1.5"/><line x1="154.0" y1="2303.0" x2="180.0" y2="2303.0" stroke="#111827" stroke-width="0.8"/><path d="M 167.0 2253.0 L 180.0 2267.3 L 180.0 2353.0 L 154.0 2353.0 L 154.0 2267.3 Z" fill="none" stroke="#111827" stroke-width="1.5"/></g>
+<g class="laban-symbol retention" data-symbol-id="retention.hold.arm"><circle cx="127.0" cy="977.0" r="3.5" fill="none" stroke="#111827" stroke-width="1.2"/></g>
+<g class="laban-symbol retention" data-symbol-id="retention.hold.arm"><line x1="233.0" y1="972.0" x2="230.0" y2="982.0" stroke="#111827" stroke-width="1.2"/><line x1="233.0" y1="972.0" x2="236.0" y2="982.0" stroke="#111827" stroke-width="1.2"/></g>
+<g class="laban-symbol whitespace" data-symbol-id="support.step.forward"><rect x="154" y="519.0" width="26" height="406.0" fill="white" stroke="#ccc" stroke-width="0.8" stroke-dasharray="4,3"/></g>
+<g class="laban-symbol" data-symbol-id="support.step.forward" data-direction="forward" data-level="middle"><path d="M 193.0 723.0 L 206.0 737.3 L 206.0 925.0 L 180.0 925.0 L 180.0 737.3 Z" fill="#ffffff" stroke="#111827" stroke-width="1.5"/><circle cx="193.0" cy="824.0" r="2.5" fill="#111827"/><polyline points="180.0,824.0 184.3,827.0 188.7,821.0 193.0,827.0 197.3,821.0 201.7,827.0 206.0,821.0" fill="none" stroke="#111827" stroke-width="1"/></g>
+<g class="laban-symbol" data-symbol-id="direction.forward" data-direction="forward" data-level="high"><path d="M 127.0 723.0 L 136.0 732.9 L 136.0 925.0 L 118.0 925.0 L 118.0 732.9 Z" fill="url(#laban-hatch)" stroke="#111827" stroke-width="1.5"/><line x1="127.0" y1="723.0" x2="127.0" y2="719.0" stroke="#111827" stroke-width="1"/><line x1="118.0" y1="824.0" x2="114.0" y2="824.0" stroke="#111827" stroke-width="1"/></g>
+<g class="laban-symbol" data-symbol-id="direction.forward" data-direction="right" data-level="low"><path d="M 224.0 723.0 L 242.0 824.0 L 224.0 925.0 Z" fill="#111827" stroke="#111827" stroke-width="1.5"/><text x="233.0" y="720.0" text-anchor="middle" font-size="6" font-style="italic" fill="#666">elbow</text><circle cx="230.5" cy="824.0" r="1.5" fill="#111827"/><circle cx="235.5" cy="824.0" r="1.5" fill="#111827"/></g>
+<g class="laban-symbol" data-symbol-id="support.step.forward" data-direction="forward" data-level="middle"><path d="M 167.0 315.0 L 180.0 329.3 L 180.0 517.0 L 154.0 517.0 L 154.0 329.3 Z" fill="#ffffff" stroke="#111827" stroke-width="1.5" stroke-dasharray="3,3"/><circle cx="167.0" cy="416.0" r="2.5" fill="#111827"/></g>
+<g class="laban-symbol" data-symbol-id="support.step.forward" data-direction="backward" data-level="high"><path d="M 180.0 315.0 L 206.0 315.0 L 206.0 502.7 L 193.0 517.0 L 180.0 502.7 Z" fill="url(#laban-hatch)" stroke="#111827" stroke-width="1.5"/><path d="M 180.0 315.0 L 206.0 315.0 L 206.0 502.7 L 193.0 517.0 L 180.0 502.7 Z" fill="none" stroke="#111827" stroke-width="3.5" opacity="0.3"/></g>
+<g class="laban-symbol" data-symbol-id="support.step.forward" data-direction="forward" data-level="high"><path d="M 527.0 315.0 L 540.0 329.3 L 540.0 517.0 L 514.0 517.0 L 514.0 329.3 Z" fill="url(#laban-hatch)" stroke="#111827" stroke-width="1.5"/><text class="laban-caption" x="638.0" y="416.0" text-anchor="start" font-size="7" fill="#475569" transform="rotate(-90, 638.0, 416.0)">plié</text></g>
+<g class="laban-symbol" data-symbol-id="support.step.forward" data-direction="forward" data-level="low"><path d="M 553.0 315.0 L 566.0 329.3 L 566.0 517.0 L 540.0 517.0 L 540.0 329.3 Z" fill="#111827" stroke="#111827" stroke-width="1.5"/><text x="553.0" y="535.0" text-anchor="middle" font-size="6" font-style="italic" fill="#999">relevé</text></g>
+<g class="laban-annotation turn" data-level="middle" data-turn-subtype="right" data-symbol-id="turn.right" transform="rotate(180, 71.0, 2048.0)"><circle cx="71.0" cy="2048.0" r="5.0" fill="#ffffff" stroke="#111827" stroke-width="1"/><path d="M 63.0 2048.0 A 8.0 8.0 0 1 1 79.0 2048.0" fill="none" stroke="#111827" stroke-width="1.5"/><polygon points="83.0,2048.0 77.0,2045.0 77.0,2051.0" fill="#111827"/></g>
+<g class="laban-annotation jump" data-level="middle" data-symbol-id="jump.basic"><path d="M 283.0 1942.0 C 283.0 1842.0 295.0 1842.0 295.0 1942.0 Z" fill="#ffffff" stroke="#111827" stroke-width="1.5"/><line x1="289.0" y1="1848.0" x2="289.0" y2="1938.0" stroke="#111827" stroke-width="1.2"/></g>
+<g class="laban-annotation jump" data-level="middle" data-symbol-id="jump.basic"><path d="M 289.0 1840.0 L 293.0 1834.6 L 285.0 1829.2 L 293.0 1823.9 L 285.0 1818.5 L 293.0 1813.1 L 285.0 1807.8 L 293.0 1802.4 L 285.0 1797.0 L 289.0 1797.0" fill="none" stroke="#111827" stroke-width="1.5"/><circle cx="289.0" cy="1840.0" r="2.5" fill="#ffffff" stroke="#111827" stroke-width="1"/><line x1="289.0" y1="1797.0" x2="289.0" y2="1836.0" stroke="#111827" stroke-width="1.2"/></g>
+<g class="laban-annotation effort" data-symbol-id="effort.weight.strong"><path d="M 289.0 1632.0 L 297.0 1640.0 L 289.0 1648.0 L 281.0 1640.0 Z" fill="none" stroke="#111827" stroke-width="1.2"/><line x1="289.0" y1="1632.0" x2="289.0" y2="1648.0" stroke="#111827" stroke-width="0.8"/><line x1="281.0" y1="1640.0" x2="297.0" y2="1640.0" stroke="#111827" stroke-width="0.8"/><path d="M 289.0 1632.0 L 281.0 1640.0 L 289.0 1640.0 Z" fill="#111827" opacity="0.6"/><path d="M 289.0 1632.0 L 297.0 1640.0 L 289.0 1640.0 Z" fill="#111827" opacity="0.6"/></g>
+<g class="laban-annotation contact" data-symbol-id="contact.touch"><path d="M 307.0 1695.0 L 313.0 1687.0 L 319.0 1695.0" fill="none" stroke="#111827" stroke-width="1.5" stroke-linejoin="miter"/></g>
+<g class="laban-annotation contact" data-symbol-id="contact.grasp"><path d="M 284.0 1584.0 L 284.0 1594.0 L 294.0 1594.0 L 294.0 1584.0" fill="none" stroke="#111827" stroke-width="1.5" stroke-linejoin="miter"/></g>
+<g class="laban-annotation contact" data-symbol-id="contact.slide"><path d="M 283.0 1491.0 L 289.0 1483.0 L 295.0 1491.0" fill="none" stroke="#111827" stroke-width="1.5" stroke-linejoin="miter"/><line x1="284.0" y1="1480.0" x2="293.0" y2="1480.0" stroke="#111827" stroke-width="1"/><polygon points="295.0,1480.0 292.0,1478.0 292.0,1482.0" fill="#111827"/></g>
+<g class="laban-annotation contact" data-symbol-id="contact.strike"><path d="M 283.0 1389.0 L 289.0 1381.0 L 295.0 1389.0" fill="none" stroke="#111827" stroke-width="1.5" stroke-linejoin="miter"/><line x1="289.0" y1="1378.0" x2="289.0" y2="1392.0" stroke="#111827" stroke-width="1.2"/></g>
+<g class="laban-annotation flexion" data-symbol-id="flexion.knee.90"><line x1="289.0" y1="1283.0" x2="293.2" y2="1278.8" stroke="#111827" stroke-width="1.2"/><line x1="292.0" y1="1280.0" x2="293.7" y2="1281.8" stroke="#111827" stroke-width="1.2"/><line x1="289.0" y1="1283.0" x2="293.2" y2="1287.2" stroke="#111827" stroke-width="1.2"/><line x1="292.0" y1="1286.0" x2="290.2" y2="1287.7" stroke="#111827" stroke-width="1.2"/><line x1="289.0" y1="1283.0" x2="284.8" y2="1287.2" stroke="#111827" stroke-width="1.2"/><line x1="286.0" y1="1286.0" x2="284.3" y2="1284.2" stroke="#111827" stroke-width="1.2"/><line x1="289.0" y1="1283.0" x2="284.8" y2="1278.8" stroke="#111827" stroke-width="1.2"/><line x1="286.0" y1="1280.0" x2="287.8" y2="1278.3" stroke="#111827" stroke-width="1.2"/></g>
+<g class="laban-annotation flexion" data-symbol-id="flexion.knee.90"><line x1="289.0" y1="1181.0" x2="293.2" y2="1176.8" stroke="#111827" stroke-width="1.2"/><line x1="292.0" y1="1178.0" x2="293.7" y2="1179.8" stroke="#111827" stroke-width="1.2"/><line x1="290.7" y1="1179.3" x2="292.5" y2="1181.1" stroke="#111827" stroke-width="1.2"/><line x1="289.0" y1="1181.0" x2="293.2" y2="1185.2" stroke="#111827" stroke-width="1.2"/><line x1="292.0" y1="1184.0" x2="290.2" y2="1185.7" stroke="#111827" stroke-width="1.2"/><line x1="290.7" y1="1182.7" x2="288.9" y2="1184.5" stroke="#111827" stroke-width="1.2"/><line x1="289.0" y1="1181.0" x2="284.8" y2="1185.2" stroke="#111827" stroke-width="1.2"/><line x1="286.0" y1="1184.0" x2="284.3" y2="1182.2" stroke="#111827" stroke-width="1.2"/><line x1="287.3" y1="1182.7" x2="285.5" y2="1180.9" stroke="#111827" stroke-width="1.2"/><line x1="289.0" y1="1181.0" x2="284.8" y2="1176.8" stroke="#111827" stroke-width="1.2"/><line x1="286.0" y1="1178.0" x2="287.8" y2="1176.3" stroke="#111827" stroke-width="1.2"/><line x1="287.3" y1="1179.3" x2="289.1" y2="1177.5" stroke="#111827" stroke-width="1.2"/></g>
+<g class="laban-annotation flexion" data-symbol-id="flexion.hip.90"><line x1="289.0" y1="1079.0" x2="293.2" y2="1074.8" stroke="#111827" stroke-width="1.2"/><line x1="292.0" y1="1076.0" x2="293.7" y2="1077.8" stroke="#111827" stroke-width="1.2"/><line x1="290.7" y1="1077.3" x2="292.5" y2="1079.1" stroke="#111827" stroke-width="1.2"/><line x1="289.4" y1="1078.6" x2="291.2" y2="1080.3" stroke="#111827" stroke-width="1.2"/><line x1="289.0" y1="1079.0" x2="293.2" y2="1083.2" stroke="#111827" stroke-width="1.2"/><line x1="292.0" y1="1082.0" x2="290.2" y2="1083.7" stroke="#111827" stroke-width="1.2"/><line x1="290.7" y1="1080.7" x2="288.9" y2="1082.5" stroke="#111827" stroke-width="1.2"/><line x1="289.4" y1="1079.4" x2="287.7" y2="1081.2" stroke="#111827" stroke-width="1.2"/><line x1="289.0" y1="1079.0" x2="284.8" y2="1083.2" stroke="#111827" stroke-width="1.2"/><line x1="286.0" y1="1082.0" x2="284.3" y2="1080.2" stroke="#111827" stroke-width="1.2"/><line x1="287.3" y1="1080.7" x2="285.5" y2="1078.9" stroke="#111827" stroke-width="1.2"/><line x1="288.6" y1="1079.4" x2="286.8" y2="1077.7" stroke="#111827" stroke-width="1.2"/><line x1="289.0" y1="1079.0" x2="284.8" y2="1074.8" stroke="#111827" stroke-width="1.2"/><line x1="286.0" y1="1076.0" x2="287.8" y2="1074.3" stroke="#111827" stroke-width="1.2"/><line x1="287.3" y1="1077.3" x2="289.1" y2="1075.5" stroke="#111827" stroke-width="1.2"/><line x1="288.6" y1="1078.6" x2="290.3" y2="1076.8" stroke="#111827" stroke-width="1.2"/></g>
+<g class="laban-annotation repeat" data-symbol-id="repeat.start"><line x1="71.0" y1="418.0" x2="71.0" y2="516.0" stroke="#111827" stroke-width="2.5"/></g>
+<g class="laban-annotation repeat" data-symbol-id="repeat.end"><line x1="71.0" y1="112.0" x2="71.0" y2="210.0" stroke="#111827" stroke-width="1.5"/><circle cx="71.0" cy="156.0" r="2" fill="#111827"/><circle cx="71.0" cy="166.0" r="2" fill="#111827"/></g>
+<g class="laban-annotation sequential" data-symbol-id="sequential.successive" data-sequential-kind="successive"><path d="M 431.0 924.0 Q 434.0 823.0 431.0 790.7 Q 428.0 722.0 431.0 653.3 Q 434.0 621.0 431.0 520.0" fill="none" stroke="#111827" stroke-width="1.2"/><polygon points="431.0,518.0 434.0,522.5 428.0,522.5" fill="#111827"/></g>
+<g class="laban-annotation shape" data-symbol-id="shape.pin" data-shape-pole=""><line x1="649.0" y1="869.0" x2="649.0" y2="880.0" stroke="#111827" stroke-width="1.5"/><polygon points="649.0,883.0 646.0,878.8 652.0,878.8" fill="#111827"/></g>
+<g class="laban-annotation shape" data-symbol-id="shape.wall" data-shape-pole=""><line x1="642.0" y1="773.0" x2="656.0" y2="773.0" stroke="#111827" stroke-width="1.5"/><polygon points="640.0,773.0 644.2,770.0 644.2,776.0" fill="#111827"/><polygon points="658.0,773.0 653.8,776.0 653.8,770.0" fill="#111827"/></g>
+<line x1="71.0" y1="314.0" x2="71.0" y2="314.0" stroke="#111827" stroke-width="1.5"/>
+<path class="repeat-span" d="M 54.0 518.0 L 54.0 110.0 M 54.0 518.0 L 63.0 518.0 M 54.0 110.0 L 63.0 110.0" fill="none" stroke="#111827" stroke-width="1.4"/>
 </svg>
