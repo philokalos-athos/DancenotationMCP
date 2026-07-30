@@ -63,6 +63,17 @@ thing from one dance wrapping, and not what settles this.
 What was NOT wrong: measure height, about 186px against the plates' ~190 at
 150dpi. The whole error was in the direction systems flow.
 
+Caption orientation is settled and was re-checked, because it looks wrong at
+first sight. On La vivandière every piece of text is horizontal — measure
+numbers, the dancer letters F, A, G1,2 under each staff, the floor-plan
+number under each bracket. That made our 90°-rotated captions look like a
+defect. They are not: the rule is length, not text as such. Soirée musicale
+p58 runs a full sentence up the left margin, rotated —
+"(LET HER BALANCE HERSELF AS MUCH AS POSSIBLE - SUPPORT WHERE NEEDED)" —
+while its measure numbers and its C and MC dancer labels stay horizontal on
+the same page. Short identifiers horizontal, prose vertical. What we do not
+yet do is keep short labels horizontal; every caption is rotated.
+
 Since settled: captions are assigned lanes in the margin and no longer stack
 on each other. Still open: the trailing system of a score can come out nearly
 empty.
@@ -348,23 +359,38 @@ with the time signature. p90 is not evidence of a looser staff; it is
 probably evidence of a shorter measure.
 
 The invariant to compare is staff width over the length of one beat, which
-needs each plate's beats per measure. No detector reads that; it was read by
-eye, from the piano reduction engraved alongside each Laban staff on the same
-vertical time axis — count the beamed groups between two bar lines. p72 and
-p84 carry three beats to the measure, p90 two.
+needs each plate's beats per measure.
 
-| plate | staff width | measure height | beats | beat height | width / beat |
-|-------|-------------|----------------|-------|-------------|--------------|
-| p72   | 112         | 268            | 3     | 89.3        | 1.25         |
-| p84   | 105         | 236            | 3     | 78.7        | 1.33         |
-| p90   | 142         | 206            | 2     | 103.0       | 1.38         |
-| ours  | 184         | 240            | 4     | 60.0        | 3.07         |
+Two ways to get it, and the second is much better:
 
-The three plates agree — 1.25, 1.33, 1.38, mean 1.32 — once the beat count is
-read rather than assumed. It was the assumption of three beats on p90 that
-made it look like an outlier at 2.07, and that in turn is what made the
-width-over-measure-height figures look scattered. **Our staff is 2.3 times
-too wide for its beat.**
+- Read the piano reduction engraved alongside the Laban staff on the same
+  vertical time axis, counting beamed groups between bar lines. Works, but
+  needs a plate that carries the music and a render large enough to align
+  them. La vivandière p72 and p84 come out at three beats, p90 at two.
+- **Count the beat ticks the notation draws on its own centre line.** They
+  are there in both publications and they answer the question directly, with
+  no music and no eye: sample a narrow band at the staff's centre x, take
+  dark runs, and the median gap is the beat height. On Soirée musicale p58
+  this gives 97 units against a 290-unit measure — three beats — without
+  reading anything.
+
+| plate                | staff width | beats | beat height | width / beat |
+|----------------------|-------------|-------|-------------|--------------|
+| La vivandière p72    | 112         | 3     | 89.3        | 1.25         |
+| La vivandière p84    | 105         | 3     | 78.7        | 1.33         |
+| La vivandière p90    | 142         | 2     | 103.0       | 1.38         |
+| Soirée musicale p58  | 129         | 3     | 97.0        | 1.33         |
+| ours                 | 184         | 4     | 60.0        | 3.07         |
+
+Four plates across two publications and two notators agree at 1.25–1.38,
+mean 1.32. **Our staff is 2.3 times too wide for its beat.**
+
+Getting there took two corrections, both the same mistake. Width over
+*measure* height is not an invariant — under the Third Principle a measure's
+height is its beat count times the unit, so the ratio moves with the time
+signature; measured that way the plates read 0.42, 0.44 and 0.69 and looked
+scattered. And p90's apparent outlier at 2.07 came from assuming three beats
+when it has two. Assume the beat count and the data disagrees with itself.
 
 Either constant can carry the correction, and they are not equivalent:
 
