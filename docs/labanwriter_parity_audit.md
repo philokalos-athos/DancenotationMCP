@@ -397,13 +397,15 @@ prints and lets the level dot show through 122a. Whether the plate means
 Still open:
 
 - 78d, retention of a relationship, and the broken retention signs 79c/79c′.
-- **Slide is modelled wrong.** p45, immediately after the undeviating
-  passage: "The round retention sign is only written within a support sign in
-  order to indicate a slide." We give the nine `support.slide_support.*`
-  entries `behavior.pre_sign: foot.action.slide`, which puts a mark beside the
-  support sign instead of the round retention sign inside it. Introduced when
-  the foot pre-signs were modelled; slide was grouped with heel and toe, and
-  it does not belong there.
+
+Since settled: **slide**. p45, immediately after the undeviating passage,
+"The round retention sign is only written within a support sign in order to
+indicate a slide." The nine `support.slide_support.*` entries carried
+`behavior.pre_sign: foot.action.slide`, putting a mark beside the support
+sign instead of the round sign inside it. That came in when the foot
+pre-signs were modelled — slide was grouped with heel and toe, and it is a
+different kind of statement: those say which part of the foot takes the
+weight, a slide says the weight stays on the foot while it travels.
 
 ### Staff proportions
 

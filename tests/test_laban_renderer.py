@@ -1512,13 +1512,19 @@ class SupportPreSignTest(unittest.TestCase):
     down as the weight-bearing part, a pivot is a turn sign, and the others are
     compound positions with no dedicated glyph. Guessing a sign for them would
     be inventing notation.
+
+    slide was wired here and has been taken out. Knust vol 1 p45: "The round
+    retention sign is only written within a support sign in order to indicate
+    a slide." It is a sign *inside* the symbol, not beside it, and it belongs
+    to a different family of statement — the foot pre-signs say which part of
+    the foot takes the weight, a slide says the weight stays on the foot while
+    it travels. See SlideIsARetentionSignInsideTheSupportTest.
     """
 
     WIRED = {
         "support.heel": "foot.surface.heel",
         "support.toe": "foot.surface.toe_tip",
         "support.stamp": "foot.action.stamp",
-        "support.slide_support": "foot.action.slide",
     }
     NOT_WIRED = ["support.kneel", "support.balance", "support.lunge",
                  "support.hop_support", "support.pivot_support"]
@@ -2540,6 +2546,69 @@ class RetentionInsideADirectionSymbolTest(unittest.TestCase):
             for y in dn[1::2]:
                 self.assertGreaterEqual(y, min(ys))
                 self.assertLessEqual(y, max(ys))
+
+
+class SlideIsARetentionSignInsideTheSupportTest(unittest.TestCase):
+    """A slide is the round retention sign written inside the support sign.
+
+    Knust vol 1 p45, two sentences after the undeviating passage: "Slide. The
+    round retention sign is only written within a support sign in order to
+    indicate a slide (see D 233a, H 524b, L III 780e). The retention sign
+    indicates that the foot in question keeps the body weight."
+
+    The nine support.slide_support.* entries carried
+    behavior.pre_sign: foot.action.slide, which draws a mark flanking the
+    support sign. Slide came in with the foot pre-signs -- heel, toe, ball,
+    the graded points -- and it is not one of them: those say which part of
+    the foot bears the weight, and a slide says the weight stays on the foot
+    while it travels.
+    """
+
+    def _ink(self, symbol_id):
+        svg = render_laban_svg({
+            "schema_version": "1.0",
+            "metadata": {"title": "slide probe"},
+            "symbols": [{"symbol_id": symbol_id, "body_part": "left_leg",
+                         "direction": "forward", "level": "middle",
+                         "timing": {"measure": 1, "beat": 1,
+                                    "duration_beats": 2},
+                         "modifiers": {}}],
+        })
+        group = re.search(
+            r'<g class="laban-symbol"[^>]*data-symbol-id="'
+            + re.escape(symbol_id) + r'"[^>]*>(.*?)</g>', svg, re.S)
+        self.assertIsNotNone(group, f"{symbol_id} drew nothing")
+        return group.group(1)
+
+    def test_a_slide_draws_no_pre_sign(self):
+        self.assertNotIn(
+            "laban-pre-sign", self._ink("support.slide_support.forward"),
+            "the slide is drawn as a foot pre-sign beside the support sign")
+
+    def test_a_slide_draws_the_round_retention_sign_inside(self):
+        ink = self._ink("support.slide_support.forward")
+        outline = re.search(r'<path d="([^"]+)"', ink)
+        self.assertIsNotNone(outline, "no support outline drawn")
+        nums = r"-?\d*\.?\d+"
+        body = [float(n) for n in re.findall(nums, outline.group(1))]
+        xs, ys = body[0::2], body[1::2]
+
+        rings = [c for c in re.findall(r'<circle[^>]*>', ink)
+                 if 'fill="none"' in c]
+        self.assertTrue(rings, "the slide drew no round retention sign")
+        for ring in rings:
+            cx = float(re.search(r'cx="(' + nums + r')"', ring).group(1))
+            cy = float(re.search(r'cy="(' + nums + r')"', ring).group(1))
+            self.assertGreaterEqual(cx, min(xs))
+            self.assertLessEqual(cx, max(xs))
+            self.assertGreaterEqual(cy, min(ys))
+            self.assertLessEqual(cy, max(ys))
+
+    def test_a_plain_step_is_not_a_slide(self):
+        self.assertNotIn('fill="none"',
+                         "".join(re.findall(r'<circle[^>]*>',
+                                            self._ink("support.step.forward"))),
+                         "a plain step carries the slide's retention sign")
 
 
 class FlexionExtensionRoutingTest(unittest.TestCase):

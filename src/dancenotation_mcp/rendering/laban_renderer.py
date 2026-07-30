@@ -857,7 +857,7 @@ def _render_staff_symbol(entry: dict, ctx: _RenderContext,
                 f'<circle cx="{(x_left + x_right) / 2:.1f}" '
                 f'cy="{(y_top + y_bottom) / 2:.1f}" r="2.5" fill="#111827"/>'
             )
-    svg += _render_undeviating_mark(symbol, x_left, x_right, y_top, y_bottom)
+    svg += _render_inside_sign(symbol, x_left, x_right, y_top, y_bottom)
     svg = _render_modifier_overlays(svg, modifiers, entry.get("caption_x"),
                                     x_left, x_right, y_top, y_bottom)
     svg += _render_body_action_mark(symbol_id, x_left, x_right, y_top, y_bottom)
@@ -1269,6 +1269,39 @@ def _diamond_path(cx: float, cy: float, r: float) -> str:
     return (f'<path d="M {cx:.1f} {cy - r:.1f} L {cx + r:.1f} {cy:.1f} '
             f'L {cx:.1f} {cy + r:.1f} L {cx - r:.1f} {cy:.1f} Z" '
             f'fill="none" stroke="#111827" stroke-width="1.2"/>')
+
+
+def _render_inside_sign(symbol: dict, x_left: float, x_right: float,
+                        y_top: float, y_bottom: float) -> str:
+    """A retention sign written inside a movement symbol.
+
+    Two readings, both from Knust vol 1 p45, and they are different
+    instructions sharing one construction:
+
+    - a *spatial* hold inside a direction sign makes the movement undeviating
+    - the *round* hold inside a support sign makes it a slide
+
+    Slide first, because it is keyed off the symbol id rather than the
+    retention field: "Slide. The round retention sign is only written within a
+    support sign in order to indicate a slide (see D 233a, H 524b, L III
+    780e). The retention sign indicates that the foot in question keeps the
+    body weight."
+
+    The nine support.slide_support.* entries used to carry
+    behavior.pre_sign: foot.action.slide, drawing a mark beside the support
+    sign. That came in with the foot pre-signs and slide is not one of them --
+    those say which part of the foot takes the weight, this says the weight
+    stays on the foot while it travels.
+    """
+    symbol_id = symbol.get("symbol_id", "")
+    if symbol_id.startswith("support.slide_support"):
+        cx = (x_left + x_right) / 2
+        cy = (y_top + y_bottom) / 2
+        r = min((x_right - x_left) * 0.22, (y_bottom - y_top) * 0.28)
+        return (f'<g class="laban-slide" data-inside-sign="round_hold">'
+                f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{r:.1f}" '
+                f'fill="none" stroke="#111827" stroke-width="1.2"/></g>')
+    return _render_undeviating_mark(symbol, x_left, x_right, y_top, y_bottom)
 
 
 def _render_undeviating_mark(symbol: dict, x_left: float, x_right: float,
