@@ -466,6 +466,25 @@ def _render_modifier_overlays(svg: str, modifiers: dict, caption_x: float | None
 #              when explicitly asked for
 #   heel_1..4  on the heels, by how far the toes are lifted from the floor
 #
+# What each timing.duration.<value> id names, in beats, so the sign can be
+# drawn to scale.
+#
+# The suffix is read as a beat count, fractions included: 1_8 is an eighth of
+# a beat, 4 is four beats. That is the only self-consistent reading of the set
+# -- taking the suffix as a note value relative to a whole would make 1_8 a
+# quaver and 1 a semi-breve, leaving 2, 3 and 4 as two, three and four
+# semi-breves, which is not a duration scale anyone writes. The catalog
+# carries no gloss either way (the names are just "Duration 1_8" and so on),
+# so the reading is recorded in docs/labanwriter_parity_audit.md as resting on
+# internal consistency rather than on a source.
+#
+# Written out rather than parsed so the mapping is inspectable beside the sign
+# that uses it.
+_DURATION_SIGN_BEATS = {
+    "1_8": 0.125, "1_4": 0.25, "1_2": 0.5,
+    "1": 1.0, "2": 2.0, "3": 3.0, "4": 4.0,
+}
+
 # Knust's note: the marks "indicate, first, which part of the foot takes the
 # weight, and second, how far the toes are lifted away from the floor". The
 # scale is orthogonal to level -- the same marks appear on hatched, white and
@@ -1117,14 +1136,26 @@ def _render_timing_annotation(entry: dict) -> str:
             f'fill="none" stroke="#111827" stroke-width="1.2"/>'
             f'</g>'
         )
-    # timing.duration.<value>: a vertical duration line whose length scales
-    # with the note value (1_8 shortest .. 4 longest), reading like a
-    # duration-sign stem in the timing column.
+    # timing.duration.<value>: a vertical duration line measuring the note
+    # value, drawn in the timing column.
+    #
+    # Knust's Third Principle governs this sign exactly as it governs a
+    # direction symbol: "if a centimetre is chosen for the length of a
+    # crochet, a semi-breve will be 4 cm long, a minim 2 cm, a crochet 1 cm,
+    # a quaver 1/2 cm." The first implementation scaled by an arithmetic
+    # table — 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0 for 1/8, 1/4, 1/2, 1, 2, 3
+    # and 4 beats — so a 32 : 1 span of time was engraved 4 : 1, and no step
+    # of the scale had the right ratio either. It read as distinct geometry to
+    # every structural test because the stems genuinely differed; they just
+    # differed by the wrong amounts.
+    #
+    # The scale is BEAT_HEIGHT, the same units-per-beat the direction symbols
+    # use. A four-beat duration sign and a four-beat direction symbol measure
+    # the same quantity and sit on the same page, so they have to come out the
+    # same height — otherwise the sign measures nothing.
     if symbol_id.startswith("timing.duration."):
         value = symbol_id.split(".")[-1]
-        factors = {"1_8": 1.0, "1_4": 1.5, "1_2": 2.0, "1": 2.5,
-                   "2": 3.0, "3": 3.5, "4": 4.0}
-        half = 2.0 * factors.get(value, 2.0)
+        half = 0.5 * BEAT_HEIGHT * _DURATION_SIGN_BEATS.get(value, 1.0)
         return (
             f'<g class="laban-annotation timing duration" data-symbol-id="{escape(symbol_id)}" '
             f'data-duration="{escape(value)}">'

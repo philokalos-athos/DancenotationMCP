@@ -1040,8 +1040,22 @@ class PlaceholderGeometryTest(unittest.TestCase):
         import re as _re
 
         def line_len(svg):
-            m = _re.search(r'<line x1="[\d.]+" y1="([\d.]+)" x2="[\d.]+" y2="([\d.]+)"', svg)
-            return abs(float(m.group(2)) - float(m.group(1)))
+            """Length of the vertical stem.
+
+            Selected by x1 == x2 rather than by being the first <line> in the
+            group, and with the sign allowed in the coordinate pattern. The
+            first version did neither: `[\\d.]+` does not match a negative
+            coordinate, so once a four-beat stem grew tall enough to start
+            above the slot origin the regex fell through to a serif — whose
+            two endpoints share a y — and reported the long sign as 0.0 long.
+            """
+            for m in _re.finditer(
+                    r'<line x1="(-?[\d.]+)" y1="(-?[\d.]+)" '
+                    r'x2="(-?[\d.]+)" y2="(-?[\d.]+)"', svg):
+                x1, y1, x2, y2 = (float(g) for g in m.groups())
+                if abs(x1 - x2) < 0.05:
+                    return abs(y2 - y1)
+            raise AssertionError("no vertical stem drawn")
 
         self.assertLess(line_len(short), line_len(long))
 
@@ -1404,6 +1418,74 @@ class DurationIsSymbolLengthTest(unittest.TestCase):
                 _, width = self._drawn_extent(duration)
                 self.assertAlmostEqual(width, 26.0, delta=1.0,
                                        msg="symbol width drifted with duration")
+
+
+class DurationSignLengthTest(unittest.TestCase):
+    """The timing.duration.* signs obey the Third Principle too.
+
+    The direction symbols were fixed to draw length linearly in duration, but
+    timing.duration.* is a separate code path that never got the same law. It
+    scaled the drawn line by an arithmetic table — 1.0, 1.5, 2.0, 2.5, 3.0,
+    3.5, 4.0 for values whose real durations are 1/8, 1/4, 1/2, 1, 2, 3 and 4
+    beats. So a 32 : 1 span of time was engraved 4 : 1, and no single step of
+    the scale had the right ratio either.
+    """
+
+    # symbol id suffix -> the duration it names, in beats
+    VALUES = {"1_8": 0.125, "1_4": 0.25, "1_2": 0.5,
+              "1": 1.0, "2": 2.0, "3": 3.0, "4": 4.0}
+
+    def _drawn_length(self, suffix):
+        """Length of the duration stem, from the stem line's own endpoints.
+
+        Read from y1/y2 of the stem rather than from every number in the
+        group: the two serifs are drawn at the same y as the stem ends, so a
+        min/max over all coordinates would silently agree with a stem of any
+        length as long as the serifs were right.
+        """
+        svg = render_laban_svg(_minimal_ir([{
+            "symbol_id": f"timing.duration.{suffix}",
+            "body_part": "torso",
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {},
+        }]))
+        group = re.search(
+            r'<g[^>]*data-duration="' + re.escape(suffix) + r'"[^>]*>(.*?)</g>',
+            svg, re.S)
+        self.assertIsNotNone(group, f"timing.duration.{suffix} drew nothing")
+        # The stem is the vertical line: x1 == x2.
+        for line in re.finditer(
+                r'<line x1="(-?[\d.]+)" y1="(-?[\d.]+)" '
+                r'x2="(-?[\d.]+)" y2="(-?[\d.]+)"', group.group(1)):
+            x1, y1, x2, y2 = (float(g) for g in line.groups())
+            if abs(x1 - x2) < 0.05:
+                return abs(y2 - y1)
+        self.fail(f"timing.duration.{suffix} drew no vertical stem")
+
+    def test_stem_length_is_proportional_to_the_value_it_names(self):
+        """One beat against every other value, at the ratio Knust states."""
+        unit = self._drawn_length("1")
+        self.assertGreater(unit, 0.0, "the one-beat stem has no length")
+        for suffix, beats in self.VALUES.items():
+            with self.subTest(value=suffix):
+                drawn = self._drawn_length(suffix)
+                self.assertAlmostEqual(
+                    drawn / unit, beats, delta=max(0.05, beats * 0.05),
+                    msg=(f"timing.duration.{suffix} names {beats} beats but "
+                         f"draws {drawn:.1f} against {unit:.1f} for one beat"))
+
+    def test_the_longest_value_is_not_engraved_like_the_shortest(self):
+        """The failure this began as: 1/8 and 4 differed by 6 units of ink.
+
+        Stated as a span rather than a ratio so it stays meaningful even if
+        the unit scale is retuned.
+        """
+        shortest = self._drawn_length("1_8")
+        longest = self._drawn_length("4")
+        self.assertGreater(
+            longest / shortest, 20.0,
+            f"1/8 beat draws {shortest:.1f} and 4 beats {longest:.1f} — a "
+            f"32 : 1 span of time engraved {longest / shortest:.1f} : 1")
 
 
 class SupportPreSignTest(unittest.TestCase):
