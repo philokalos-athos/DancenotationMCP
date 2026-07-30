@@ -13,13 +13,13 @@
       "level": null,
       "timing": {
         "measure": 1,
-        "beat": 1,
-        "duration_beats": 1
+        "beat": 1.0,
+        "duration_beats": 0.5
       },
       "modifiers": {
+        "tempo": 144,
         "measure_header": true,
-        "label": "♩=144",
-        "tempo": 144
+        "label": "♩=144"
       },
       "rotation_degrees": null,
       "flexion_degrees": null,
@@ -34,8 +34,8 @@
       "level": "low",
       "timing": {
         "measure": 1,
-        "beat": 1,
-        "duration_beats": 3
+        "beat": 1.0,
+        "duration_beats": 1.5
       },
       "modifiers": {
         "label": "grand plié 2nd"
@@ -53,8 +53,8 @@
       "level": "low",
       "timing": {
         "measure": 1,
-        "beat": 1,
-        "duration_beats": 3
+        "beat": 1.0,
+        "duration_beats": 1.5
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -70,8 +70,8 @@
       "level": "middle",
       "timing": {
         "measure": 1,
-        "beat": 1,
-        "duration_beats": 3
+        "beat": 1.0,
+        "duration_beats": 1.5
       },
       "modifiers": {
         "label": "flat-back table"
@@ -89,8 +89,8 @@
       "level": "low",
       "timing": {
         "measure": 1,
-        "beat": 1,
-        "duration_beats": 1.5
+        "beat": 1.0,
+        "duration_beats": 0.75
       },
       "modifiers": {
         "label": "slash down"
@@ -108,8 +108,8 @@
       "level": "low",
       "timing": {
         "measure": 1,
-        "beat": 1,
-        "duration_beats": 1.5
+        "beat": 1.0,
+        "duration_beats": 0.75
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -125,8 +125,8 @@
       "level": "high",
       "timing": {
         "measure": 1,
-        "beat": 2.5,
-        "duration_beats": 1.5
+        "beat": 1.75,
+        "duration_beats": 0.75
       },
       "modifiers": {
         "label": "wide V overhead"
@@ -144,8 +144,8 @@
       "level": "high",
       "timing": {
         "measure": 1,
-        "beat": 2.5,
-        "duration_beats": 1.5
+        "beat": 1.75,
+        "duration_beats": 0.75
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -161,8 +161,8 @@
       "level": "low",
       "timing": {
         "measure": 1,
-        "beat": 1,
-        "duration_beats": 3
+        "beat": 1.0,
+        "duration_beats": 1.5
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -173,13 +173,13 @@
     },
     {
       "symbol_id": "effort.weight.strong",
-      "body_part": "torso",
+      "body_part": "whole_body",
       "direction": null,
       "level": null,
       "timing": {
         "measure": 1,
-        "beat": 1,
-        "duration_beats": 3
+        "beat": 1.0,
+        "duration_beats": 1.5
       },
       "modifiers": {
         "effort_weight": "strong",
@@ -198,8 +198,8 @@
       "level": "high",
       "timing": {
         "measure": 1,
-        "beat": 4,
-        "duration_beats": 2
+        "beat": 2.5,
+        "duration_beats": 1.0
       },
       "modifiers": {
         "label": "relevé L foot"
@@ -217,8 +217,8 @@
       "level": "middle",
       "timing": {
         "measure": 1,
-        "beat": 4,
-        "duration_beats": 2
+        "beat": 2.5,
+        "duration_beats": 1.0
       },
       "modifiers": {
         "label": "à la seconde 90°"
@@ -236,8 +236,8 @@
       "level": "middle",
       "timing": {
         "measure": 1,
-        "beat": 4,
-        "duration_beats": 2
+        "beat": 2.5,
+        "duration_beats": 1.0
       },
       "modifiers": {
         "label": "spiral upstage"
@@ -255,8 +255,8 @@
       "level": "low",
       "timing": {
         "measure": 1,
-        "beat": 4,
-        "duration_beats": 2
+        "beat": 2.5,
+        "duration_beats": 1.0
       },
       "modifiers": {
         "label": "cross to R hip"
@@ -274,8 +274,8 @@
       "level": "high",
       "timing": {
         "measure": 1,
-        "beat": 4,
-        "duration_beats": 2
+        "beat": 2.5,
+        "duration_beats": 1.0
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -291,8 +291,8 @@
       "level": "low",
       "timing": {
         "measure": 1,
-        "beat": 6,
-        "duration_beats": 2
+        "beat": 3.5,
+        "duration_beats": 1.0
       },
       "modifiers": {
         "label": "deep lunge R"
@@ -310,8 +310,8 @@
       "level": "low",
       "timing": {
         "measure": 1,
-        "beat": 6,
-        "duration_beats": 2
+        "beat": 3.5,
+        "duration_beats": 1.0
       },
       "modifiers": {
         "label": "extended behind"
@@ -329,8 +329,8 @@
       "level": "middle",
       "timing": {
         "measure": 1,
-        "beat": 6,
-        "duration_beats": 2
+        "beat": 3.5,
+        "duration_beats": 1.0
       },
       "modifiers": {
         "label": "lateral arch over R"
@@ -348,8 +348,8 @@
       "level": "middle",
       "timing": {
         "measure": 1,
-        "beat": 6,
-        "duration_beats": 2
+        "beat": 3.5,
+        "duration_beats": 1.0
       },
       "modifiers": {
         "label": "windmill finish: fwd-mid"
@@ -367,8 +367,8 @@
       "level": "low",
       "timing": {
         "measure": 1,
-        "beat": 6,
-        "duration_beats": 2
+        "beat": 3.5,
+        "duration_beats": 1.0
       },
       "modifiers": {
         "label": "windmill finish: bk-low"
@@ -381,13 +381,13 @@
     },
     {
       "symbol_id": "effort.time.sustained",
-      "body_part": "torso",
+      "body_part": "whole_body",
       "direction": null,
       "level": null,
       "timing": {
         "measure": 1,
-        "beat": 6,
-        "duration_beats": 2
+        "beat": 3.5,
+        "duration_beats": 1.0
       },
       "modifiers": {
         "effort_weight": "strong",
@@ -406,8 +406,8 @@
       "level": "high",
       "timing": {
         "measure": 3,
-        "beat": 1,
-        "duration_beats": 2.33
+        "beat": 1.0,
+        "duration_beats": 1.165
       },
       "modifiers": {
         "label": "chainé 1"
@@ -425,8 +425,8 @@
       "level": "high",
       "timing": {
         "measure": 3,
-        "beat": 1,
-        "duration_beats": 2.33
+        "beat": 1.0,
+        "duration_beats": 1.165
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -442,8 +442,8 @@
       "level": "middle",
       "timing": {
         "measure": 3,
-        "beat": 1,
-        "duration_beats": 2.33
+        "beat": 1.0,
+        "duration_beats": 1.165
       },
       "modifiers": {
         "label": "1st position"
@@ -461,8 +461,8 @@
       "level": "middle",
       "timing": {
         "measure": 3,
-        "beat": 1,
-        "duration_beats": 2.33
+        "beat": 1.0,
+        "duration_beats": 1.165
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -472,14 +472,14 @@
       "retention": null
     },
     {
-      "symbol_id": "turn.pivot",
+      "symbol_id": "turn.full",
       "body_part": "torso",
       "direction": "right",
-      "level": null,
+      "level": "middle",
       "timing": {
         "measure": 3,
-        "beat": 1,
-        "duration_beats": 2.33
+        "beat": 1.0,
+        "duration_beats": 1.165
       },
       "modifiers": {},
       "rotation_degrees": 360,
@@ -495,8 +495,8 @@
       "level": "high",
       "timing": {
         "measure": 3,
-        "beat": 3.33,
-        "duration_beats": 2.33
+        "beat": 2.165,
+        "duration_beats": 1.165
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -512,8 +512,8 @@
       "level": "high",
       "timing": {
         "measure": 3,
-        "beat": 3.33,
-        "duration_beats": 2.33
+        "beat": 2.165,
+        "duration_beats": 1.165
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -529,8 +529,8 @@
       "level": "middle",
       "timing": {
         "measure": 3,
-        "beat": 3.33,
-        "duration_beats": 2.33
+        "beat": 2.165,
+        "duration_beats": 1.165
       },
       "modifiers": {
         "label": "demi-seconde"
@@ -548,8 +548,8 @@
       "level": "middle",
       "timing": {
         "measure": 3,
-        "beat": 3.33,
-        "duration_beats": 2.33
+        "beat": 2.165,
+        "duration_beats": 1.165
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -559,14 +559,14 @@
       "retention": null
     },
     {
-      "symbol_id": "turn.pivot",
+      "symbol_id": "turn.full",
       "body_part": "torso",
       "direction": "right",
-      "level": null,
+      "level": "middle",
       "timing": {
         "measure": 3,
-        "beat": 3.33,
-        "duration_beats": 2.33
+        "beat": 2.165,
+        "duration_beats": 1.165
       },
       "modifiers": {},
       "rotation_degrees": 360,
@@ -582,8 +582,8 @@
       "level": "high",
       "timing": {
         "measure": 3,
-        "beat": 5.66,
-        "duration_beats": 2.34
+        "beat": 3.33,
+        "duration_beats": 1.17
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -599,8 +599,8 @@
       "level": "high",
       "timing": {
         "measure": 3,
-        "beat": 5.66,
-        "duration_beats": 2.34
+        "beat": 3.33,
+        "duration_beats": 1.17
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -616,8 +616,8 @@
       "level": "middle",
       "timing": {
         "measure": 3,
-        "beat": 5.66,
-        "duration_beats": 2.34
+        "beat": 3.33,
+        "duration_beats": 1.17
       },
       "modifiers": {
         "label": "full 2nd, flexed hands"
@@ -635,8 +635,8 @@
       "level": "middle",
       "timing": {
         "measure": 3,
-        "beat": 5.66,
-        "duration_beats": 2.34
+        "beat": 3.33,
+        "duration_beats": 1.17
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -646,14 +646,14 @@
       "retention": null
     },
     {
-      "symbol_id": "turn.pivot",
+      "symbol_id": "turn.full",
       "body_part": "torso",
       "direction": "right",
-      "level": null,
+      "level": "middle",
       "timing": {
         "measure": 3,
-        "beat": 5.66,
-        "duration_beats": 2.34
+        "beat": 3.33,
+        "duration_beats": 1.17
       },
       "modifiers": {},
       "rotation_degrees": 360,
@@ -669,8 +669,8 @@
       "level": "high",
       "timing": {
         "measure": 4,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {
         "label": "cambré derrière"
@@ -688,8 +688,8 @@
       "level": "high",
       "timing": {
         "measure": 4,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {
         "label": "relevé turned-out"
@@ -707,8 +707,8 @@
       "level": "low",
       "timing": {
         "measure": 4,
-        "beat": 4.5,
-        "duration_beats": 3.5
+        "beat": 2.75,
+        "duration_beats": 1.75
       },
       "modifiers": {
         "label": "R knee floor",
@@ -727,8 +727,8 @@
       "level": "high",
       "timing": {
         "measure": 4,
-        "beat": 4.5,
-        "duration_beats": 3.5
+        "beat": 2.75,
+        "duration_beats": 1.75
       },
       "modifiers": {
         "label": "développé seconde 120°"
@@ -746,8 +746,8 @@
       "level": "low",
       "timing": {
         "measure": 5,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {
         "label": "kneel R",
@@ -766,8 +766,8 @@
       "level": "low",
       "timing": {
         "measure": 5,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {
         "label": "body roll fwd"
@@ -785,8 +785,8 @@
       "level": "low",
       "timing": {
         "measure": 5,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -802,8 +802,8 @@
       "level": "low",
       "timing": {
         "measure": 5,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -819,8 +819,8 @@
       "level": null,
       "timing": {
         "measure": 5,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {
         "wave_direction": "upward",
@@ -834,13 +834,13 @@
     },
     {
       "symbol_id": "support.step.forward",
-      "body_part": "left_leg",
+      "body_part": "torso",
       "direction": "backward",
       "level": "low",
       "timing": {
         "measure": 5,
-        "beat": 4.5,
-        "duration_beats": 3.5
+        "beat": 2.75,
+        "duration_beats": 1.75
       },
       "modifiers": {
         "label": "roll supine",
@@ -859,8 +859,8 @@
       "level": "high",
       "timing": {
         "measure": 5,
-        "beat": 4.5,
-        "duration_beats": 3.5
+        "beat": 2.75,
+        "duration_beats": 1.75
       },
       "modifiers": {
         "label": "legs overhead"
@@ -878,8 +878,8 @@
       "level": "high",
       "timing": {
         "measure": 5,
-        "beat": 4.5,
-        "duration_beats": 3.5
+        "beat": 2.75,
+        "duration_beats": 1.75
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -895,8 +895,8 @@
       "level": "low",
       "timing": {
         "measure": 6,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {
         "label": "shoulder roll",
@@ -915,8 +915,8 @@
       "level": "low",
       "timing": {
         "measure": 6,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {
         "label": "roll through shoulders"
@@ -934,8 +934,8 @@
       "level": "middle",
       "timing": {
         "measure": 6,
-        "beat": 4.5,
-        "duration_beats": 3.5
+        "beat": 2.75,
+        "duration_beats": 1.75
       },
       "modifiers": {
         "label": "push to stand"
@@ -953,8 +953,8 @@
       "level": "middle",
       "timing": {
         "measure": 6,
-        "beat": 4.5,
-        "duration_beats": 3.5
+        "beat": 2.75,
+        "duration_beats": 1.75
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -965,13 +965,13 @@
     },
     {
       "symbol_id": "effort.space.direct",
-      "body_part": "torso",
+      "body_part": "whole_body",
       "direction": null,
       "level": null,
       "timing": {
         "measure": 6,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {
         "effort_weight": "light",
@@ -990,8 +990,8 @@
       "level": "middle",
       "timing": {
         "measure": 7,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -1007,8 +1007,8 @@
       "level": "middle",
       "timing": {
         "measure": 7,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -1024,8 +1024,8 @@
       "level": "high",
       "timing": {
         "measure": 7,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {
         "label": "sweeping arc L"
@@ -1043,8 +1043,8 @@
       "level": "high",
       "timing": {
         "measure": 7,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {
         "label": "sweeping arc R"
@@ -1062,8 +1062,8 @@
       "level": "middle",
       "timing": {
         "measure": 7,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -1079,8 +1079,8 @@
       "level": "middle",
       "timing": {
         "measure": 7,
-        "beat": 4.5,
-        "duration_beats": 3.5
+        "beat": 2.75,
+        "duration_beats": 1.75
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -1096,8 +1096,8 @@
       "level": "middle",
       "timing": {
         "measure": 7,
-        "beat": 4.5,
-        "duration_beats": 3.5
+        "beat": 2.75,
+        "duration_beats": 1.75
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -1113,8 +1113,8 @@
       "level": "high",
       "timing": {
         "measure": 7,
-        "beat": 4.5,
-        "duration_beats": 3.5
+        "beat": 2.75,
+        "duration_beats": 1.75
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -1130,8 +1130,8 @@
       "level": "high",
       "timing": {
         "measure": 7,
-        "beat": 4.5,
-        "duration_beats": 3.5
+        "beat": 2.75,
+        "duration_beats": 1.75
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -1147,8 +1147,8 @@
       "level": "middle",
       "timing": {
         "measure": 8,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {
         "label": "wide steps"
@@ -1166,8 +1166,8 @@
       "level": "middle",
       "timing": {
         "measure": 8,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -1183,8 +1183,8 @@
       "level": "high",
       "timing": {
         "measure": 8,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {
         "label": "full reach"
@@ -1202,8 +1202,8 @@
       "level": "high",
       "timing": {
         "measure": 8,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -1219,8 +1219,8 @@
       "level": "middle",
       "timing": {
         "measure": 9,
-        "beat": 1,
-        "duration_beats": 2
+        "beat": 1.0,
+        "duration_beats": 1.0
       },
       "modifiers": {
         "label": "sharp step fwd"
@@ -1238,8 +1238,8 @@
       "level": "middle",
       "timing": {
         "measure": 9,
-        "beat": 3,
-        "duration_beats": 2
+        "beat": 2.0,
+        "duration_beats": 1.0
       },
       "modifiers": {
         "label": "sharp step L"
@@ -1257,8 +1257,8 @@
       "level": "middle",
       "timing": {
         "measure": 9,
-        "beat": 5,
-        "duration_beats": 3
+        "beat": 3.0,
+        "duration_beats": 1.5
       },
       "modifiers": {
         "label": "sharp step bk"
@@ -1276,8 +1276,8 @@
       "level": "high",
       "timing": {
         "measure": 9,
-        "beat": 1,
-        "duration_beats": 2
+        "beat": 1.0,
+        "duration_beats": 1.0
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -1293,8 +1293,8 @@
       "level": "high",
       "timing": {
         "measure": 9,
-        "beat": 3,
-        "duration_beats": 2
+        "beat": 2.0,
+        "duration_beats": 1.0
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -1310,8 +1310,8 @@
       "level": "low",
       "timing": {
         "measure": 9,
-        "beat": 5,
-        "duration_beats": 3
+        "beat": 3.0,
+        "duration_beats": 1.5
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -1322,13 +1322,13 @@
     },
     {
       "symbol_id": "effort.weight.strong",
-      "body_part": "torso",
+      "body_part": "whole_body",
       "direction": null,
       "level": null,
       "timing": {
         "measure": 9,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {
         "effort_weight": "strong",
@@ -1347,8 +1347,8 @@
       "level": "high",
       "timing": {
         "measure": 10,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {
         "label": "balance relevé"
@@ -1366,8 +1366,8 @@
       "level": "high",
       "timing": {
         "measure": 10,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {
         "label": "développé devant"
@@ -1385,8 +1385,8 @@
       "level": "high",
       "timing": {
         "measure": 10,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -1402,8 +1402,8 @@
       "level": "high",
       "timing": {
         "measure": 10,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -1419,8 +1419,8 @@
       "level": null,
       "timing": {
         "measure": 10,
-        "beat": 4,
-        "duration_beats": 1
+        "beat": 2.5,
+        "duration_beats": 0.5
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -1436,8 +1436,8 @@
       "level": null,
       "timing": {
         "measure": 10,
-        "beat": 4,
-        "duration_beats": 1
+        "beat": 2.5,
+        "duration_beats": 0.5
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -1453,8 +1453,8 @@
       "level": "low",
       "timing": {
         "measure": 10,
-        "beat": 4.5,
-        "duration_beats": 3.5
+        "beat": 2.75,
+        "duration_beats": 1.75
       },
       "modifiers": {
         "label": "controlled fall"
@@ -1467,13 +1467,13 @@
     },
     {
       "symbol_id": "effort.time.sustained",
-      "body_part": "torso",
+      "body_part": "whole_body",
       "direction": null,
       "level": null,
       "timing": {
         "measure": 10,
-        "beat": 4.5,
-        "duration_beats": 3.5
+        "beat": 2.75,
+        "duration_beats": 1.75
       },
       "modifiers": {
         "effort_weight": "strong",
@@ -1492,8 +1492,8 @@
       "level": "middle",
       "timing": {
         "measure": 11,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -1509,8 +1509,8 @@
       "level": "middle",
       "timing": {
         "measure": 11,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -1526,8 +1526,8 @@
       "level": "middle",
       "timing": {
         "measure": 11,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {
         "label": "spiral recovery"
@@ -1545,8 +1545,8 @@
       "level": "middle",
       "timing": {
         "measure": 11,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -1562,8 +1562,8 @@
       "level": "middle",
       "timing": {
         "measure": 11,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -1573,14 +1573,14 @@
       "retention": null
     },
     {
-      "symbol_id": "turn.pivot",
+      "symbol_id": "turn.full",
       "body_part": "torso",
       "direction": "right",
-      "level": null,
+      "level": "middle",
       "timing": {
         "measure": 11,
-        "beat": 4.5,
-        "duration_beats": 3.5
+        "beat": 2.75,
+        "duration_beats": 1.75
       },
       "modifiers": {
         "label": "pirouette en dehors"
@@ -1598,8 +1598,8 @@
       "level": "high",
       "timing": {
         "measure": 11,
-        "beat": 4.5,
-        "duration_beats": 3.5
+        "beat": 2.75,
+        "duration_beats": 1.75
       },
       "modifiers": {
         "label": "passé relevé"
@@ -1617,8 +1617,8 @@
       "level": "low",
       "timing": {
         "measure": 12,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {
         "label": "plié landing"
@@ -1636,8 +1636,8 @@
       "level": "low",
       "timing": {
         "measure": 12,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -1653,8 +1653,8 @@
       "level": "middle",
       "timing": {
         "measure": 12,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -1670,8 +1670,8 @@
       "level": "middle",
       "timing": {
         "measure": 12,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -1687,8 +1687,8 @@
       "level": "middle",
       "timing": {
         "measure": 12,
-        "beat": 4.5,
-        "duration_beats": 3.5
+        "beat": 2.75,
+        "duration_beats": 1.75
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -1704,8 +1704,8 @@
       "level": "middle",
       "timing": {
         "measure": 12,
-        "beat": 4.5,
-        "duration_beats": 3.5
+        "beat": 2.75,
+        "duration_beats": 1.75
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -1715,14 +1715,14 @@
       "retention": null
     },
     {
-      "symbol_id": "jump.small",
+      "symbol_id": "jump.assemble",
       "body_part": "left_leg",
       "direction": "diagonal_forward_left",
       "level": "middle",
       "timing": {
         "measure": 13,
-        "beat": 1,
-        "duration_beats": 2
+        "beat": 1.0,
+        "duration_beats": 1.0
       },
       "modifiers": {
         "label": "assemblé"
@@ -1735,13 +1735,13 @@
     },
     {
       "symbol_id": "jump.small",
-      "body_part": "left_leg",
+      "body_part": "right_leg",
       "direction": "diagonal_forward_left",
       "level": "middle",
       "timing": {
         "measure": 13,
-        "beat": 3,
-        "duration_beats": 2
+        "beat": 2.0,
+        "duration_beats": 1.0
       },
       "modifiers": {
         "label": "jeté"
@@ -1753,14 +1753,14 @@
       "retention": null
     },
     {
-      "symbol_id": "jump.small",
+      "symbol_id": "jump.large",
       "body_part": "left_leg",
       "direction": "diagonal_forward_left",
       "level": "high",
       "timing": {
         "measure": 13,
-        "beat": 5,
-        "duration_beats": 3
+        "beat": 3.0,
+        "duration_beats": 1.5
       },
       "modifiers": {
         "label": "grand jeté",
@@ -1786,8 +1786,8 @@
       "level": "high",
       "timing": {
         "measure": 14,
-        "beat": 1,
-        "duration_beats": 2
+        "beat": 1.0,
+        "duration_beats": 1.0
       },
       "modifiers": {
         "label": "take-off"
@@ -1799,14 +1799,14 @@
       "retention": null
     },
     {
-      "symbol_id": "jump.small",
-      "body_part": "left_leg",
+      "symbol_id": "jump.large",
+      "body_part": "right_leg",
       "direction": "forward",
       "level": "high",
       "timing": {
         "measure": 14,
-        "beat": 3,
-        "duration_beats": 3
+        "beat": 2.0,
+        "duration_beats": 1.5
       },
       "modifiers": {
         "label": "tour en l'air",
@@ -1828,14 +1828,14 @@
       "retention": null
     },
     {
-      "symbol_id": "turn.pivot",
+      "symbol_id": "turn.full",
       "body_part": "torso",
       "direction": "right",
-      "level": null,
+      "level": "high",
       "timing": {
         "measure": 14,
-        "beat": 3,
-        "duration_beats": 3
+        "beat": 2.0,
+        "duration_beats": 1.5
       },
       "modifiers": {
         "label": "double tour"
@@ -1853,8 +1853,8 @@
       "level": "low",
       "timing": {
         "measure": 14,
-        "beat": 6,
-        "duration_beats": 2
+        "beat": 3.5,
+        "duration_beats": 1.0
       },
       "modifiers": {
         "label": "plié landing"
@@ -1872,8 +1872,8 @@
       "level": "low",
       "timing": {
         "measure": 14,
-        "beat": 6,
-        "duration_beats": 2
+        "beat": 3.5,
+        "duration_beats": 1.0
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -1889,8 +1889,8 @@
       "level": "low",
       "timing": {
         "measure": 15,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {
         "label": "kneel descent",
@@ -1909,8 +1909,8 @@
       "level": "low",
       "timing": {
         "measure": 15,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {
         "label": "torso folds"
@@ -1928,8 +1928,8 @@
       "level": null,
       "timing": {
         "measure": 15,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {
         "wave_direction": "downward",
@@ -1948,8 +1948,8 @@
       "level": "low",
       "timing": {
         "measure": 15,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {
         "label": "arms fold"
@@ -1967,8 +1967,8 @@
       "level": "low",
       "timing": {
         "measure": 15,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -1984,8 +1984,8 @@
       "level": "low",
       "timing": {
         "measure": 16,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {
         "label": "seated floor",
@@ -2004,8 +2004,8 @@
       "level": "low",
       "timing": {
         "measure": 16,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {
         "contact_type": "touch"
@@ -2023,8 +2023,8 @@
       "level": "low",
       "timing": {
         "measure": 16,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {
         "label": "curled"
@@ -2042,8 +2042,8 @@
       "level": null,
       "timing": {
         "measure": 16,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -2059,8 +2059,8 @@
       "level": null,
       "timing": {
         "measure": 16,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -2076,8 +2076,8 @@
       "level": "middle",
       "timing": {
         "measure": 17,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {
         "label": "push up from floor"
@@ -2095,8 +2095,8 @@
       "level": "middle",
       "timing": {
         "measure": 17,
-        "beat": 4.5,
-        "duration_beats": 3.5
+        "beat": 2.75,
+        "duration_beats": 1.75
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -2112,8 +2112,8 @@
       "level": "middle",
       "timing": {
         "measure": 17,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {
         "label": "unfurl spine"
@@ -2131,8 +2131,8 @@
       "level": null,
       "timing": {
         "measure": 17,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {
         "wave_direction": "upward"
@@ -2150,8 +2150,8 @@
       "level": "middle",
       "timing": {
         "measure": 17,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {
         "label": "opens L"
@@ -2169,8 +2169,8 @@
       "level": "middle",
       "timing": {
         "measure": 17,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {
         "label": "opens R"
@@ -2188,8 +2188,8 @@
       "level": "middle",
       "timing": {
         "measure": 18,
-        "beat": 1,
-        "duration_beats": 2.33
+        "beat": 1.0,
+        "duration_beats": 1.165
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -2205,8 +2205,8 @@
       "level": "middle",
       "timing": {
         "measure": 18,
-        "beat": 3.33,
-        "duration_beats": 2.33
+        "beat": 2.165,
+        "duration_beats": 1.165
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -2222,8 +2222,8 @@
       "level": "middle",
       "timing": {
         "measure": 18,
-        "beat": 5.66,
-        "duration_beats": 2.34
+        "beat": 3.33,
+        "duration_beats": 1.17
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -2239,8 +2239,8 @@
       "level": "high",
       "timing": {
         "measure": 18,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -2256,8 +2256,8 @@
       "level": "high",
       "timing": {
         "measure": 18,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -2267,14 +2267,14 @@
       "retention": null
     },
     {
-      "symbol_id": "turn.pivot",
+      "symbol_id": "turn.full",
       "body_part": "torso",
       "direction": "right",
-      "level": null,
+      "level": "middle",
       "timing": {
         "measure": 18,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {
         "label": "traveling turn"
@@ -2292,8 +2292,8 @@
       "level": "middle",
       "timing": {
         "measure": 19,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -2309,8 +2309,8 @@
       "level": "middle",
       "timing": {
         "measure": 19,
-        "beat": 4.5,
-        "duration_beats": 3.5
+        "beat": 2.75,
+        "duration_beats": 1.75
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -2326,8 +2326,8 @@
       "level": "middle",
       "timing": {
         "measure": 19,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {},
       "rotation_degrees": 90,
@@ -2343,8 +2343,8 @@
       "level": "high",
       "timing": {
         "measure": 19,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -2360,8 +2360,8 @@
       "level": "middle",
       "timing": {
         "measure": 19,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -2372,13 +2372,13 @@
     },
     {
       "symbol_id": "effort.space.direct",
-      "body_part": "torso",
+      "body_part": "whole_body",
       "direction": null,
       "level": null,
       "timing": {
         "measure": 19,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {
         "effort_space": "indirect",
@@ -2397,8 +2397,8 @@
       "level": "middle",
       "timing": {
         "measure": 20,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -2414,8 +2414,8 @@
       "level": "middle",
       "timing": {
         "measure": 20,
-        "beat": 4.5,
-        "duration_beats": 3.5
+        "beat": 2.75,
+        "duration_beats": 1.75
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -2431,8 +2431,8 @@
       "level": "high",
       "timing": {
         "measure": 20,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -2448,8 +2448,8 @@
       "level": "high",
       "timing": {
         "measure": 20,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -2459,14 +2459,14 @@
       "retention": null
     },
     {
-      "symbol_id": "turn.pivot",
+      "symbol_id": "turn.full",
       "body_part": "torso",
       "direction": "left",
-      "level": null,
+      "level": "middle",
       "timing": {
         "measure": 20,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {},
       "rotation_degrees": 180,
@@ -2482,8 +2482,8 @@
       "level": "middle",
       "timing": {
         "measure": 21,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -2499,8 +2499,8 @@
       "level": "middle",
       "timing": {
         "measure": 21,
-        "beat": 4.5,
-        "duration_beats": 3.5
+        "beat": 2.75,
+        "duration_beats": 1.75
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -2516,8 +2516,8 @@
       "level": "high",
       "timing": {
         "measure": 21,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {
         "label": "port de bras R"
@@ -2535,8 +2535,8 @@
       "level": "high",
       "timing": {
         "measure": 21,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -2552,8 +2552,8 @@
       "level": "middle",
       "timing": {
         "measure": 21,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -2569,8 +2569,8 @@
       "level": "middle",
       "timing": {
         "measure": 22,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -2586,8 +2586,8 @@
       "level": "middle",
       "timing": {
         "measure": 22,
-        "beat": 4.5,
-        "duration_beats": 3.5
+        "beat": 2.75,
+        "duration_beats": 1.75
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -2603,8 +2603,8 @@
       "level": "middle",
       "timing": {
         "measure": 22,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {
         "label": "reach behind"
@@ -2622,8 +2622,8 @@
       "level": "middle",
       "timing": {
         "measure": 22,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -2633,14 +2633,14 @@
       "retention": null
     },
     {
-      "symbol_id": "turn.pivot",
+      "symbol_id": "turn.full",
       "body_part": "torso",
       "direction": "left",
-      "level": null,
+      "level": "middle",
       "timing": {
         "measure": 22,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {
         "label": "manège turn"
@@ -2658,8 +2658,8 @@
       "level": "middle",
       "timing": {
         "measure": 23,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -2675,8 +2675,8 @@
       "level": "middle",
       "timing": {
         "measure": 23,
-        "beat": 4.5,
-        "duration_beats": 3.5
+        "beat": 2.75,
+        "duration_beats": 1.75
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -2692,8 +2692,8 @@
       "level": "high",
       "timing": {
         "measure": 23,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -2709,8 +2709,8 @@
       "level": "high",
       "timing": {
         "measure": 23,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -2726,8 +2726,8 @@
       "level": "high",
       "timing": {
         "measure": 23,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {
         "label": "full extension"
@@ -2745,8 +2745,8 @@
       "level": "middle",
       "timing": {
         "measure": 24,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {
         "label": "5th position"
@@ -2764,8 +2764,8 @@
       "level": "middle",
       "timing": {
         "measure": 24,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -2781,8 +2781,8 @@
       "level": "high",
       "timing": {
         "measure": 24,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {
         "label": "2nd position"
@@ -2800,8 +2800,8 @@
       "level": "high",
       "timing": {
         "measure": 24,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -2817,8 +2817,8 @@
       "level": null,
       "timing": {
         "measure": 24,
-        "beat": 4.5,
-        "duration_beats": 3.5
+        "beat": 2.75,
+        "duration_beats": 1.75
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -2834,8 +2834,8 @@
       "level": null,
       "timing": {
         "measure": 24,
-        "beat": 4.5,
-        "duration_beats": 3.5
+        "beat": 2.75,
+        "duration_beats": 1.75
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -2851,8 +2851,8 @@
       "level": "high",
       "timing": {
         "measure": 25,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {
         "label": "5th relevé"
@@ -2870,8 +2870,8 @@
       "level": "high",
       "timing": {
         "measure": 25,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -2887,8 +2887,8 @@
       "level": "high",
       "timing": {
         "measure": 25,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {
         "label": "high-5th"
@@ -2906,8 +2906,8 @@
       "level": "high",
       "timing": {
         "measure": 25,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -2923,8 +2923,8 @@
       "level": "high",
       "timing": {
         "measure": 25,
-        "beat": 1,
-        "duration_beats": 2
+        "beat": 1.0,
+        "duration_beats": 1.0
       },
       "modifiers": {
         "label": "tilt 30°"
@@ -2942,8 +2942,8 @@
       "level": "middle",
       "timing": {
         "measure": 25,
-        "beat": 3,
-        "duration_beats": 2
+        "beat": 2.0,
+        "duration_beats": 1.0
       },
       "modifiers": {
         "label": "catch step R"
@@ -2961,8 +2961,8 @@
       "level": "middle",
       "timing": {
         "measure": 25,
-        "beat": 3,
-        "duration_beats": 2
+        "beat": 2.0,
+        "duration_beats": 1.0
       },
       "modifiers": {
         "label": "tilt 45°"
@@ -2980,8 +2980,8 @@
       "level": "middle",
       "timing": {
         "measure": 25,
-        "beat": 5,
-        "duration_beats": 3
+        "beat": 3.0,
+        "duration_beats": 1.5
       },
       "modifiers": {
         "label": "catch step L"
@@ -2999,8 +2999,8 @@
       "level": "low",
       "timing": {
         "measure": 25,
-        "beat": 5,
-        "duration_beats": 3
+        "beat": 3.0,
+        "duration_beats": 1.5
       },
       "modifiers": {
         "label": "tilt 60° → fall"
@@ -3013,13 +3013,13 @@
     },
     {
       "symbol_id": "support.step.forward",
-      "body_part": "right_leg",
+      "body_part": "left_arm",
       "direction": "forward",
       "level": "low",
       "timing": {
         "measure": 26,
-        "beat": 1,
-        "duration_beats": 2
+        "beat": 1.0,
+        "duration_beats": 1.0
       },
       "modifiers": {
         "label": "hands to floor",
@@ -3033,13 +3033,13 @@
     },
     {
       "symbol_id": "support.step.forward",
-      "body_part": "left_leg",
+      "body_part": "right_arm",
       "direction": "forward",
       "level": "low",
       "timing": {
         "measure": 26,
-        "beat": 1,
-        "duration_beats": 2
+        "beat": 1.0,
+        "duration_beats": 1.0
       },
       "modifiers": {
         "contact_type": "touch"
@@ -3057,8 +3057,8 @@
       "level": null,
       "timing": {
         "measure": 26,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {
         "wave_direction": "downward",
@@ -3077,8 +3077,8 @@
       "level": "low",
       "timing": {
         "measure": 26,
-        "beat": 1,
-        "duration_beats": 2
+        "beat": 1.0,
+        "duration_beats": 1.0
       },
       "modifiers": {
         "label": "plank"
@@ -3096,8 +3096,8 @@
       "level": "low",
       "timing": {
         "measure": 26,
-        "beat": 3,
-        "duration_beats": 2
+        "beat": 2.0,
+        "duration_beats": 1.0
       },
       "modifiers": {
         "label": "cobra arch"
@@ -3115,8 +3115,8 @@
       "level": "middle",
       "timing": {
         "measure": 26,
-        "beat": 5,
-        "duration_beats": 3
+        "beat": 3.0,
+        "duration_beats": 1.5
       },
       "modifiers": {
         "label": "push to stand"
@@ -3129,13 +3129,13 @@
     },
     {
       "symbol_id": "effort.weight.strong",
-      "body_part": "torso",
+      "body_part": "whole_body",
       "direction": null,
       "level": null,
       "timing": {
         "measure": 26,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {
         "effort_weight": "strong",
@@ -3154,8 +3154,8 @@
       "level": "high",
       "timing": {
         "measure": 27,
-        "beat": 1,
-        "duration_beats": 2.33
+        "beat": 1.0,
+        "duration_beats": 1.165
       },
       "modifiers": {
         "label": "piqué turn 1"
@@ -3167,14 +3167,14 @@
       "retention": null
     },
     {
-      "symbol_id": "turn.pivot",
+      "symbol_id": "turn.full",
       "body_part": "torso",
       "direction": "right",
-      "level": null,
+      "level": "high",
       "timing": {
         "measure": 27,
-        "beat": 1,
-        "duration_beats": 2.33
+        "beat": 1.0,
+        "duration_beats": 1.165
       },
       "modifiers": {},
       "rotation_degrees": 360,
@@ -3190,8 +3190,8 @@
       "level": "high",
       "timing": {
         "measure": 27,
-        "beat": 3.33,
-        "duration_beats": 2.33
+        "beat": 2.165,
+        "duration_beats": 1.165
       },
       "modifiers": {
         "label": "piqué turn 2"
@@ -3203,14 +3203,14 @@
       "retention": null
     },
     {
-      "symbol_id": "turn.pivot",
+      "symbol_id": "turn.full",
       "body_part": "torso",
       "direction": "right",
-      "level": null,
+      "level": "high",
       "timing": {
         "measure": 27,
-        "beat": 3.33,
-        "duration_beats": 2.33
+        "beat": 2.165,
+        "duration_beats": 1.165
       },
       "modifiers": {},
       "rotation_degrees": 360,
@@ -3226,8 +3226,8 @@
       "level": "high",
       "timing": {
         "measure": 27,
-        "beat": 5.66,
-        "duration_beats": 2.34
+        "beat": 3.33,
+        "duration_beats": 1.17
       },
       "modifiers": {
         "label": "piqué turn 3"
@@ -3239,14 +3239,14 @@
       "retention": null
     },
     {
-      "symbol_id": "turn.pivot",
+      "symbol_id": "turn.full",
       "body_part": "torso",
       "direction": "right",
-      "level": null,
+      "level": "high",
       "timing": {
         "measure": 27,
-        "beat": 5.66,
-        "duration_beats": 2.34
+        "beat": 3.33,
+        "duration_beats": 1.17
       },
       "modifiers": {},
       "rotation_degrees": 360,
@@ -3262,8 +3262,8 @@
       "level": "middle",
       "timing": {
         "measure": 27,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {
         "label": "2nd position"
@@ -3281,8 +3281,8 @@
       "level": "middle",
       "timing": {
         "measure": 27,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -3298,8 +3298,8 @@
       "level": "high",
       "timing": {
         "measure": 28,
-        "beat": 1,
-        "duration_beats": 2.33
+        "beat": 1.0,
+        "duration_beats": 1.165
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -3309,14 +3309,14 @@
       "retention": null
     },
     {
-      "symbol_id": "turn.pivot",
+      "symbol_id": "turn.full",
       "body_part": "torso",
       "direction": "right",
-      "level": null,
+      "level": "high",
       "timing": {
         "measure": 28,
-        "beat": 1,
-        "duration_beats": 2.33
+        "beat": 1.0,
+        "duration_beats": 1.165
       },
       "modifiers": {},
       "rotation_degrees": 360,
@@ -3332,8 +3332,8 @@
       "level": "high",
       "timing": {
         "measure": 28,
-        "beat": 3.33,
-        "duration_beats": 2.33
+        "beat": 2.165,
+        "duration_beats": 1.165
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -3343,14 +3343,14 @@
       "retention": null
     },
     {
-      "symbol_id": "turn.pivot",
+      "symbol_id": "turn.full",
       "body_part": "torso",
       "direction": "right",
-      "level": null,
+      "level": "high",
       "timing": {
         "measure": 28,
-        "beat": 3.33,
-        "duration_beats": 2.33
+        "beat": 2.165,
+        "duration_beats": 1.165
       },
       "modifiers": {},
       "rotation_degrees": 360,
@@ -3366,8 +3366,8 @@
       "level": "high",
       "timing": {
         "measure": 28,
-        "beat": 5.66,
-        "duration_beats": 2.34
+        "beat": 3.33,
+        "duration_beats": 1.17
       },
       "modifiers": {
         "label": "final turn"
@@ -3379,14 +3379,14 @@
       "retention": null
     },
     {
-      "symbol_id": "turn.pivot",
+      "symbol_id": "turn.full",
       "body_part": "torso",
       "direction": "right",
-      "level": null,
+      "level": "high",
       "timing": {
         "measure": 28,
-        "beat": 5.66,
-        "duration_beats": 2.34
+        "beat": 3.33,
+        "duration_beats": 1.17
       },
       "modifiers": {},
       "rotation_degrees": 360,
@@ -3402,8 +3402,8 @@
       "level": "high",
       "timing": {
         "measure": 28,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -3419,8 +3419,8 @@
       "level": "high",
       "timing": {
         "measure": 28,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -3436,8 +3436,8 @@
       "level": "middle",
       "timing": {
         "measure": 29,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {
         "label": "decel step"
@@ -3455,8 +3455,8 @@
       "level": "middle",
       "timing": {
         "measure": 29,
-        "beat": 4.5,
-        "duration_beats": 3.5
+        "beat": 2.75,
+        "duration_beats": 1.75
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -3472,8 +3472,8 @@
       "level": "middle",
       "timing": {
         "measure": 29,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {
         "label": "lowering to side"
@@ -3491,8 +3491,8 @@
       "level": "middle",
       "timing": {
         "measure": 29,
-        "beat": 1,
-        "duration_beats": 3.5
+        "beat": 1.0,
+        "duration_beats": 1.75
       },
       "modifiers": {
         "label": "lowering"
@@ -3510,8 +3510,8 @@
       "level": "low",
       "timing": {
         "measure": 29,
-        "beat": 4.5,
-        "duration_beats": 3.5
+        "beat": 2.75,
+        "duration_beats": 1.75
       },
       "modifiers": {
         "label": "hangs at side"
@@ -3524,13 +3524,13 @@
     },
     {
       "symbol_id": "effort.time.sustained",
-      "body_part": "torso",
+      "body_part": "whole_body",
       "direction": null,
       "level": null,
       "timing": {
         "measure": 29,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {
         "effort_time": "sustained",
@@ -3549,8 +3549,8 @@
       "level": "middle",
       "timing": {
         "measure": 30,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {
         "label": "forced arch"
@@ -3568,8 +3568,8 @@
       "level": "middle",
       "timing": {
         "measure": 30,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {
         "label": "forced arch"
@@ -3587,8 +3587,8 @@
       "level": "middle",
       "timing": {
         "measure": 30,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {
         "label": "slight spiral: R shoulder fwd"
@@ -3606,8 +3606,8 @@
       "level": "middle",
       "timing": {
         "measure": 30,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {
         "label": "tilted right"
@@ -3625,8 +3625,8 @@
       "level": "middle",
       "timing": {
         "measure": 31,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {
         "label": "forced arch stance"
@@ -3644,8 +3644,8 @@
       "level": "middle",
       "timing": {
         "measure": 31,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -3661,8 +3661,8 @@
       "level": "middle",
       "timing": {
         "measure": 31,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {
         "label": "extended 45° above horiz, palm up"
@@ -3680,8 +3680,8 @@
       "level": "low",
       "timing": {
         "measure": 31,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {
         "label": "hangs, fingers brush thigh"
@@ -3699,8 +3699,8 @@
       "level": "middle",
       "timing": {
         "measure": 31,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {
         "label": "spiral posture"
@@ -3718,8 +3718,8 @@
       "level": "middle",
       "timing": {
         "measure": 31,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {
         "label": "gaze USL corner"
@@ -3737,8 +3737,8 @@
       "level": null,
       "timing": {
         "measure": 31,
-        "beat": 1,
-        "duration_beats": 4
+        "beat": 1.0,
+        "duration_beats": 2.0
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -3754,8 +3754,8 @@
       "level": null,
       "timing": {
         "measure": 31,
-        "beat": 1,
-        "duration_beats": 4
+        "beat": 1.0,
+        "duration_beats": 2.0
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -3771,8 +3771,8 @@
       "level": null,
       "timing": {
         "measure": 31,
-        "beat": 1,
-        "duration_beats": 4
+        "beat": 1.0,
+        "duration_beats": 2.0
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -3788,8 +3788,8 @@
       "level": null,
       "timing": {
         "measure": 31,
-        "beat": 1,
-        "duration_beats": 4
+        "beat": 1.0,
+        "duration_beats": 2.0
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -3805,8 +3805,8 @@
       "level": "middle",
       "timing": {
         "measure": 32,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {
         "label": "hold stance"
@@ -3824,8 +3824,8 @@
       "level": "middle",
       "timing": {
         "measure": 32,
-        "beat": 1,
-        "duration_beats": 7
+        "beat": 1.0,
+        "duration_beats": 3.5
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -3841,8 +3841,8 @@
       "level": "middle",
       "timing": {
         "measure": 32,
-        "beat": 1,
-        "duration_beats": 4
+        "beat": 1.0,
+        "duration_beats": 2.0
       },
       "modifiers": {
         "label": "hold"
@@ -3860,8 +3860,8 @@
       "level": "low",
       "timing": {
         "measure": 32,
-        "beat": 1,
-        "duration_beats": 4
+        "beat": 1.0,
+        "duration_beats": 2.0
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -3877,8 +3877,8 @@
       "level": null,
       "timing": {
         "measure": 32,
-        "beat": 5,
-        "duration_beats": 1
+        "beat": 3.0,
+        "duration_beats": 0.5
       },
       "modifiers": {
         "contact_type": "grasp",
@@ -3892,13 +3892,13 @@
     },
     {
       "symbol_id": "direction.forward",
-      "body_part": "right_arm",
+      "body_part": "right_hand",
       "direction": "place",
       "level": "low",
       "timing": {
         "measure": 32,
-        "beat": 6,
-        "duration_beats": 1
+        "beat": 3.5,
+        "duration_beats": 0.5
       },
       "modifiers": {
         "label": "fingers spread"
@@ -3910,33 +3910,14 @@
       "retention": null
     },
     {
-      "symbol_id": "music.tempo.mark",
-      "body_part": "torso",
-      "direction": null,
-      "level": null,
-      "timing": {
-        "measure": 32,
-        "beat": 7,
-        "duration_beats": 1
-      },
-      "modifiers": {
-        "label": "BLACKOUT"
-      },
-      "rotation_degrees": null,
-      "flexion_degrees": null,
-      "stage_position": null,
-      "facing": null,
-      "retention": null
-    },
-    {
       "symbol_id": "repeat.start",
-      "body_part": "torso",
+      "body_part": "whole_body",
       "direction": null,
       "level": null,
       "timing": {
         "measure": 1,
-        "beat": 1,
-        "duration_beats": 1
+        "beat": 1.0,
+        "duration_beats": 0.5
       },
       "modifiers": {
         "label": "Section A: Eruption"
@@ -3949,13 +3930,13 @@
     },
     {
       "symbol_id": "repeat.end",
-      "body_part": "torso",
+      "body_part": "whole_body",
       "direction": null,
       "level": null,
       "timing": {
         "measure": 16,
-        "beat": 7,
-        "duration_beats": 1
+        "beat": 4.0,
+        "duration_beats": 0.5
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -3966,13 +3947,13 @@
     },
     {
       "symbol_id": "repeat.start",
-      "body_part": "torso",
+      "body_part": "whole_body",
       "direction": null,
       "level": null,
       "timing": {
         "measure": 17,
-        "beat": 1,
-        "duration_beats": 1
+        "beat": 1.0,
+        "duration_beats": 0.5
       },
       "modifiers": {
         "label": "Section B: Tessellation"
@@ -3985,13 +3966,13 @@
     },
     {
       "symbol_id": "repeat.end",
-      "body_part": "torso",
+      "body_part": "whole_body",
       "direction": null,
       "level": null,
       "timing": {
         "measure": 24,
-        "beat": 7,
-        "duration_beats": 1
+        "beat": 4.0,
+        "duration_beats": 0.5
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -4002,13 +3983,13 @@
     },
     {
       "symbol_id": "repeat.start",
-      "body_part": "torso",
+      "body_part": "whole_body",
       "direction": null,
       "level": null,
       "timing": {
         "measure": 25,
-        "beat": 1,
-        "duration_beats": 1
+        "beat": 1.0,
+        "duration_beats": 0.5
       },
       "modifiers": {
         "label": "Section C: Dissolution"
@@ -4021,13 +4002,13 @@
     },
     {
       "symbol_id": "repeat.end",
-      "body_part": "torso",
+      "body_part": "whole_body",
       "direction": null,
       "level": null,
       "timing": {
         "measure": 32,
-        "beat": 7,
-        "duration_beats": 1
+        "beat": 4.0,
+        "duration_beats": 0.5
       },
       "modifiers": {},
       "rotation_degrees": null,
@@ -4049,7 +4030,7 @@
       {
         "performer_id": "dancer_1",
         "measure": 1,
-        "beat": 1,
+        "beat": 1.0,
         "position": {
           "zone": "upstage_right",
           "x": 0.8,
@@ -4061,7 +4042,7 @@
       {
         "performer_id": "dancer_1",
         "measure": 3,
-        "beat": 1,
+        "beat": 1.0,
         "position": {
           "zone": "upstage_right"
         },
@@ -4071,7 +4052,7 @@
       {
         "performer_id": "dancer_1",
         "measure": 4,
-        "beat": 1,
+        "beat": 1.0,
         "position": {
           "zone": "center_right"
         },
@@ -4081,7 +4062,7 @@
       {
         "performer_id": "dancer_1",
         "measure": 5,
-        "beat": 1,
+        "beat": 1.0,
         "position": {
           "zone": "center_right"
         },
@@ -4091,7 +4072,7 @@
       {
         "performer_id": "dancer_1",
         "measure": 7,
-        "beat": 1,
+        "beat": 1.0,
         "position": {
           "zone": "center"
         },
@@ -4101,7 +4082,7 @@
       {
         "performer_id": "dancer_1",
         "measure": 9,
-        "beat": 1,
+        "beat": 1.0,
         "position": {
           "zone": "center"
         },
@@ -4111,7 +4092,7 @@
       {
         "performer_id": "dancer_1",
         "measure": 12,
-        "beat": 1,
+        "beat": 1.0,
         "position": {
           "zone": "center_left"
         },
@@ -4121,7 +4102,7 @@
       {
         "performer_id": "dancer_1",
         "measure": 13,
-        "beat": 1,
+        "beat": 1.0,
         "position": {
           "zone": "downstage_left"
         },
@@ -4131,7 +4112,7 @@
       {
         "performer_id": "dancer_1",
         "measure": 16,
-        "beat": 1,
+        "beat": 1.0,
         "position": {
           "zone": "downstage_left"
         },
@@ -4141,7 +4122,7 @@
       {
         "performer_id": "dancer_1",
         "measure": 17,
-        "beat": 1,
+        "beat": 1.0,
         "position": {
           "zone": "downstage_left"
         },
@@ -4151,7 +4132,7 @@
       {
         "performer_id": "dancer_1",
         "measure": 19,
-        "beat": 1,
+        "beat": 1.0,
         "position": {
           "zone": "center"
         },
@@ -4161,7 +4142,7 @@
       {
         "performer_id": "dancer_1",
         "measure": 21,
-        "beat": 1,
+        "beat": 1.0,
         "position": {
           "zone": "downstage_right"
         },
@@ -4171,7 +4152,7 @@
       {
         "performer_id": "dancer_1",
         "measure": 23,
-        "beat": 1,
+        "beat": 1.0,
         "position": {
           "zone": "center"
         },
@@ -4181,7 +4162,7 @@
       {
         "performer_id": "dancer_1",
         "measure": 24,
-        "beat": 1,
+        "beat": 1.0,
         "position": {
           "zone": "center"
         },
@@ -4191,7 +4172,7 @@
       {
         "performer_id": "dancer_1",
         "measure": 25,
-        "beat": 1,
+        "beat": 1.0,
         "position": {
           "zone": "center"
         },
@@ -4201,7 +4182,7 @@
       {
         "performer_id": "dancer_1",
         "measure": 27,
-        "beat": 1,
+        "beat": 1.0,
         "position": {
           "zone": "center"
         },
@@ -4211,7 +4192,7 @@
       {
         "performer_id": "dancer_1",
         "measure": 28,
-        "beat": 1,
+        "beat": 1.0,
         "position": {
           "zone": "center"
         },
@@ -4221,7 +4202,7 @@
       {
         "performer_id": "dancer_1",
         "measure": 29,
-        "beat": 1,
+        "beat": 1.0,
         "position": {
           "zone": "center"
         },

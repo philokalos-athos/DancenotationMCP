@@ -25,14 +25,29 @@ syms = ir["symbols"]
 fp = ir["extensions"]["floor_plan"]
 
 
+EIGHTH_NOTES_PER_QUARTER_BEAT = 2.0
+
+
+def _count_beat(count: float) -> float:
+    return min(1.0 + (count - 1.0) / EIGHTH_NOTES_PER_QUARTER_BEAT, 3.5)
+
+
+def _count_duration(counts: float) -> float:
+    return counts / EIGHTH_NOTES_PER_QUARTER_BEAT
+
+
 def sym(sid, bp, d, lv, m, bt, dur, **kw):
-    """Shorthand to append a symbol."""
+    """Append a symbol authored in eighth-note counts to quarter-beat IR."""
     entry = {
         "symbol_id": sid,
         "body_part": bp,
         "direction": d,
         "level": lv,
-        "timing": {"measure": m, "beat": bt, "duration_beats": dur},
+        "timing": {
+            "measure": m,
+            "beat": _count_beat(bt),
+            "duration_beats": _count_duration(dur),
+        },
         "modifiers": kw.get("modifiers", {}),
         "rotation_degrees": kw.get("rotation_degrees"),
         "flexion_degrees": kw.get("flexion_degrees"),
@@ -47,7 +62,7 @@ def floor(m, bt, zone, facing, x=None, y=None, path="straight"):
     entry = {
         "performer_id": "dancer_1",
         "measure": m,
-        "beat": bt,
+        "beat": _count_beat(bt),
         "position": {"zone": zone},
         "facing": facing,
         "path_to_next": path,
@@ -60,8 +75,10 @@ def floor(m, bt, zone, facing, x=None, y=None, path="straight"):
 
 
 # ── Tempo mark ────────────────────────────────────────────────────────
-sym("timing.tempo", "whole_body", None, None, 1, 1, 1,
-    modifiers={"bpm": 144, "measure_header": True, "label": "♩=144"})
+# music.tempo.mark, not timing.tempo: there is no timing.tempo in the catalog,
+# and the validator rejects the score outright when the builder emits one.
+sym("music.tempo.mark", "torso", None, None, 1, 1, 1,
+    modifiers={"tempo": 144, "measure_header": True, "label": "♩=144"})
 
 # ══════════════════════════════════════════════════════════════════════
 # SECTION A — "Eruption" (Measures 1–16)
@@ -131,7 +148,7 @@ sym("support.step.forward", "left_leg", "forward", "high", 3, 1, 2.33)
 sym("direction.forward", "left_arm", "forward", "middle", 3, 1, 2.33,
     modifiers={"label": "1st position"})
 sym("direction.forward", "right_arm", "forward", "middle", 3, 1, 2.33)
-sym("turn.right", "whole_body", "right", None, 3, 1, 2.33,
+sym("turn.full", "torso", "right", "middle", 3, 1, 2.33,
     rotation_degrees=360)
 
 # Turn 2: medium, arms demi-seconde
@@ -140,7 +157,7 @@ sym("support.step.forward", "left_leg", "forward", "high", 3, 3.33, 2.33)
 sym("direction.forward", "left_arm", "left", "middle", 3, 3.33, 2.33,
     modifiers={"label": "demi-seconde"})
 sym("direction.forward", "right_arm", "right", "middle", 3, 3.33, 2.33)
-sym("turn.right", "whole_body", "right", None, 3, 3.33, 2.33,
+sym("turn.full", "torso", "right", "middle", 3, 3.33, 2.33,
     rotation_degrees=360)
 
 # Turn 3: fast, arms full second with flexed hands
@@ -149,7 +166,7 @@ sym("support.step.forward", "left_leg", "forward", "high", 3, 5.66, 2.34)
 sym("direction.forward", "left_arm", "left", "middle", 3, 5.66, 2.34,
     modifiers={"label": "full 2nd, flexed hands"})
 sym("direction.forward", "right_arm", "right", "middle", 3, 5.66, 2.34)
-sym("turn.right", "whole_body", "right", None, 3, 5.66, 2.34,
+sym("turn.full", "torso", "right", "middle", 3, 5.66, 2.34,
     rotation_degrees=360)
 
 # ── Measure 4: Forced-arch fall, développé from kneeling ──
@@ -177,7 +194,7 @@ sym("direction.forward", "torso", "forward", "low", 5, 1, 3.5,
 sym("direction.forward", "left_arm", "forward", "low", 5, 1, 3.5)
 sym("direction.forward", "right_arm", "forward", "low", 5, 1, 3.5)
 # Sequential successive movement through spine
-sym("sequential.successive", "torso", None, None, 5, 1, 3.5,
+sym("sequential.successive.upward", "torso", None, None, 5, 1, 3.5,
     modifiers={"wave_direction": "upward", "sequential_type": "successive"})
 
 # M5 beat 4.5-7: Transition to supine
@@ -260,7 +277,7 @@ sym("direction.forward", "torso", "right", "middle", 11, 1, 7,
     rotation_degrees=180, modifiers={"label": "spiral recovery"})
 sym("direction.forward", "left_arm", "diagonal_forward_left", "middle", 11, 1, 3.5)
 sym("direction.forward", "right_arm", "diagonal_forward_right", "middle", 11, 1, 3.5)
-sym("turn.right", "whole_body", "right", None, 11, 4.5, 3.5,
+sym("turn.full", "torso", "right", "middle", 11, 4.5, 3.5,
     rotation_degrees=360, modifiers={"label": "pirouette en dehors"})
 sym("support.step.forward", "left_leg", "place", "high", 11, 4.5, 3.5,
     modifiers={"label": "passé relevé"})
@@ -280,19 +297,19 @@ sym("support.step.forward", "right_leg", "diagonal_forward_left", "middle", 12, 
 floor(13, 1, "downstage_left", "diagonal_upstage_right", path="straight")
 
 # M13: Jump sequence — small jumps along diagonal
-sym("jump.basic", "whole_body", "diagonal_forward_left", "middle", 13, 1, 2,
+sym("jump.assemble", "left_leg", "diagonal_forward_left", "middle", 13, 1, 2,
     modifiers={"label": "assemblé"})
-sym("jump.basic", "whole_body", "diagonal_forward_left", "middle", 13, 3, 2,
+sym("jump.small", "right_leg", "diagonal_forward_left", "middle", 13, 3, 2,
     modifiers={"label": "jeté"})
-sym("jump.basic", "whole_body", "diagonal_forward_left", "high", 13, 5, 3,
+sym("jump.large", "left_leg", "diagonal_forward_left", "high", 13, 5, 3,
     modifiers={"label": "grand jeté", "spring_jump": {"takeoff": ["left"], "landing": ["right"]}})
 
 # M14: Aerial turn
 sym("support.step.forward", "left_leg", "place", "high", 14, 1, 2,
     modifiers={"label": "take-off"})
-sym("jump.basic", "whole_body", "forward", "high", 14, 3, 3,
+sym("jump.large", "right_leg", "forward", "high", 14, 3, 3,
     modifiers={"label": "tour en l'air", "spring_jump": {"takeoff": ["left", "right"], "landing": ["left", "right"]}})
-sym("turn.right", "whole_body", "right", None, 14, 3, 3,
+sym("turn.full", "torso", "right", "high", 14, 3, 3,
     rotation_degrees=720, modifiers={"label": "double tour"})
 sym("support.step.forward", "right_leg", "place", "low", 14, 6, 2,
     modifiers={"label": "plié landing"})
@@ -303,7 +320,7 @@ sym("support.step.forward", "right_leg", "place", "low", 15, 1, 7,
     modifiers={"label": "kneel descent", "contact_type": "touch"})
 sym("direction.forward", "torso", "forward", "low", 15, 1, 3.5,
     modifiers={"label": "torso folds"})
-sym("sequential.successive", "torso", None, None, 15, 1, 7,
+sym("sequential.successive.downward", "torso", None, None, 15, 1, 7,
     modifiers={"wave_direction": "downward", "sequential_type": "successive"})
 sym("direction.forward", "left_arm", "forward", "low", 15, 1, 7,
     modifiers={"label": "arms fold"})
@@ -335,7 +352,7 @@ sym("support.step.forward", "right_leg", "forward", "middle", 17, 1, 3.5,
 sym("support.step.forward", "left_leg", "forward", "middle", 17, 4.5, 3.5)
 sym("direction.forward", "torso", "forward", "middle", 17, 1, 7,
     modifiers={"label": "unfurl spine"})
-sym("sequential.successive", "torso", None, None, 17, 1, 7,
+sym("sequential.successive.upward", "torso", None, None, 17, 1, 7,
     modifiers={"wave_direction": "upward"})
 sym("direction.forward", "left_arm", "left", "middle", 17, 1, 7,
     modifiers={"label": "opens L"})
@@ -348,7 +365,7 @@ sym("support.step.forward", "left_leg", "forward", "middle", 18, 3.33, 2.33)
 sym("support.step.forward", "right_leg", "forward", "middle", 18, 5.66, 2.34)
 sym("direction.forward", "left_arm", "diagonal_forward_left", "high", 18, 1, 7)
 sym("direction.forward", "right_arm", "diagonal_forward_right", "high", 18, 1, 7)
-sym("turn.right", "whole_body", "right", None, 18, 1, 7,
+sym("turn.full", "torso", "right", "middle", 18, 1, 7,
     rotation_degrees=180, modifiers={"label": "traveling turn"})
 
 # M19-20: Center crossing of figure-8
@@ -366,7 +383,7 @@ sym("support.step.forward", "left_leg", "diagonal_forward_left", "middle", 20, 1
 sym("support.step.forward", "right_leg", "forward", "middle", 20, 4.5, 3.5)
 sym("direction.forward", "left_arm", "diagonal_forward_left", "high", 20, 1, 7)
 sym("direction.forward", "right_arm", "diagonal_forward_right", "high", 20, 1, 7)
-sym("turn.right", "whole_body", "left", None, 20, 1, 7,
+sym("turn.full", "torso", "left", "middle", 20, 1, 7,
     rotation_degrees=180)
 
 # M21-22: Second loop of figure-8 (DSR area)
@@ -382,7 +399,7 @@ sym("support.step.forward", "right_leg", "backward", "middle", 22, 4.5, 3.5)
 sym("direction.forward", "left_arm", "backward", "middle", 22, 1, 7,
     modifiers={"label": "reach behind"})
 sym("direction.forward", "right_arm", "backward", "middle", 22, 1, 7)
-sym("turn.right", "whole_body", "left", None, 22, 1, 7,
+sym("turn.full", "torso", "left", "middle", 22, 1, 7,
     rotation_degrees=360, modifiers={"label": "manège turn"})
 
 # M23-24: Return to center, complete figure-8
@@ -434,7 +451,7 @@ sym("support.step.forward", "left_arm", "forward", "low", 26, 1, 2,
     modifiers={"label": "hands to floor", "contact_type": "touch"})
 sym("support.step.forward", "right_arm", "forward", "low", 26, 1, 2,
     modifiers={"contact_type": "touch"})
-sym("sequential.successive", "torso", None, None, 26, 1, 7,
+sym("sequential.successive.downward", "torso", None, None, 26, 1, 7,
     modifiers={"wave_direction": "downward", "label": "body wave: plank→cobra→stand"})
 sym("direction.forward", "torso", "forward", "low", 26, 1, 2,
     modifiers={"label": "plank"})
@@ -452,15 +469,15 @@ floor(28, 1, "center", "stage_left", path="curved")
 # M27: Manège piqué turns
 sym("support.step.forward", "right_leg", "forward", "high", 27, 1, 2.33,
     modifiers={"label": "piqué turn 1"})
-sym("turn.right", "whole_body", "right", None, 27, 1, 2.33,
+sym("turn.full", "torso", "right", "high", 27, 1, 2.33,
     rotation_degrees=360)
 sym("support.step.forward", "left_leg", "forward", "high", 27, 3.33, 2.33,
     modifiers={"label": "piqué turn 2"})
-sym("turn.right", "whole_body", "right", None, 27, 3.33, 2.33,
+sym("turn.full", "torso", "right", "high", 27, 3.33, 2.33,
     rotation_degrees=360)
 sym("support.step.forward", "right_leg", "forward", "high", 27, 5.66, 2.34,
     modifiers={"label": "piqué turn 3"})
-sym("turn.right", "whole_body", "right", None, 27, 5.66, 2.34,
+sym("turn.full", "torso", "right", "high", 27, 5.66, 2.34,
     rotation_degrees=360)
 sym("direction.forward", "left_arm", "left", "middle", 27, 1, 7,
     modifiers={"label": "2nd position"})
@@ -468,14 +485,14 @@ sym("direction.forward", "right_arm", "right", "middle", 27, 1, 7)
 
 # M28: Continue manège
 sym("support.step.forward", "left_leg", "forward", "high", 28, 1, 2.33)
-sym("turn.right", "whole_body", "right", None, 28, 1, 2.33,
+sym("turn.full", "torso", "right", "high", 28, 1, 2.33,
     rotation_degrees=360)
 sym("support.step.forward", "right_leg", "forward", "high", 28, 3.33, 2.33)
-sym("turn.right", "whole_body", "right", None, 28, 3.33, 2.33,
+sym("turn.full", "torso", "right", "high", 28, 3.33, 2.33,
     rotation_degrees=360)
 sym("support.step.forward", "left_leg", "forward", "high", 28, 5.66, 2.34,
     modifiers={"label": "final turn"})
-sym("turn.right", "whole_body", "right", None, 28, 5.66, 2.34,
+sym("turn.full", "torso", "right", "high", 28, 5.66, 2.34,
     rotation_degrees=360)
 sym("direction.forward", "left_arm", "left", "high", 28, 1, 7)
 sym("direction.forward", "right_arm", "right", "high", 28, 1, 7)
@@ -535,9 +552,14 @@ sym("contact.touch", "left_hand", None, None, 32, 5, 1,
 # Beat 6: R hand opens, fingers spread
 sym("direction.forward", "right_hand", "place", "low", 32, 6, 1,
     modifiers={"label": "fingers spread"})
-# Beat 7: blackout
-sym("timing.tempo", "whole_body", None, None, 32, 7, 1,
-    modifiers={"label": "BLACKOUT"})
+# Beat 7: blackout.
+#
+# Left out, not re-signed. A blackout is a production cue, not a movement, and
+# the catalog has no id that carries a written cue -- there is no text or
+# annotation family, and music.* is tempo, time signatures, rests and cadence
+# marks only. It was written as timing.tempo, which does not exist and which
+# the validator rejects; putting it on some other real id would say something
+# the notation does not mean. The gap is recorded rather than papered over.
 
 # ── Repeat markers (section boundaries) ──
 sym("repeat.start", "whole_body", None, None, 1, 1, 1,

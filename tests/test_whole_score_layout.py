@@ -22,6 +22,7 @@ from dancenotation_mcp.rendering.laban_layout import (
     compute_laban_layout,
 )
 from dancenotation_mcp.rendering.laban_renderer import render_laban_svg
+from dancenotation_mcp.validation.validator import validate_ir
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -144,6 +145,26 @@ class WholeScoreLayoutTests(unittest.TestCase):
         svg = render_laban_svg(json.loads(path.read_text(encoding="utf-8")))
         for x_min, x_max in _symbol_boxes(svg):
             self.assertLessEqual(x_max - x_min, _WIDEST_COLUMN + 1)
+
+    def test_the_golden_example_score_validates(self):
+        """Rendering it was never proof that it is a legal score.
+
+        The builder emitted timing.tempo, which is not in the catalog. The
+        renderer drew it anyway -- an unknown id falls through to a generic
+        annotation -- so this file could be regenerated into an invalid score
+        and every test stayed green. The validator does catch the id; nothing
+        was asking it.
+        """
+        path = ROOT / "examples" / "collapse_of_symmetry_full.ir.json"
+        if not path.exists():
+            self.skipTest("example score not built")
+        report = validate_ir(json.loads(path.read_text(encoding="utf-8")))
+        errors = [i for i in report.get("issues", [])
+                  if i.get("severity") == "error"]
+        self.assertEqual(
+            errors, [],
+            "the example score does not validate: "
+            + "; ".join(i.get("message", "") for i in errors))
 
 
 if __name__ == "__main__":

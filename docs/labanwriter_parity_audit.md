@@ -63,9 +63,9 @@ thing from one dance wrapping, and not what settles this.
 What was NOT wrong: measure height, about 186px against the plates' ~190 at
 150dpi. The whole error was in the direction systems flow.
 
-Still open at this level: captions all take the same margin x, so where they
-are dense they overlap each other; and the trailing system of a score can come
-out nearly empty.
+Since settled: captions are assigned lanes in the margin and no longer stack
+on each other. Still open: the trailing system of a score can come out nearly
+empty.
 
 ### What the remaining clusters are
 
@@ -300,10 +300,17 @@ a convention cannot be found, the gap may be in the sample rather than in the
 notation.
 
 Next parity priorities:
-1. Bar lines: the plates show them running staff-line to staff-line with no
-   overhang, plus separate dashed segments further out whose meaning was not
-   established. We draw a 4px overhang and no dashed segments.
-2. Shift more renderer branching from symbol-id checks to catalog behavior roles.
-3. Add explicit geometry for springs, carets, staples, and retention/cancellation families.
-4. Expand official motif and LMA variants beyond current placeholders.
-5. Add golden SVG fixtures for representative LabanWriter-style examples.
+1. Shift more renderer branching from symbol-id checks to catalog behavior
+   roles. `behavior.cap_shape`, `behavior.preferred_separator_mode` and
+   `behavior.pre_sign` are read now; several families still key off id
+   prefixes, and every defect of the "id says X, renderer ignores it" class
+   came from that pattern.
+2. Add explicit geometry for springs, carets, staples, and the
+   retention/cancellation families.
+3. Expand official motif and LMA variants beyond current placeholders.
+4. Add golden SVG fixtures for representative LabanWriter-style examples.
+
+Bar lines were on this list and are settled: solid across the staff, stopping
+on the outer staff lines, continuing outward as a dashed time reference. The
+meaning of the dashed segments is now known — they tie the same count across
+every staff on the page.
