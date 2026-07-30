@@ -1287,12 +1287,16 @@ def _render_retention_sign(entry: dict) -> str:
     retention = symbol.get("retention") or (symbol_id_parts[1] if len(symbol_id_parts) > 1 else symbol_id_parts[-1])
 
     if retention == "hold":
-        # Filled circle with tie arc above
+        # The round retention sign, Knust vol 2 Fig. 78a: an empty circle,
+        # nothing else. It was a filled disc under a tie arc; the arc is not
+        # in Fig. 78 at all, and vol 1 p74 states the sign is open — "The
+        # symbol for this cross of axes (101c) contains a small, empty circle.
+        # The connection between the two ideas of the retention in the body
+        # and the cross of the body axes becomes evident."
         return (
             f'<g class="laban-symbol retention" data-symbol-id="{escape(symbol_id)}">'
-            f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="3" fill="#111827"/>'
-            f'<path d="M {cx - 6:.1f} {cy:.1f} Q {cx:.1f} {cy - 8:.1f} {cx + 6:.1f} {cy:.1f}" '
-            f'fill="none" stroke="#111827" stroke-width="1.2"/>'
+            f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="3.5" fill="none" '
+            f'stroke="#111827" stroke-width="1.2"/>'
             f'</g>'
         )
     if retention == "release":

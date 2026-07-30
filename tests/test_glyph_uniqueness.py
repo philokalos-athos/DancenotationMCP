@@ -42,10 +42,12 @@ MAX_CLUSTER_SIZE = 29
 #   joint it applies to; the joint is carried by which limb the mark attaches
 #   to, and the probe deliberately renders everything into one slot.
 #
-# retention: Knust has three retention signs in the whole system — the round
-#   one, the diamond for retention in space, and a special sign for the
-#   standard retention during a turn (vol 1, 78a/78b/217i). Never one per body
-#   part. What distinguishes retention.hold.arm from retention.hold.leg is the
+# retention: Knust's retention vocabulary is four signs and a special case —
+#   the round sign, the diamond for retention in space, the diamond with a dot
+#   for retention at a spot, that one again over an x for retention of a
+#   relationship, and 217i for the standard retention during a turn (vol 2,
+#   Fig. 78a-d). Never one per body part. What distinguishes
+#   retention.hold.arm from retention.hold.leg is the
 #   column, and Knust is explicit that the column changes the meaning outright:
 #   Rule III, p67, the round sign in a support column means the part retains
 #   the weight, while p75 says the same sign in a gesture column means

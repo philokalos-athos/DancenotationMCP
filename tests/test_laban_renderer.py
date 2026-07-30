@@ -425,10 +425,13 @@ class LabanRendererTests(unittest.TestCase):
             },
         ])
         svg = render_laban_svg(ir)
-        # hold: filled circle + tie arc (has both a <circle> and a <path>)
+        # hold: the round retention sign, Knust vol 2 Fig. 78a — an empty
+        # circle and nothing else. This asserted a filled disc under a tie
+        # arc, which is not in Fig. 78; the arc was invented.
         self.assertRegex(
             svg,
-            r'data-symbol-id="retention\.hold\.arm">.*?<circle[^/]*/>.*?<path',
+            r'data-symbol-id="retention\.hold\.arm">'
+            r'<circle[^>]*fill="none"[^>]*/></g>',
         )
         # release: X mark (two crossing <line> elements, no <circle>/<path>)
         self.assertRegex(
@@ -2364,6 +2367,24 @@ class RetentionColumnTest(unittest.TestCase):
             re.sub(r'data-symbol-id="[^"]*"', "", direction),
             "a retention sign is engraved identically to a place-middle "
             "direction symbol")
+
+    def test_the_round_retention_sign_is_an_empty_circle(self):
+        """Knust vol 2, Fig. 78a: the round retention sign is drawn as an
+        empty circle, and vol 1 p74 says so in words while explaining why —
+        "The symbol for this cross of axes (101c) contains a small, empty
+        circle. The connection between the two ideas of the retention in the
+        body and the cross of the body axes becomes evident."
+
+        We drew a filled disc with a tie arc over it. The arc is not in
+        Fig. 78 at all.
+        """
+        ink = self._ink("retention.hold.leg", "left_leg")
+        circles = re.findall(r'<circle[^>]*>', ink)
+        self.assertTrue(circles, "the round retention sign drew no circle")
+        for circle in circles:
+            self.assertNotRegex(
+                circle, r'fill="#[0-9a-fA-F]{6}"',
+                f"the round retention sign is filled: {circle}")
 
     def test_which_body_part_is_held_survives_rendering(self):
         """Four body parts, four columns — the id says which, and it is the
