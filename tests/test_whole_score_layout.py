@@ -75,6 +75,85 @@ def _symbol_boxes(svg):
     return boxes
 
 
+def _symbol_spans_y(svg):
+    """(y_min, y_max, symbol_id) of the ink in each drawn symbol.
+
+    Reads only geometry attributes and path data, never colours or ids — a
+    naive sweep of every number in the group picks up the digits inside
+    ``#111827`` and ``stroke-width="1"`` and drowns the coordinates.
+    """
+    num = r"-?\d*\.?\d+"
+    spans = []
+    for g in re.finditer(
+            r'<g class="laban-symbol"[^>]*data-symbol-id="([^"]+)"[^>]*>'
+            r'(.*?)</g>', svg, re.S):
+        symbol_id, body = g.group(1), g.group(2)
+        ys = [float(v) for v in
+              re.findall(r'\b(?:y|cy|y1|y2)="(' + num + r')"', body)]
+        for d in re.findall(r'\bd="([^"]*)"', body):
+            ys += [float(n) for n in re.findall(num, d)][1::2]
+        for use in re.finditer(
+                r'<use [^>]*y="(' + num + r')"[^>]*height="(' + num + r')"',
+                body):
+            ys += [float(use.group(1)),
+                   float(use.group(1)) + float(use.group(2))]
+        if ys:
+            spans.append((min(ys), max(ys), symbol_id))
+    return spans
+
+
+class SymbolFitsThePageTests(unittest.TestCase):
+    """A symbol long enough to outrun its system was drawn off the page.
+
+    Per-symbol tests cannot see this: the symbol is the right shape and the
+    right length, and only the last measure of a system puts it anywhere it
+    does not fit. The whole-score guard next door checked width and system
+    crossing but never vertical bounds, so this was green across 678 tests.
+    """
+
+    def _score_with_a_long_symbol_at_the_top_of_a_system(self, duration):
+        """Fill a system, then put a long symbol on its final beat.
+
+        Time runs bottom to top, so the last measure of a system is at the
+        top of the page and a symbol there grows towards the margin.
+        """
+        symbols = [{
+            "symbol_id": "support.step", "body_part": "left_leg",
+            "direction": "forward", "level": "middle",
+            "timing": {"measure": m, "beat": 1, "duration_beats": 1},
+            "modifiers": {},
+        } for m in range(1, 9)]
+        symbols.append({
+            "symbol_id": "support.step", "body_part": "right_leg",
+            "direction": "forward", "level": "middle",
+            "timing": {"measure": 8, "beat": 4, "duration_beats": duration},
+            "modifiers": {},
+        })
+        return {"metadata": {"title": "overflow probe", "ir_version": "0.1.0",
+                             "schema_version": "0.1.0"},
+                "symbols": symbols}
+
+    def test_no_symbol_is_drawn_outside_the_canvas(self):
+        """Measured: a four-beat step on the last beat of a system drew
+        y -69 .. 169 against a canvas starting at 0."""
+        for duration in (1, 2, 4):
+            with self.subTest(duration_beats=duration):
+                ir = self._score_with_a_long_symbol_at_the_top_of_a_system(
+                    duration)
+                layout = compute_laban_layout(ir)
+                height = layout["height"]
+                for y_min, y_max, symbol_id in _symbol_spans_y(
+                        render_laban_svg(ir)):
+                    self.assertGreaterEqual(
+                        y_min, 0,
+                        f"{symbol_id} starts at y={y_min:.0f}, above the top "
+                        f"of the canvas")
+                    self.assertLessEqual(
+                        y_max, height,
+                        f"{symbol_id} ends at y={y_max:.0f}, below the "
+                        f"canvas bottom of {height}")
+
+
 class WholeScoreLayoutTests(unittest.TestCase):
     """Rendered once for the class — it draws a full multi-system score."""
 

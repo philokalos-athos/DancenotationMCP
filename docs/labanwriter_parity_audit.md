@@ -299,6 +299,44 @@ the first could not, because it happens to open with a starting position. Where
 a convention cannot be found, the gap may be in the sample rather than in the
 notation.
 
+### A movement that outruns its system
+
+Open. A symbol's length is its duration, so one anchored near the top of a
+system can extend past the end of it. The renderer drew it anyway, off the
+page — a four-beat step on the last beat of an eight-measure system started at
+y -69 against a canvas beginning at 0.
+
+The plates do not settle what such a sign should look like, because a notator
+does not write one. On La vivandière p84 the staff closes with a horizontal
+cap and the last measure's signs finish inside it; the movement is broken at
+the bar instead. The score-level condition is already reported — the validator
+raises `TIMING_MEASURE_OVERFLOW` carrying the `carry_duration` that would have
+to resume in the following measure.
+
+What is unsettled is whether that remainder should be re-engraved at the foot
+of the next system, and if so with what mark joining the two halves. Until
+that is answered from a source, the sign is clamped to the top of its system:
+shorter than its duration, which the Third Principle would forbid, but the
+score is already flagged as malformed at that point, and drawing off the page
+is wrong under every answer to the question.
+
+The measurement to settle it: find a plate where a held support crosses a
+system break. None of La vivandière pp. 63-150 has been searched for one yet.
+
+### Staff proportions
+
+The engraved staff is narrower than ours relative to its own height. Measured
+on La vivandière p84: staff x 1312..1455 = 143 units on a 2727-wide page, over
+eight measures filling about 62% of the 3774-unit height, so roughly 292 units
+per measure — a width-to-measure-height ratio of 0.49. Ours is 184 over 240,
+or 0.77.
+
+The ratio is the comparison that survives scaling; raw share of page width
+does not, because the plate sets one system beside the piano reduction while
+we tile four systems across. The figure rests on one page and on a height
+estimate rather than on measured bar lines, so it is recorded as a lead, not
+yet as a correction.
+
 Next parity priorities:
 1. Shift more renderer branching from symbol-id checks to catalog behavior
    roles. `behavior.cap_shape`, `behavior.preferred_separator_mode` and

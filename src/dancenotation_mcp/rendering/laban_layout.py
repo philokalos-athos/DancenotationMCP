@@ -268,11 +268,28 @@ def _resolve_column(symbol: dict, spec: dict) -> str:
 
 
 def _beat_to_y(measure_pos: tuple[float, float], beat: float,
-               duration: float, beats_per_measure: float | None = None) -> tuple[float, float]:
+               duration: float, beats_per_measure: float | None = None,
+               system_top: float | None = None) -> tuple[float, float]:
     """Convert beat position within a measure to y-coordinates.
 
     Returns (y_bottom, y_top) — bottom of symbol, top of symbol.
     In bottom-to-top layout: beat 1 at bottom_y, beat N at top_y.
+
+    A symbol may run past the top of its own measure — that is a movement
+    held across a bar line, and the plates engrave it as one continuous sign.
+    It may not run past the top of its system: that is off the page. A
+    four-beat step on the last beat of an eight-measure system was drawn from
+    y -69, above a canvas starting at 0.
+
+    ``system_top`` clamps it. The plates do not show what a sign looks like
+    when it outruns the staff, because a notator does not put one there — on
+    La vivandière p84 the staff closes with a horizontal cap and the last
+    measure's signs finish inside it. The score-level problem is already
+    reported: the validator raises TIMING_MEASURE_OVERFLOW with the
+    carry_duration that would have to resume in the next measure. Whether the
+    remainder should be re-engraved at the foot of the next system is
+    recorded as open in docs/labanwriter_parity_audit.md; drawing it off the
+    page is wrong under every answer to that question.
     """
     m_bottom, m_top = measure_pos
     measure_height = m_bottom - m_top
@@ -282,6 +299,8 @@ def _beat_to_y(measure_pos: tuple[float, float], beat: float,
     # beat 1 starts at bottom
     y_bottom = m_bottom - (beat - 1.0) * beat_h
     y_top = y_bottom - duration * beat_h
+    if system_top is not None and y_top < system_top:
+        y_top = system_top
     return y_bottom, y_top
 
 
@@ -492,7 +511,10 @@ def compute_laban_layout(ir: dict) -> dict:
 
         col = _resolve_column(symbol, spec)
         m_bpm = beats_for_measure(m, beats_map)
-        y_bottom, y_top = _beat_to_y(m_pos, beat, duration, m_bpm)
+        # The system's ceiling is the top of its last measure — time runs
+        # bottom to top, so that is the highest a sign in this system may go.
+        s_top = min(top for _bottom, top in s_measure_positions.values())
+        y_bottom, y_top = _beat_to_y(m_pos, beat, duration, m_bpm, s_top)
 
         if col == "annotation":
             side = ANNOTATION_SIDE.get(family, "right")
