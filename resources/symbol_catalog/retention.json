@@ -1,307 +1,104 @@
 [
   {
-    "id": "retention.hold.arm",
-    "category": "retention",
-    "name": "Hold Arm Position",
-    "allowed_body_parts": [
-      "left_arm",
-      "right_arm"
-    ],
-    "requires_direction": false,
-    "allowed_directions": [
-      "forward",
-      "backward",
-      "left",
-      "right",
-      "place"
-    ],
-    "requires_level": false,
-    "allowed_levels": [
-      "high",
-      "middle",
-      "low"
-    ],
-    "geometry": {
-      "glyph": "⊙",
-      "width": 14,
-      "height": 14,
-      "anchor": "adjacent",
-      "staff_column": "retention"
-    }
-  },
-  {
-    "id": "retention.hold.leg",
-    "category": "retention",
-    "name": "Hold Leg Position",
-    "allowed_body_parts": [
-      "left_leg",
-      "right_leg"
-    ],
-    "requires_direction": false,
-    "allowed_directions": [
-      "forward",
-      "backward",
-      "left",
-      "right",
-      "place"
-    ],
-    "requires_level": false,
-    "allowed_levels": [
-      "high",
-      "middle",
-      "low"
-    ],
-    "geometry": {
-      "glyph": "⊙",
-      "width": 14,
-      "height": 14,
-      "anchor": "adjacent",
-      "staff_column": "retention"
-    }
-  },
-  {
-    "id": "retention.hold.torso",
-    "category": "retention",
-    "name": "Hold Torso Position",
-    "allowed_body_parts": [
-      "torso"
-    ],
-    "requires_direction": false,
-    "allowed_directions": [
-      "forward",
-      "backward",
-      "left",
-      "right",
-      "place"
-    ],
-    "requires_level": false,
-    "allowed_levels": [
-      "high",
-      "middle",
-      "low"
-    ],
-    "geometry": {
-      "glyph": "⊙",
-      "width": 14,
-      "height": 14,
-      "anchor": "adjacent",
-      "staff_column": "retention"
-    }
-  },
-  {
-    "id": "retention.hold.head",
-    "category": "retention",
-    "name": "Hold Head Position",
-    "allowed_body_parts": [
-      "head"
-    ],
-    "requires_direction": false,
-    "allowed_directions": [
-      "forward",
-      "backward",
-      "left",
-      "right",
-      "place"
-    ],
-    "requires_level": false,
-    "allowed_levels": [
-      "high",
-      "middle",
-      "low"
-    ],
-    "geometry": {
-      "glyph": "⊙",
-      "width": 14,
-      "height": 14,
-      "anchor": "adjacent",
-      "staff_column": "retention"
-    }
-  },
-  {
-    "id": "retention.hold.hand",
-    "category": "retention",
-    "name": "Hold Hand Position",
-    "allowed_body_parts": [
-      "left_hand",
-      "right_hand"
-    ],
-    "requires_direction": false,
-    "allowed_directions": [
-      "forward",
-      "backward",
-      "left",
-      "right",
-      "place"
-    ],
-    "requires_level": false,
-    "allowed_levels": [
-      "high",
-      "middle",
-      "low"
-    ],
-    "geometry": {
-      "glyph": "⊙",
-      "width": 14,
-      "height": 14,
-      "anchor": "adjacent",
-      "staff_column": "retention"
-    }
-  },
-  {
-    "id": "retention.release.arm",
-    "category": "retention",
-    "name": "Release Arm Position",
-    "allowed_body_parts": [
-      "left_arm",
-      "right_arm"
-    ],
-    "requires_direction": false,
-    "allowed_directions": [
-      "forward",
-      "backward",
-      "left",
-      "right",
-      "place"
-    ],
-    "requires_level": false,
-    "allowed_levels": [
-      "high",
-      "middle",
-      "low"
-    ],
-    "geometry": {
-      "glyph": "⊘",
-      "width": 14,
-      "height": 14,
-      "anchor": "adjacent",
-      "staff_column": "retention"
-    }
-  },
-  {
-    "id": "retention.release.leg",
-    "category": "retention",
-    "name": "Release Leg Position",
-    "allowed_body_parts": [
-      "left_leg",
-      "right_leg"
-    ],
-    "requires_direction": false,
-    "allowed_directions": [
-      "forward",
-      "backward",
-      "left",
-      "right",
-      "place"
-    ],
-    "requires_level": false,
-    "allowed_levels": [
-      "high",
-      "middle",
-      "low"
-    ],
-    "geometry": {
-      "glyph": "⊘",
-      "width": 14,
-      "height": 14,
-      "anchor": "adjacent",
-      "staff_column": "retention"
-    }
-  },
-  {
-    "id": "retention.release.torso",
-    "category": "retention",
-    "name": "Release Torso Position",
-    "allowed_body_parts": [
-      "torso"
-    ],
-    "requires_direction": false,
-    "allowed_directions": [
-      "forward",
-      "backward",
-      "left",
-      "right",
-      "place"
-    ],
-    "requires_level": false,
-    "allowed_levels": [
-      "high",
-      "middle",
-      "low"
-    ],
-    "geometry": {
-      "glyph": "⊘",
-      "width": 14,
-      "height": 14,
-      "anchor": "adjacent",
-      "staff_column": "retention"
-    }
-  },
-  {
-    "id": "retention.release.head",
-    "category": "retention",
-    "name": "Release Head Position",
-    "allowed_body_parts": [
-      "head"
-    ],
-    "requires_direction": false,
-    "allowed_directions": [
-      "forward",
-      "backward",
-      "left",
-      "right",
-      "place"
-    ],
-    "requires_level": false,
-    "allowed_levels": [
-      "high",
-      "middle",
-      "low"
-    ],
-    "geometry": {
-      "glyph": "⊘",
-      "width": 14,
-      "height": 14,
-      "anchor": "adjacent",
-      "staff_column": "retention"
-    }
-  },
-  {
-    "id": "retention.release.hand",
-    "category": "retention",
-    "name": "Release Hand Position",
-    "allowed_body_parts": [
-      "left_hand",
-      "right_hand"
-    ],
-    "requires_direction": false,
-    "allowed_directions": [
-      "forward",
-      "backward",
-      "left",
-      "right",
-      "place"
-    ],
-    "requires_level": false,
-    "allowed_levels": [
-      "high",
-      "middle",
-      "low"
-    ],
-    "geometry": {
-      "glyph": "⊘",
-      "width": 14,
-      "height": 14,
-      "anchor": "adjacent",
-      "staff_column": "retention"
-    }
-  },
-  {
     "id": "retention.cancel.arm",
     "category": "retention",
     "name": "Cancel Arm Retention",
     "allowed_body_parts": [
       "left_arm",
       "right_arm"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⊗",
+      "width": 14,
+      "height": 14,
+      "anchor": "adjacent",
+      "staff_column": "retention"
+    }
+  },
+  {
+    "id": "retention.cancel.full_body",
+    "category": "retention",
+    "name": "Cancel Full Body Retention",
+    "allowed_body_parts": [
+      "torso",
+      "left_arm",
+      "right_arm",
+      "left_leg",
+      "right_leg",
+      "head"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⊗",
+      "width": 16,
+      "height": 16,
+      "anchor": "adjacent",
+      "staff_column": "retention"
+    }
+  },
+  {
+    "id": "retention.cancel.hand",
+    "category": "retention",
+    "name": "Cancel Hand Retention",
+    "allowed_body_parts": [
+      "left_hand",
+      "right_hand"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⊗",
+      "width": 14,
+      "height": 14,
+      "anchor": "adjacent",
+      "staff_column": "retention"
+    }
+  },
+  {
+    "id": "retention.cancel.head",
+    "category": "retention",
+    "name": "Cancel Head Retention",
+    "allowed_body_parts": [
+      "head"
     ],
     "requires_direction": false,
     "allowed_directions": [
@@ -356,6 +153,36 @@
     }
   },
   {
+    "id": "retention.cancel.shoulder",
+    "category": "retention",
+    "name": "Cancel Shoulder Retention",
+    "allowed_body_parts": [
+      "left_arm",
+      "right_arm"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⊗",
+      "width": 14,
+      "height": 14,
+      "anchor": "adjacent",
+      "staff_column": "retention"
+    }
+  },
+  {
     "id": "retention.cancel.torso",
     "category": "retention",
     "name": "Cancel Torso Retention",
@@ -385,11 +212,12 @@
     }
   },
   {
-    "id": "retention.cancel.head",
+    "id": "retention.hold.arm",
     "category": "retention",
-    "name": "Cancel Head Retention",
+    "name": "Hold Arm Position",
     "allowed_body_parts": [
-      "head"
+      "left_arm",
+      "right_arm"
     ],
     "requires_direction": false,
     "allowed_directions": [
@@ -406,37 +234,7 @@
       "low"
     ],
     "geometry": {
-      "glyph": "⊗",
-      "width": 14,
-      "height": 14,
-      "anchor": "adjacent",
-      "staff_column": "retention"
-    }
-  },
-  {
-    "id": "retention.cancel.hand",
-    "category": "retention",
-    "name": "Cancel Hand Retention",
-    "allowed_body_parts": [
-      "left_hand",
-      "right_hand"
-    ],
-    "requires_direction": false,
-    "allowed_directions": [
-      "forward",
-      "backward",
-      "left",
-      "right",
-      "place"
-    ],
-    "requires_level": false,
-    "allowed_levels": [
-      "high",
-      "middle",
-      "low"
-    ],
-    "geometry": {
-      "glyph": "⊗",
+      "glyph": "⊙",
       "width": 14,
       "height": 14,
       "anchor": "adjacent",
@@ -478,6 +276,184 @@
     }
   },
   {
+    "id": "retention.hold.hand",
+    "category": "retention",
+    "name": "Hold Hand Position",
+    "allowed_body_parts": [
+      "left_hand",
+      "right_hand"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⊙",
+      "width": 14,
+      "height": 14,
+      "anchor": "adjacent",
+      "staff_column": "retention"
+    }
+  },
+  {
+    "id": "retention.hold.head",
+    "category": "retention",
+    "name": "Hold Head Position",
+    "allowed_body_parts": [
+      "head"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⊙",
+      "width": 14,
+      "height": 14,
+      "anchor": "adjacent",
+      "staff_column": "retention"
+    }
+  },
+  {
+    "id": "retention.hold.leg",
+    "category": "retention",
+    "name": "Hold Leg Position",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⊙",
+      "width": 14,
+      "height": 14,
+      "anchor": "adjacent",
+      "staff_column": "retention"
+    }
+  },
+  {
+    "id": "retention.hold.shoulder",
+    "category": "retention",
+    "name": "Hold Shoulder Position",
+    "allowed_body_parts": [
+      "left_arm",
+      "right_arm"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⊙",
+      "width": 14,
+      "height": 14,
+      "anchor": "adjacent",
+      "staff_column": "retention"
+    }
+  },
+  {
+    "id": "retention.hold.torso",
+    "category": "retention",
+    "name": "Hold Torso Position",
+    "allowed_body_parts": [
+      "torso"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⊙",
+      "width": 14,
+      "height": 14,
+      "anchor": "adjacent",
+      "staff_column": "retention"
+    }
+  },
+  {
+    "id": "retention.release.arm",
+    "category": "retention",
+    "name": "Release Arm Position",
+    "allowed_body_parts": [
+      "left_arm",
+      "right_arm"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⊘",
+      "width": 14,
+      "height": 14,
+      "anchor": "adjacent",
+      "staff_column": "retention"
+    }
+  },
+  {
     "id": "retention.release.full_body",
     "category": "retention",
     "name": "Release Full Body Position",
@@ -512,15 +488,40 @@
     }
   },
   {
-    "id": "retention.cancel.full_body",
+    "id": "retention.release.hand",
     "category": "retention",
-    "name": "Cancel Full Body Retention",
+    "name": "Release Hand Position",
     "allowed_body_parts": [
-      "torso",
-      "left_arm",
-      "right_arm",
-      "left_leg",
-      "right_leg",
+      "left_hand",
+      "right_hand"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⊘",
+      "width": 14,
+      "height": 14,
+      "anchor": "adjacent",
+      "staff_column": "retention"
+    }
+  },
+  {
+    "id": "retention.release.head",
+    "category": "retention",
+    "name": "Release Head Position",
+    "allowed_body_parts": [
       "head"
     ],
     "requires_direction": false,
@@ -538,20 +539,20 @@
       "low"
     ],
     "geometry": {
-      "glyph": "⊗",
-      "width": 16,
-      "height": 16,
+      "glyph": "⊘",
+      "width": 14,
+      "height": 14,
       "anchor": "adjacent",
       "staff_column": "retention"
     }
   },
   {
-    "id": "retention.hold.shoulder",
+    "id": "retention.release.leg",
     "category": "retention",
-    "name": "Hold Shoulder Position",
+    "name": "Release Leg Position",
     "allowed_body_parts": [
-      "left_arm",
-      "right_arm"
+      "left_leg",
+      "right_leg"
     ],
     "requires_direction": false,
     "allowed_directions": [
@@ -568,7 +569,7 @@
       "low"
     ],
     "geometry": {
-      "glyph": "⊙",
+      "glyph": "⊘",
       "width": 14,
       "height": 14,
       "anchor": "adjacent",
@@ -606,9 +607,38 @@
     }
   },
   {
-    "id": "retention.cancel.shoulder",
+    "id": "retention.release.torso",
     "category": "retention",
-    "name": "Cancel Shoulder Retention",
+    "name": "Release Torso Position",
+    "allowed_body_parts": [
+      "torso"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⊘",
+      "width": 14,
+      "height": 14,
+      "anchor": "adjacent",
+      "staff_column": "retention"
+    }
+  },
+  {
+    "id": "retention.space_hold.arm",
+    "category": "retention",
+    "name": "Space Hold Arm",
     "allowed_body_parts": [
       "left_arm",
       "right_arm"
@@ -628,7 +658,401 @@
       "low"
     ],
     "geometry": {
-      "glyph": "⊗",
+      "glyph": "⊙",
+      "width": 14,
+      "height": 14,
+      "anchor": "adjacent",
+      "staff_column": "retention"
+    }
+  },
+  {
+    "id": "retention.space_hold.full_body",
+    "category": "retention",
+    "name": "Space Hold Full Body",
+    "allowed_body_parts": [
+      "torso",
+      "left_arm",
+      "right_arm",
+      "left_leg",
+      "right_leg",
+      "head"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⊙",
+      "width": 16,
+      "height": 16,
+      "anchor": "adjacent",
+      "staff_column": "retention"
+    }
+  },
+  {
+    "id": "retention.space_hold.hand",
+    "category": "retention",
+    "name": "Space Hold Hand",
+    "allowed_body_parts": [
+      "left_hand",
+      "right_hand"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⊙",
+      "width": 14,
+      "height": 14,
+      "anchor": "adjacent",
+      "staff_column": "retention"
+    }
+  },
+  {
+    "id": "retention.space_hold.head",
+    "category": "retention",
+    "name": "Space Hold Head",
+    "allowed_body_parts": [
+      "head"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⊙",
+      "width": 14,
+      "height": 14,
+      "anchor": "adjacent",
+      "staff_column": "retention"
+    }
+  },
+  {
+    "id": "retention.space_hold.leg",
+    "category": "retention",
+    "name": "Space Hold Leg",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⊙",
+      "width": 14,
+      "height": 14,
+      "anchor": "adjacent",
+      "staff_column": "retention"
+    }
+  },
+  {
+    "id": "retention.space_hold.shoulder",
+    "category": "retention",
+    "name": "Space Hold Shoulder",
+    "allowed_body_parts": [
+      "left_arm",
+      "right_arm"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⊙",
+      "width": 14,
+      "height": 14,
+      "anchor": "adjacent",
+      "staff_column": "retention"
+    }
+  },
+  {
+    "id": "retention.space_hold.torso",
+    "category": "retention",
+    "name": "Space Hold Torso",
+    "allowed_body_parts": [
+      "torso"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⊙",
+      "width": 14,
+      "height": 14,
+      "anchor": "adjacent",
+      "staff_column": "retention"
+    }
+  },
+  {
+    "id": "retention.spot_hold.arm",
+    "category": "retention",
+    "name": "Spot Hold Arm",
+    "allowed_body_parts": [
+      "left_arm",
+      "right_arm"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⊙",
+      "width": 14,
+      "height": 14,
+      "anchor": "adjacent",
+      "staff_column": "retention"
+    }
+  },
+  {
+    "id": "retention.spot_hold.full_body",
+    "category": "retention",
+    "name": "Spot Hold Full Body",
+    "allowed_body_parts": [
+      "torso",
+      "left_arm",
+      "right_arm",
+      "left_leg",
+      "right_leg",
+      "head"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⊙",
+      "width": 16,
+      "height": 16,
+      "anchor": "adjacent",
+      "staff_column": "retention"
+    }
+  },
+  {
+    "id": "retention.spot_hold.hand",
+    "category": "retention",
+    "name": "Spot Hold Hand",
+    "allowed_body_parts": [
+      "left_hand",
+      "right_hand"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⊙",
+      "width": 14,
+      "height": 14,
+      "anchor": "adjacent",
+      "staff_column": "retention"
+    }
+  },
+  {
+    "id": "retention.spot_hold.head",
+    "category": "retention",
+    "name": "Spot Hold Head",
+    "allowed_body_parts": [
+      "head"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⊙",
+      "width": 14,
+      "height": 14,
+      "anchor": "adjacent",
+      "staff_column": "retention"
+    }
+  },
+  {
+    "id": "retention.spot_hold.leg",
+    "category": "retention",
+    "name": "Spot Hold Leg",
+    "allowed_body_parts": [
+      "left_leg",
+      "right_leg"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⊙",
+      "width": 14,
+      "height": 14,
+      "anchor": "adjacent",
+      "staff_column": "retention"
+    }
+  },
+  {
+    "id": "retention.spot_hold.shoulder",
+    "category": "retention",
+    "name": "Spot Hold Shoulder",
+    "allowed_body_parts": [
+      "left_arm",
+      "right_arm"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⊙",
+      "width": 14,
+      "height": 14,
+      "anchor": "adjacent",
+      "staff_column": "retention"
+    }
+  },
+  {
+    "id": "retention.spot_hold.torso",
+    "category": "retention",
+    "name": "Spot Hold Torso",
+    "allowed_body_parts": [
+      "torso"
+    ],
+    "requires_direction": false,
+    "allowed_directions": [
+      "forward",
+      "backward",
+      "left",
+      "right",
+      "place"
+    ],
+    "requires_level": false,
+    "allowed_levels": [
+      "high",
+      "middle",
+      "low"
+    ],
+    "geometry": {
+      "glyph": "⊙",
       "width": 14,
       "height": 14,
       "anchor": "adjacent",

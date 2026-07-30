@@ -20,6 +20,18 @@ MEASURE_HEADER_SYMBOLS = {
     "music.time.7_8", "music.time.9_8", "music.time.12_8",
 }
 MEASURE_BEATS = 4.0
+
+# Knust's retention types, vol 2 Fig. 78-79. Named here so the validator, the
+# add_retention tool and the MCP schema enum cannot drift apart -- adding
+# space_hold and spot_hold to the first two and not to this list let the tool
+# build a score that then failed its own validation.
+#
+#   hold        round sign (78a)          retention in the body, or of weight
+#   space_hold  diamond (78b)             retention in space
+#   spot_hold   diamond with a dot (78c)  retention at a spot
+#   cancel      decrease sign (79a)       the general cancellation sign
+#   release     synonym of cancel         one operation, one sign
+RETENTION_TYPES = ("hold", "space_hold", "spot_hold", "release", "cancel")
 TIME_SIGNATURE_BEATS = {
     "music.time.2_4": 2.0,
     "music.time.3_4": 3.0,
@@ -688,14 +700,15 @@ def validate_semantic(data: dict) -> list[ValidationIssue]:
             )
 
         retention = sym.get("retention")
-        if retention is not None and retention not in ("hold", "release", "cancel"):
+        if retention is not None and retention not in RETENTION_TYPES:
             issues.append(
                 ValidationIssue(
                     "INVALID_RETENTION",
-                    f"retention '{retention}' must be one of hold, release, cancel",
+                    f"retention '{retention}' must be one of "
+                    + ", ".join(RETENTION_TYPES),
                     f"{p}/retention",
                     "error",
-                    {"value": retention, "allowed": ["hold", "release", "cancel"]},
+                    {"value": retention, "allowed": list(RETENTION_TYPES)},
                 )
             )
 

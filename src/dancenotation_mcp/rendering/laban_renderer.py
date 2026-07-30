@@ -1258,6 +1258,18 @@ def _render_repeat_annotation(entry: dict) -> str:
     )
 
 
+def _diamond_path(cx: float, cy: float, r: float) -> str:
+    """The retention diamond: a square on its point, drawn open.
+
+    Knust vol 2 Fig. 78b and 78c. Kept as one helper so the space hold and the
+    spot hold cannot drift apart — they are the same diamond, and only the dot
+    inside distinguishes them.
+    """
+    return (f'<path d="M {cx:.1f} {cy - r:.1f} L {cx + r:.1f} {cy:.1f} '
+            f'L {cx:.1f} {cy + r:.1f} L {cx - r:.1f} {cy:.1f} Z" '
+            f'fill="none" stroke="#111827" stroke-width="1.2"/>')
+
+
 def _render_retention_sign(entry: dict) -> str:
     """Render hold/release/cancel marks.
 
@@ -1299,22 +1311,44 @@ def _render_retention_sign(entry: dict) -> str:
             f'stroke="#111827" stroke-width="1.2"/>'
             f'</g>'
         )
-    if retention == "release":
-        # X mark
+    if retention == "space_hold":
+        # Retention in space, Knust vol 2 Fig. 78b: an empty diamond. Vol 1
+        # p87: "The retention in space (space hold) means the maintenance of
+        # the same spatial direction ... This retention is written with the
+        # diamond-shaped retention sign (251b)."
         return (
             f'<g class="laban-symbol retention" data-symbol-id="{escape(symbol_id)}">'
-            f'<line x1="{cx - 4:.1f}" y1="{cy - 4:.1f}" x2="{cx + 4:.1f}" y2="{cy + 4:.1f}" '
-            f'stroke="#111827" stroke-width="1.5"/>'
-            f'<line x1="{cx + 4:.1f}" y1="{cy - 4:.1f}" x2="{cx - 4:.1f}" y2="{cy + 4:.1f}" '
-            f'stroke="#111827" stroke-width="1.5"/>'
+            f'{_diamond_path(cx, cy, 4.5)}'
             f'</g>'
         )
-    if retention == "cancel":
-        # Diagonal slash
+    if retention == "spot_hold":
+        # Retention at a spot, Fig. 78c: the same diamond with a filled dot,
+        # meaning a body part stays fixed on a certain spot (vol 1 p10/78c).
         return (
             f'<g class="laban-symbol retention" data-symbol-id="{escape(symbol_id)}">'
-            f'<line x1="{cx - 5:.1f}" y1="{cy + 5:.1f}" x2="{cx + 5:.1f}" y2="{cy - 5:.1f}" '
-            f'stroke="#111827" stroke-width="1.5"/>'
+            f'{_diamond_path(cx, cy, 4.5)}'
+            f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="1.8" fill="#111827"/>'
+            f'</g>'
+        )
+    if retention in ("cancel", "release"):
+        # The decrease sign, Knust vol 2 Fig. 79a: two strokes meeting at a
+        # point above and splaying apart below. Vol 1 p39: "The general
+        # cancellation sign of Kinetography is the decrease sign (79a), which
+        # is derived from the music decrescendo sign."
+        #
+        # "Cancel X Retention" and "Release X Position" name one operation and
+        # the notation has one sign for it, so both draw this. They were an x
+        # and a diagonal slash — two invented glyphs, neither in Fig. 79. The
+        # ids stay separate because add_retention exposes both in its type
+        # enum; the synonymy is recorded in the audit doc.
+        return (
+            f'<g class="laban-symbol retention" data-symbol-id="{escape(symbol_id)}">'
+            f'<line x1="{cx:.1f}" y1="{cy - 5:.1f}" '
+            f'x2="{cx - 3:.1f}" y2="{cy + 5:.1f}" '
+            f'stroke="#111827" stroke-width="1.2"/>'
+            f'<line x1="{cx:.1f}" y1="{cy - 5:.1f}" '
+            f'x2="{cx + 3:.1f}" y2="{cy + 5:.1f}" '
+            f'stroke="#111827" stroke-width="1.2"/>'
             f'</g>'
         )
     # Fallback

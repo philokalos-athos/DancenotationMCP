@@ -349,6 +349,39 @@ is wrong under every answer to the question.
 The measurement to settle it: find a plate where a held support crosses a
 system break. None of La vivandière pp. 63-150 has been searched for one yet.
 
+### Retention
+
+Settled against Knust vol 2 Fig. 78-79 (the plate is PDF page 12, printed
+page 5). The vocabulary is:
+
+| sign | shape | meaning |
+|------|-------|---------|
+| 78a | empty circle | retention in the body; in a support column, retaining the weight |
+| 78b | empty diamond | retention in space — the same spatial direction is kept while the body turns under it |
+| 78c | diamond with a dot | retention at a spot |
+| 78d | 78c over an × on a bow | retention of a relationship |
+| 79a | a narrow Λ | the decrease sign, Kinetography's general cancellation sign, derived from the decrescendo |
+| 79c, 79c′ | wave, or small curl | the broken retention sign, cancelling a relationship |
+
+Three things follow, and all three are now done: the column carries half the
+meaning so the sign is placed by body part rather than in the margin; the
+round sign is drawn open, not as a filled disc under an invented tie arc; and
+78b and 78c existed nowhere in the catalog and now do.
+
+`release` and `cancel` name one operation — "Release X Position" and
+"Cancel X Retention" — and the notation has one sign for it, so both engrave
+the decrease sign. They stay as separate ids only because `add_retention`
+already exposes both in its public type enum. Note that Knust's usual way of
+ending a retention is not a sign at all: vol 1 p67, "A movement symbol in one
+support column cancels previous retention signs in both support columns."
+Writing the next movement is the cancellation.
+
+Still open: 78d, retention of a relationship, and the broken retention signs
+79c/79c′. Also unimplemented is writing a retention sign *inside* a direction
+symbol, which vol 1 p45 says makes the movement undeviating — a space hold
+inside a direction sign means an undeviating curve or step, a spot hold means
+an undeviating movement towards an aim.
+
 ### Staff proportions
 
 Open, and the measurement is harder than it looks.

@@ -2386,6 +2386,61 @@ class RetentionColumnTest(unittest.TestCase):
                 circle, r'fill="#[0-9a-fA-F]{6}"',
                 f"the round retention sign is filled: {circle}")
 
+    def test_cancelling_a_retention_draws_the_decrease_sign(self):
+        """Knust vol 1 p39: "The general cancellation sign of Kinetography is
+        the decrease sign (79a), which is derived from the music decrescendo
+        sign." Fig. 79a is two straight lines meeting at a point above and
+        splaying apart below.
+
+        We drew a single diagonal slash, which is not in Fig. 79 anywhere.
+        """
+        ink = self._ink("retention.cancel.torso", "torso")
+        lines = re.findall(
+            r'<line x1="(-?[\d.]+)" y1="(-?[\d.]+)" '
+            r'x2="(-?[\d.]+)" y2="(-?[\d.]+)"', ink)
+        self.assertEqual(len(lines), 2,
+                         f"the decrease sign is two strokes, drew {len(lines)}")
+        (ax1, ay1, ax2, ay2), (bx1, by1, bx2, by2) = (
+            tuple(float(v) for v in pair) for pair in lines)
+        # They meet at the top and are apart at the bottom.
+        self.assertAlmostEqual(ax1, bx1, delta=0.2, msg="strokes do not meet")
+        self.assertAlmostEqual(ay1, by1, delta=0.2, msg="strokes do not meet")
+        self.assertGreater(abs(ax2 - bx2), 3.0, "strokes do not splay apart")
+        self.assertGreater(ay2, ay1, "the sign opens upward, not downward")
+
+    def test_release_and_cancel_are_the_same_sign(self):
+        """They name one operation, and the notation has one sign for it.
+
+        "Cancel X Retention" and "Release X Position" are the same act, and
+        Knust's general cancellation sign is a single sign. They were drawn as
+        an x and a slash — two invented glyphs for one thing. Kept as separate
+        ids because add_retention exposes both in its type enum.
+        """
+        cancel = self._ink("retention.cancel.torso", "torso")
+        release = self._ink("retention.release.torso", "torso")
+        self.assertEqual(cancel, release,
+                         "release and cancel engrave differently")
+
+    def test_space_hold_and_spot_hold_are_diamonds(self):
+        """Knust vol 2 Fig. 78b and 78c, missing from the catalog entirely.
+
+        78b, retention in space, is an empty diamond; vol 1 p87: "This
+        retention is written with the diamond-shaped retention sign (251b)."
+        78c, retention at a spot, is the same diamond with a filled dot in it.
+        """
+        space = self._ink("retention.space_hold.arm", "left_arm")
+        spot = self._ink("retention.spot_hold.arm", "left_arm")
+        for name, ink in (("space hold", space), ("spot hold", spot)):
+            with self.subTest(sign=name):
+                path = re.search(r'<path d="([^"]+)"', ink)
+                self.assertIsNotNone(path, f"{name} drew no diamond")
+                self.assertEqual(
+                    len(re.findall(r'[ML]', path.group(1))), 4,
+                    f"{name} is not a four-cornered diamond")
+        self.assertNotIn("<circle", space,
+                         "the space hold carries a dot; only the spot hold does")
+        self.assertIn("<circle", spot, "the spot hold has no dot")
+
     def test_which_body_part_is_held_survives_rendering(self):
         """Four body parts, four columns — the id says which, and it is the
         column that has to carry it, since the glyph is shared by design."""
