@@ -1574,13 +1574,30 @@ def _render_contact_annotation(entry: dict) -> str:
             f'{cx + 2.5:.1f},{cy - 8:.1f}" fill="#111827"/>'
         )
     elif contact_type == "release":
-        # Contact ending: caret broken by a gap, with the release tick above
+        # The broken retention sign, Knust vol 2 Fig. 79c. Vol 1 p39: "The end
+        # of a relationship, e.g. the release of a contact, is expressed by a
+        # special cancellation sign derived from the retention sign (the
+        # broken retention sign). It can be designed in two ways, as in
+        # Fig. 79c or as in Fig. 79c'."
+        #
+        # Derived from the *retention* sign: the round sign (78a) cut into two
+        # arcs which are then slid apart -- sideways in 79c, up and down in
+        # 79c'. 79c is drawn here. This was a broken version of contact.touch's
+        # caret instead, which is a reasonable guess derived from the wrong
+        # sign.
+        # Two halves of one circle, slid apart: the top half up and left, the
+        # bottom half down and right, so they interlock the way Fig. 79c
+        # prints. Drawing both arcs the same way round gives two commas side
+        # by side, which does not read as a broken ring.
+        r = 4.0
+        dx, dy = 1.8, 1.2
         parts = (
-            f'<path d="M {cx - 6:.1f} {cy + 4:.1f} L {cx - 2:.1f} {cy - 1:.1f} '
-            f'M {cx + 2:.1f} {cy - 1:.1f} L {cx + 6:.1f} {cy + 4:.1f}" '
-            f'fill="none" stroke="#111827" stroke-width="1.5"/>'
-            f'<line x1="{cx - 4:.1f}" y1="{cy - 7:.1f}" x2="{cx + 4:.1f}" y2="{cy - 7:.1f}" '
-            f'stroke="#111827" stroke-width="1"/>'
+            f'<path d="M {cx - r - dx:.1f} {cy - dy:.1f} '
+            f'A {r:.1f} {r:.1f} 0 0 1 {cx + r - dx:.1f} {cy - dy:.1f}" '
+            f'fill="none" stroke="#111827" stroke-width="1.3"/>'
+            f'<path d="M {cx + r + dx:.1f} {cy + dy:.1f} '
+            f'A {r:.1f} {r:.1f} 0 0 1 {cx - r + dx:.1f} {cy + dy:.1f}" '
+            f'fill="none" stroke="#111827" stroke-width="1.3"/>'
         )
     elif contact_type == "interlock":
         # Mutual hold: two staples facing each other

@@ -2463,6 +2463,66 @@ class RetentionColumnTest(unittest.TestCase):
             f"{columns}")
 
 
+class BrokenRetentionSignTest(unittest.TestCase):
+    """Releasing a contact is written with the broken retention sign.
+
+    Knust vol 1 p39: "The end of a relationship, e.g. the release of a
+    contact, is expressed by a special cancellation sign derived from the
+    retention sign (the broken retention sign). It can be designed in two
+    ways, as in Fig. 79c or as in Fig. 79c'."
+
+    Fig. 79c and 79c' are the round retention sign cut into two arcs that are
+    then slid apart — sideways in 79c, up and down in 79c'. Derived from the
+    retention sign, in other words, exactly as the sentence says.
+
+    contact.release drew two short straight strokes with a gap: a broken
+    version of contact.touch's caret. A plausible guess, and derived from the
+    wrong sign.
+    """
+
+    def _ink(self, symbol_id):
+        svg = render_laban_svg({
+            "schema_version": "1.0",
+            "metadata": {"title": "release probe"},
+            "symbols": [{"symbol_id": symbol_id, "body_part": "left_hand",
+                         "timing": {"measure": 1, "beat": 1,
+                                    "duration_beats": 1},
+                         "modifiers": {}}],
+        })
+        group = re.search(
+            r'data-symbol-id="' + re.escape(symbol_id) + r'"[^>]*>(.*?)</g>',
+            svg, re.S)
+        self.assertIsNotNone(group, f"{symbol_id} drew nothing")
+        return group.group(1)
+
+    def test_the_release_sign_is_built_from_arcs(self):
+        """A broken circle, not two straight strokes."""
+        ink = self._ink("contact.release")
+        arcs = [d for d in re.findall(r'<path d="([^"]+)"', ink)
+                if "A" in d or "Q" in d or "C" in d]
+        self.assertEqual(
+            len(arcs), 2,
+            f"expected two arcs of a broken circle, got {len(arcs)}: {ink}")
+
+    def test_the_two_halves_are_pulled_apart(self):
+        """Broken, not merely a circle drawn in two strokes."""
+        nums = r"-?\d*\.?\d+"
+        arcs = [d for d in re.findall(r'<path d="([^"]+)"',
+                                      self._ink("contact.release"))
+                if "A" in d or "Q" in d or "C" in d]
+        starts = []
+        for d in arcs:
+            n = [float(v) for v in re.findall(nums, d)]
+            starts.append((n[0], n[1]))
+        self.assertGreater(
+            abs(starts[0][0] - starts[1][0]) + abs(starts[0][1] - starts[1][1]),
+            2.0, "the two halves sit on top of each other")
+
+    def test_it_is_not_the_touch_sign_with_a_gap(self):
+        self.assertNotEqual(self._ink("contact.release"),
+                            self._ink("contact.touch"))
+
+
 class RetentionIdsAreNotCombinatorialTest(unittest.TestCase):
     """One id per retention sign, not one per sign-and-body-part pair.
 

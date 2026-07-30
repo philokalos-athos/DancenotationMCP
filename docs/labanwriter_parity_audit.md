@@ -394,9 +394,28 @@ pictures were identical. Filling 122b restores the distinction the plate
 prints and lets the level dot show through 122a. Whether the plate means
 "solid" or "a dot grown large enough to fill" cannot be told from the scan.
 
+Since settled: **79c, the broken retention sign.** Vol 1 p39, "The end of a
+relationship, e.g. the release of a contact, is expressed by a special
+cancellation sign derived from the retention sign (the broken retention
+sign)." That sentence names the derivation, and `contact.release` was not
+following it — it drew a broken version of `contact.touch`'s caret, derived
+from the wrong sign. It is now the round sign cut in half with the two halves
+slid apart, the top up and left and the bottom down and right, as Fig. 79c
+prints them. Drawing both arcs the same way round gives two commas side by
+side and does not read as a broken ring; that had to be seen rather than
+asserted.
+
 Still open:
 
-- 78d, retention of a relationship, and the broken retention signs 79c/79c′.
+- **78d, retention of a relationship.** The plate shows the spot-hold diamond
+  (78c, outlined with a filled dot — note this is *not* the filled diamond of
+  122b) sitting above an x, which sits on a shallow arc. The x is the contact
+  sign and the arc a relation bow, so this needs the bow construction, not
+  just a glyph. We have `bow.horizontal` and `bow.vertical` in the catalog but
+  nothing that stacks a retention sign over a contact on a bow.
+- 79c′, the second accepted design for the broken sign, with the halves pulled
+  apart vertically instead of sideways. One design is enough to notate with;
+  offering both is an authoring choice nobody has asked for.
 
 Since settled: **slide**. p45, immediately after the undeviating passage,
 "The round retention sign is only written within a support sign in order to
