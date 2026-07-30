@@ -426,6 +426,39 @@ pre-signs were modelled — slide was grouped with heel and toe, and it is a
 different kind of statement: those say which part of the foot takes the
 weight, a slide says the weight stays on the foot while it travels.
 
+### The floor plan has to survive being printed
+
+generate_score writes the floor plan to PDF as well as SVG, so anything it
+says only in colour is gone the moment the score is printed. Two findings from
+setting ours beside Soirée musicale p58, neither of which the glyph metric can
+see — the dancer marks are not catalog symbols.
+
+**Performers were told apart by colour alone.** Four marks, identical white
+circles, differing in stroke colour (#111827 against #2563eb).
+`_render_pin_head` varies shape by a `sex` field, but with `sex` unset — the
+default — colour was the only encoding. The plate distinguishes its two by
+sign: one a filled dot, the other a small open circle. Black and white pin
+heads are Labanotation's own distinction, so the shape now cycles by
+performer, female first because the LabanWriter manual documents the white pin
+as the default. Past three performers there is no plate evidence and colour is
+all that is left.
+
+**Travel paths had no arrowhead**, so a plan said where a dancer had been and
+not in what order. Facing arrows already had heads; the path between two
+positions did not.
+
+Then the arrowhead was drawn at the path's endpoint, which is exactly where
+the pin is painted, over it. Present in the markup, invisible on the page, and
+"is there an arrowhead" passes either way. It is backed off by the pin's
+radius now, and the assertion asks how far the tip is from the nearest pin
+rather than whether the element exists.
+
+Left alone and recorded: the plate frames the stage on three sides, open
+toward the audience, with no zone grid and no labels; ours draws a nine-cell
+grid labelled USL/USC/DSR and an AUDIENCE bar. That may be right — the plate
+embeds its plan in the score page, while ours is a standalone sheet, and there
+is no source for what a standalone sheet should look like.
+
 ### Staff proportions
 
 Settled, after getting it wrong once. **The earlier figure in this section —
