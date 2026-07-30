@@ -737,6 +737,14 @@ def _render_staff_symbol(entry: dict, ctx: _RenderContext,
     if symbol_id.startswith("separator"):
         return _render_separator(entry)
 
+    # Retention signs sit in a body-part column -- the column is half of what
+    # they say -- but they are not direction symbols and must not be drawn as
+    # one. Without this they came out byte-identical to a place-middle
+    # direction symbol, which is how flexion and extension failed before them:
+    # placed correctly, engraved as something else, their own renderer dead.
+    if symbol_id.startswith("retention."):
+        return _render_retention_sign(entry)
+
     # Whitespace band: blank gap instead of normal shape. Triggered either by
     # an explicit modifier on any symbol, or by the dedicated space.* family
     # (space.hold/transition/whitespace — see official_extras.json), which
@@ -1250,15 +1258,24 @@ def _render_repeat_annotation(entry: dict) -> str:
     )
 
 
-def _render_retention_annotation(entry: dict) -> str:
-    """Render hold/release/cancel marks."""
+def _render_retention_sign(entry: dict) -> str:
+    """Render hold/release/cancel marks.
+
+    Drawn in a body-part column, not in the margin: the column is half of what
+    a retention sign says. Knust vol 1 Rule III, p67, "The round retention sign
+    placed in a support column means that the body part shown retains the
+    weight", against p75, the same sign in a gesture column meaning "retention
+    in the body". So the entry is a placed staff symbol with x_left/x_right,
+    not an annotation with x/width.
+    """
     symbol = entry["symbol"]
     symbol_id = symbol.get("symbol_id", "")
-    x = entry["x"]
     y_top = entry["y_top"]
     y_bottom = entry["y_bottom"]
-    w = entry["width"]
-    cx = x + w / 2
+    if "x_left" in entry:
+        cx = (entry["x_left"] + entry["x_right"]) / 2
+    else:
+        cx = entry["x"] + entry["width"] / 2
     cy = (y_top + y_bottom) / 2
 
     # Catalog IDs are "retention.{type}.{body_category}" (e.g.
@@ -1272,7 +1289,7 @@ def _render_retention_annotation(entry: dict) -> str:
     if retention == "hold":
         # Filled circle with tie arc above
         return (
-            f'<g class="laban-annotation retention" data-symbol-id="{escape(symbol_id)}">'
+            f'<g class="laban-symbol retention" data-symbol-id="{escape(symbol_id)}">'
             f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="3" fill="#111827"/>'
             f'<path d="M {cx - 6:.1f} {cy:.1f} Q {cx:.1f} {cy - 8:.1f} {cx + 6:.1f} {cy:.1f}" '
             f'fill="none" stroke="#111827" stroke-width="1.2"/>'
@@ -1281,7 +1298,7 @@ def _render_retention_annotation(entry: dict) -> str:
     if retention == "release":
         # X mark
         return (
-            f'<g class="laban-annotation retention" data-symbol-id="{escape(symbol_id)}">'
+            f'<g class="laban-symbol retention" data-symbol-id="{escape(symbol_id)}">'
             f'<line x1="{cx - 4:.1f}" y1="{cy - 4:.1f}" x2="{cx + 4:.1f}" y2="{cy + 4:.1f}" '
             f'stroke="#111827" stroke-width="1.5"/>'
             f'<line x1="{cx + 4:.1f}" y1="{cy - 4:.1f}" x2="{cx - 4:.1f}" y2="{cy + 4:.1f}" '
@@ -1291,14 +1308,14 @@ def _render_retention_annotation(entry: dict) -> str:
     if retention == "cancel":
         # Diagonal slash
         return (
-            f'<g class="laban-annotation retention" data-symbol-id="{escape(symbol_id)}">'
+            f'<g class="laban-symbol retention" data-symbol-id="{escape(symbol_id)}">'
             f'<line x1="{cx - 5:.1f}" y1="{cy + 5:.1f}" x2="{cx + 5:.1f}" y2="{cy - 5:.1f}" '
             f'stroke="#111827" stroke-width="1.5"/>'
             f'</g>'
         )
     # Fallback
     return (
-        f'<g class="laban-annotation retention" data-symbol-id="{escape(symbol_id)}">'
+        f'<g class="laban-symbol retention" data-symbol-id="{escape(symbol_id)}">'
         f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="3" fill="#111827"/>'
         f'</g>'
     )
@@ -2845,7 +2862,7 @@ def _render_annotation(entry: dict) -> str:
     if family == "repeat":
         return _render_repeat_annotation(entry)
     if family == "retention":
-        return _render_retention_annotation(entry)
+        return _render_retention_sign(entry)
     if family == "surface":
         return _render_surface_annotation(entry)
     if family == "contact":

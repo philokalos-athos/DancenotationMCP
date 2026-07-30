@@ -33,7 +33,7 @@ VALID_STAFF_COLUMNS = {
     "adlib", "body", "bow", "digit", "direction", "dynamic",
     "flexion", "floor", "floor_plan", "foothook", "gesture",
     "jump", "level", "motif", "music", "path", "pin", "quality",
-    "repeat", "separator", "space", "support", "surface",
+    "repeat", "retention", "separator", "space", "support", "surface",
     "timing", "travel", "turn",
 }
 

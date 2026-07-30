@@ -41,8 +41,25 @@ MAX_CLUSTER_SIZE = 29
 # flexion/extension: the mark for a 45-degree flexion is the same mark whatever
 #   joint it applies to; the joint is carried by which limb the mark attaches
 #   to, and the probe deliberately renders everything into one slot.
+#
+# retention: Knust has three retention signs in the whole system — the round
+#   one, the diamond for retention in space, and a special sign for the
+#   standard retention during a turn (vol 1, 78a/78b/217i). Never one per body
+#   part. What distinguishes retention.hold.arm from retention.hold.leg is the
+#   column, and Knust is explicit that the column changes the meaning outright:
+#   Rule III, p67, the round sign in a support column means the part retains
+#   the weight, while p75 says the same sign in a gesture column means
+#   retention in the body.
+#
+#   Note what that costs this metric. All 21 entries used to be parked in the
+#   annotation lane at one x, discarding the body part entirely; they are now
+#   placed by body part. The fingerprints did not move, because the probe fixes
+#   PROBE_BODY_PART for every symbol so that only geometry varies. For a family
+#   whose information lives in the column rather than the glyph, this metric
+#   measures nothing — it saw neither the defect nor the fix. Distinct-glyph
+#   count is a measure of graphic vocabulary, not of information preserved.
 EXPECTED_SHARED_GLYPH_FAMILIES = {"support", "gesture", "travel", "direction",
-                                  "flexion", "extension"}
+                                  "flexion", "extension", "retention"}
 
 # Families with a KNOWN, UNFIXED collapse: the id names a variant the renderer
 # discards, and the catalog gives that variant its own glyph. These are a work

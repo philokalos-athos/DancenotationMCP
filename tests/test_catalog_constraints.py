@@ -77,6 +77,12 @@ class CatalogConstraintTests(unittest.TestCase):
             "quality", "surface", "timing", "foothook", "floor_plan", "music",
             "direction", "separator", "path", "bow", "pin", "repeat", "motif",
             "space", "level", "dynamic", "adlib", "flexion", "digit",
+            # "retention" replaced "timing" on all 21 retention entries. A
+            # retention sign is read from the column it sits in -- Knust vol 1
+            # Rule III, p67 -- so it is placed by body part like a primary
+            # symbol, not parked in the timing lane where every one of them
+            # landed at the same x.
+            "retention",
         }
         catalog = load_symbol_catalog()
         for sid, spec in catalog.items():

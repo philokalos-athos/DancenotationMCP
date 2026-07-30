@@ -781,7 +781,10 @@ class GoldenParityTests(unittest.TestCase):
         self.assertIn('data-symbol-id="flexion.knee.90"', self.rendered)
 
     def test_retention_present(self):
-        self.assertIn('class="laban-annotation retention"', self.rendered)
+        # laban-symbol, not laban-annotation: a retention sign is engraved in
+        # the column of the body part it holds, because that column is half of
+        # what it says (Knust vol 1 Rule III, p67).
+        self.assertIn('class="laban-symbol retention"', self.rendered)
 
     def test_whitespace_symbol(self):
         self.assertIn('class="laban-symbol whitespace"', self.rendered)
@@ -2257,6 +2260,125 @@ class BodyActionMarkTest(unittest.TestCase):
         markup = self._markup("body.tilt.forward.high")
         self.assertIn('data-direction="forward"', markup)
         self.assertIn('data-level="high"', markup)
+
+
+class RetentionColumnTest(unittest.TestCase):
+    """A retention sign means different things in different columns.
+
+    Knust vol 1 Rule III, p67: "The round retention sign placed in a support
+    column means that the body part shown retains the weight." And p75, on
+    the same sign: "When written in the support column, the round retention
+    sign has basically a different meaning than when it appears in a gesture
+    column, where it represents retention in the body."
+
+    So the column is not decoration, it is half the meaning. All 21
+    retention.* entries were routed to the annotation lane at one margin x,
+    which collapses those two meanings into one mark in one place — and
+    discards which body part is being held.
+
+    The shared glyph is not the defect and must not be "fixed": Knust has
+    three retention signs in the whole system — round, diamond for retention
+    in space, and one special case — never one per body part.
+    """
+
+    def _placed(self, symbol_id, body_part):
+        ir = {
+            "schema_version": "1.0",
+            "metadata": {"title": "retention probe"},
+            "symbols": [{
+                "symbol_id": symbol_id, "body_part": body_part,
+                "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+                "modifiers": {},
+            }],
+        }
+        layout = compute_laban_layout(ir)
+        placed = layout["placed_symbols"]
+        self.assertTrue(
+            placed,
+            f"{symbol_id} on {body_part} was not placed on the staff; it is "
+            f"in the annotation lane, where the column cannot mean anything")
+        return layout, placed[0]
+
+    # Every body category the retention family covers, with a body part that
+    # exercises a different column.
+    BODY_PARTS = (("retention.hold.leg", "left_leg"),
+                  ("retention.hold.arm", "left_arm"),
+                  ("retention.hold.hand", "left_hand"),
+                  ("retention.hold.head", "head"),
+                  ("retention.hold.full_body", "whole_body"),
+                  ("retention.cancel.arm", "right_arm"))
+
+    def test_a_retention_sign_is_drawn_inside_the_staff(self):
+        """All of them, not just the leg — arm and hand columns sit outside
+        the drawn support box and it is easy to mistake that for an overflow.
+        The box outlines the support columns only, as it does on Soirée
+        musicale p58 and La vivandière p84; the staff is wider than the box."""
+        for symbol_id, body_part in self.BODY_PARTS:
+            with self.subTest(body_part=body_part):
+                layout, entry = self._placed(symbol_id, body_part)
+                self.assertGreaterEqual(entry["x_left"], layout["staff_left"])
+                self.assertLessEqual(entry["x_right"], layout["staff_right"])
+
+    def test_the_column_distinguishes_holding_weight_from_holding_a_position(
+            self):
+        """The two meanings Knust contrasts must land in different columns."""
+        _, support = self._placed("retention.hold.leg", "left_leg")
+        _, gesture = self._placed("retention.hold.arm", "left_arm")
+        self.assertNotEqual(
+            support["column"], gesture["column"],
+            "a retention on the leg and one on the arm share a column, so "
+            "'retains the weight' and 'retention in the body' are the same "
+            "mark in the same place")
+
+    def _ink(self, symbol_id, body_part, **extra):
+        symbol = {"symbol_id": symbol_id, "body_part": body_part,
+                  "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+                  "modifiers": {}}
+        symbol.update(extra)
+        svg = render_laban_svg({
+            "schema_version": "1.0",
+            "metadata": {"title": "retention probe"},
+            "symbols": [symbol],
+        })
+        group = re.search(
+            r'<g[^>]*data-symbol-id="' + re.escape(symbol_id) + r'"[^>]*>'
+            r'(.*?)</g>', svg, re.S)
+        self.assertIsNotNone(group, f"{symbol_id} drew nothing")
+        return group.group(1)
+
+    def test_a_retention_sign_is_not_drawn_as_a_direction_symbol(self):
+        """Moving it onto the staff must not turn it into one.
+
+        This is the failure that hit flexion and extension: routed to a
+        body-part column, they came out as place-middle direction symbols and
+        their own renderer became dead code. The three placement assertions
+        above all pass while that happens — the sign is in the right column
+        and drawn wrong, which is the same information loss the other way
+        round.
+        """
+        retention = self._ink("retention.hold.leg", "left_leg")
+        direction = self._ink("direction.forward", "left_leg",
+                              direction="place", level="middle")
+        self.assertNotEqual(
+            re.sub(r'data-symbol-id="[^"]*"', "", retention),
+            re.sub(r'data-symbol-id="[^"]*"', "", direction),
+            "a retention sign is engraved identically to a place-middle "
+            "direction symbol")
+
+    def test_which_body_part_is_held_survives_rendering(self):
+        """Four body parts, four columns — the id says which, and it is the
+        column that has to carry it, since the glyph is shared by design."""
+        columns = {}
+        for symbol_id, body_part in (("retention.hold.leg", "left_leg"),
+                                     ("retention.hold.arm", "left_arm"),
+                                     ("retention.hold.head", "head"),
+                                     ("retention.hold.hand", "left_hand")):
+            _, entry = self._placed(symbol_id, body_part)
+            columns[symbol_id] = entry["column"]
+        self.assertEqual(
+            len(set(columns.values())), len(columns),
+            f"retention signs on different body parts share columns: "
+            f"{columns}")
 
 
 class FlexionExtensionRoutingTest(unittest.TestCase):

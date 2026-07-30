@@ -112,12 +112,20 @@ BODY_TO_COLUMN = {
 }
 
 # Symbol families placed inside the main staff columns.
-PRIMARY_FAMILIES = {"support", "direction", "gesture", "body"}
+#
+# "retention" belongs here because the column is half of what a retention
+# sign says. Knust vol 1 Rule III, p67: "The round retention sign placed in a
+# support column means that the body part shown retains the weight"; and p75:
+# "When written in the support column, the round retention sign has basically
+# a different meaning than when it appears in a gesture column, where it
+# represents retention in the body." In the annotation lane, where all 21
+# entries used to go, those two readings are one mark at one x.
+PRIMARY_FAMILIES = {"support", "direction", "gesture", "body", "retention"}
 
 # Symbol families placed in annotation areas beside the staff.
 ANNOTATION_FAMILIES = {"turn", "jump", "path", "quality", "timing",
                        "level", "surface", "pin", "repeat", "music",
-                       "retention", "contact", "effort", "shape",
+                       "contact", "effort", "shape",
                        "floor_plan", "sequential", "bow", "dynamic",
                        "adlib", "motif", "foothook", "digit",
                        # Flexion and extension are marks applied to a limb, not
