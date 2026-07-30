@@ -8,7 +8,11 @@ from dancenotation_mcp.ir.catalog import load_symbol_catalog
 from dancenotation_mcp.ir.models import BODY_PARTS, STAGE_FACINGS, STAGE_ZONES
 from dancenotation_mcp.ir.time_signatures import build_measure_beats_map
 
-PRIMARY_MOTION_COLUMNS = {"support", "direction", "path", "gesture", "body", "flexion", "foothook", "digit", "turn", "travel", "jump", "floor"}
+# Kept in step with laban_layout.PRIMARY_FAMILIES: a family the layout puts
+# on the staff must be one the conflict checks look at. "retention" moved
+# onto the staff and was added there and not here, so eight retention signs
+# drawn over the movements they retain went unreported.
+PRIMARY_MOTION_COLUMNS = {"support", "direction", "path", "gesture", "body", "flexion", "foothook", "digit", "turn", "travel", "jump", "floor", "retention"}
 ATTACHABLE_SOURCE_COLUMNS = {"pin", "surface", "music", "repeat", "quality", "level", "timing"}
 ANNOTATION_ATTACHMENT_COLUMNS = {"pin", "surface", "quality", "level", "timing"}
 REPEAT_SPAN_SOURCE_SYMBOLS = {"repeat.start", "repeat.generic"}

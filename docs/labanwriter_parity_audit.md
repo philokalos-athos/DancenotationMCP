@@ -426,6 +426,48 @@ pre-signs were modelled — slide was grouped with heel and toe, and it is a
 different kind of statement: those say which part of the foot takes the
 weight, a slide says the weight stays on the foot while it travels.
 
+### Nothing sits on the centre line
+
+torso, pelvis, upper_spine, lower_spine and whole_body mapped to a "center"
+column spanning both support columns, and head to a "head" column that is not
+in the staff at all. All six straddled the centre line and were drawn over
+whatever the legs were doing — 9 units of overlap with each support at the
+same beat, measured on measure 1 of the example score.
+
+Knust vol 1 p170: "trunk, chest, and shoulder section are, as a rule, written
+in one of the upper body columns as long as these columns are free, otherwise
+they are written in any empty gesture column." Soirée musicale p58 agrees from
+the other side: magnified across a bar line, the centre line carries beat
+ticks and nothing else.
+
+Trunk now takes the left body column, head the right. "One of" leaves the side
+open. p170 names trunk, chest and shoulder and not the head; putting the head
+with the trunk was tried and collided with it three times in the same score,
+which settles that they are not one indication even though the head's proper
+column remains unsourced.
+
+Two parts of this are left open. Knust's rule is conditional — "as long as
+these columns are free" — and a static body-part map cannot know what else is
+in the measure. And Knust numbers the columns outward from the centre as
+support, leg gesture, upper body, arm gesture (p32, p404); ours runs support,
+body, arm, arm gesture, path, with no leg gesture column and body where the
+leg gesture belongs.
+
+Worth recording how this was found and why nothing caught it earlier. It came
+from rendering the score and looking; both guards are blind to it by
+construction. The glyph metric fixes one body part for every symbol so that no
+two ever share a slot. COLUMN_CONFLICT buckets by column name, and "center" is
+a different bucket from "left_support" — two symbols on the same pixels sat in
+different buckets and were never compared. The check assumes columns do not
+intersect, and "center" broke that assumption.
+
+There is now a test that compares the two halves by outcome rather than by
+membership: every pair the layout overlaps in both x and y must produce a
+diagnostic. It caught a fourth instance of the same drift immediately —
+retention had been added to the layout's PRIMARY_FAMILIES when it moved onto
+the staff, and not to the validator's PRIMARY_MOTION_COLUMNS, so eight
+retention signs drawn over the movements they retain went unreported.
+
 ### The floor plan has to survive being printed
 
 generate_score writes the floor plan to PDF as well as SVG, so anything it

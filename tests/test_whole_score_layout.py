@@ -154,6 +154,137 @@ class SymbolFitsThePageTests(unittest.TestCase):
                         f"canvas bottom of {height}")
 
 
+class NothingCrossesTheCentreLineTests(unittest.TestCase):
+    """The centre line carries beat ticks and bar lines. Not symbols.
+
+    torso, pelvis, upper_spine, lower_spine and whole_body mapped to a
+    "center" column spanning both support columns, and head to a "head"
+    column that is not in the staff at all; all five came out straddling the
+    centre line, drawn over whatever the legs were doing. Measured on measure
+    1 of the example score: left_leg 154..180, right_leg 180..206, torso
+    171..189, all three at y 212..518.
+
+    Knust vol 1 p170: "trunk, chest, and shoulder section are, as a rule,
+    written in one of the upper body columns as long as these columns are
+    free, otherwise they are written in any empty gesture column." A column
+    beside the supports, never across them. Confirmed on Soirée musicale p58,
+    where a magnified band across a bar line shows the centre line carrying
+    beat ticks and nothing else.
+
+    Neither existing guard sees this. The glyph probe fixes one body part for
+    every symbol, so no two ever share a slot; COLUMN_CONFLICT buckets by
+    column name, and "center" is a different bucket from "left_support", so
+    two symbols on the same pixels were never compared.
+    """
+
+    BODY_PARTS = ("torso", "pelvis", "upper_spine", "lower_spine",
+                  "whole_body", "head")
+
+    def _layout(self, body_part):
+        return compute_laban_layout({
+            "schema_version": "1.0",
+            "metadata": {"title": "centre line probe"},
+            "symbols": [
+                {"symbol_id": "support.step", "body_part": "left_leg",
+                 "direction": "place", "level": "low",
+                 "timing": {"measure": 1, "beat": 1, "duration_beats": 2},
+                 "modifiers": {}},
+                {"symbol_id": "support.step", "body_part": "right_leg",
+                 "direction": "place", "level": "low",
+                 "timing": {"measure": 1, "beat": 1, "duration_beats": 2},
+                 "modifiers": {}},
+                {"symbol_id": "direction.forward", "body_part": body_part,
+                 "direction": "forward", "level": "middle",
+                 "timing": {"measure": 1, "beat": 1, "duration_beats": 2},
+                 "modifiers": {}},
+            ],
+        })
+
+    def test_no_body_symbol_straddles_the_centre_line(self):
+        for body_part in self.BODY_PARTS:
+            with self.subTest(body_part=body_part):
+                layout = self._layout(body_part)
+                centre = layout["systems"][0]["staff_center_x"]
+                entry = next(e for e in layout["placed_symbols"]
+                             if e["symbol"]["body_part"] == body_part)
+                self.assertFalse(
+                    entry["x_left"] < centre < entry["x_right"],
+                    f"a {body_part} symbol spans {entry['x_left']}.."
+                    f"{entry['x_right']}, across the centre line at {centre}")
+
+    def test_no_body_symbol_overlaps_a_support(self):
+        """The consequence that showed in the render."""
+        for body_part in self.BODY_PARTS:
+            with self.subTest(body_part=body_part):
+                placed = self._layout(body_part)["placed_symbols"]
+                body = next(e for e in placed
+                            if e["symbol"]["body_part"] == body_part)
+                for support in (e for e in placed
+                                if e["symbol"]["body_part"].endswith("_leg")):
+                    overlap = (min(body["x_right"], support["x_right"])
+                               - max(body["x_left"], support["x_left"]))
+                    self.assertLessEqual(
+                        overlap, 0,
+                        f"{body_part} overlaps {support['symbol']['body_part']}"
+                        f" by {overlap} units at the same beat")
+
+
+class WhatTheLayoutStacksTheValidatorReportsTest(unittest.TestCase):
+    """If two symbols are drawn on the same pixels, something must say so.
+
+    The two halves are maintained separately and keep drifting: the layout
+    decides a column from PRIMARY_FAMILIES and BODY_TO_COLUMN, the validator
+    from PRIMARY_MOTION_COLUMNS, and a family added to one is not added to the
+    other. Moving retention onto the staff updated the layout's set and not
+    the validator's, so eight retention signs drawn over the movements they
+    retain went unreported.
+
+    Rather than assert the membership of two sets — which is the thing that
+    drifts — this compares the outcome: every pair the layout overlaps in both
+    x and y must produce a diagnostic.
+    """
+
+    def _overlapping_pairs(self, layout):
+        placed = layout["placed_symbols"]
+        pairs = []
+        for i, a in enumerate(placed):
+            for b in placed[i + 1:]:
+                if a["system_index"] != b["system_index"]:
+                    continue
+                dx = (min(a["x_right"], b["x_right"])
+                      - max(a["x_left"], b["x_left"]))
+                dy = (min(a["y_bottom"], b["y_bottom"])
+                      - max(a["y_top"], b["y_top"]))
+                if dx > 0.5 and dy > 0.5:
+                    pairs.append((a, b))
+        return pairs
+
+    def test_every_stacked_pair_is_reported(self):
+        path = ROOT / "examples" / "collapse_of_symmetry_full.ir.json"
+        if not path.exists():
+            self.skipTest("example score not built")
+        ir = json.loads(path.read_text(encoding="utf-8"))
+
+        stacked = self._overlapping_pairs(compute_laban_layout(ir))
+        reported = {int(i["path"].split("/")[2])
+                    for i in validate_ir(ir)["issues"]
+                    if i["code"] in ("COLUMN_CONFLICT", "TIMING_OVERLAP")
+                    and i.get("path", "").startswith("/symbols/")}
+
+        symbols = ir["symbols"]
+        unreported = []
+        for a, b in stacked:
+            indices = {symbols.index(a["symbol"]), symbols.index(b["symbol"])}
+            if not (indices & reported):
+                unreported.append(
+                    f"{a['symbol']['symbol_id']} over "
+                    f"{b['symbol']['symbol_id']} in {a['column']}")
+        self.assertEqual(
+            unreported, [],
+            f"{len(unreported)} of {len(stacked)} stacked pairs are drawn on "
+            f"top of each other with no diagnostic: " + "; ".join(unreported[:4]))
+
+
 class WholeScoreLayoutTests(unittest.TestCase):
     """Rendered once for the class — it draws a full multi-system score."""
 

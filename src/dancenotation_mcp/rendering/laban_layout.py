@@ -104,11 +104,34 @@ BODY_TO_COLUMN = {
     "left_wrist": "left_arm_gesture", "right_wrist": "right_arm_gesture",
     # Shoulders → body columns
     "left_shoulder": "left_body", "right_shoulder": "right_body",
-    # Body → center
-    "torso": "center", "head": "head",
-    "upper_spine": "center", "lower_spine": "center",
-    "neck": "head",
-    "pelvis": "center", "whole_body": "center",
+    # Trunk and head → an upper body column, NOT the centre line.
+    #
+    # These used to map to "center", a column spanning both support columns,
+    # and to "head", which is not a staff column at all. Both straddle the
+    # centre line, so a torso movement was drawn over whatever the legs were
+    # doing -- 9 units of overlap with each support at the same beat.
+    #
+    # Knust vol 1 p170: "trunk, chest, and shoulder section are, as a rule,
+    # written in one of the upper body columns as long as these columns are
+    # free, otherwise they are written in any empty gesture column." Soirée
+    # musicale p58 agrees from the other side: magnified across a bar line,
+    # the centre line carries beat ticks and nothing else.
+    #
+    # "One of" leaves the side open, so the trunk takes the left body column
+    # and the head the right. p170 names trunk, chest and shoulder, not the
+    # head; putting the head with the trunk was tried and collided with it
+    # three times in the example score, which is evidence enough that the two
+    # are not one indication. Which column the head really belongs in is not
+    # settled -- see the audit doc -- but a body column is right in the one
+    # respect that matters here: nothing may sit on the centre line.
+    #
+    # The "as long as these columns are free" half of Knust's rule needs to
+    # know what else is in the measure, and a static map cannot. Not
+    # implemented; recorded.
+    "torso": "left_body",
+    "upper_spine": "left_body", "lower_spine": "left_body",
+    "pelvis": "left_body", "whole_body": "left_body",
+    "head": "right_body", "neck": "right_body",
 }
 
 # Symbol families placed inside the main staff columns.
