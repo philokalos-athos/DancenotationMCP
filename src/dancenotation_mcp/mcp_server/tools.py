@@ -87,6 +87,55 @@ def list_symbols(args: dict) -> dict:
     return {"count": len(results), "symbols": results}
 
 
+# ── Stable symbol identity ───────────────────────────────────────────
+#
+# A symbol's position in ir["symbols"] is not a handle. insert_symbol
+# appends, so every insertion shifts the index of everything after it, and a
+# client that read an index before the insert edits the wrong symbol
+# afterwards -- silently, because the result still validates. "symbol_id" is
+# no substitute: it is the catalog id, shared by every step in the score.
+#
+# Ids are sequential rather than random so that the same edits on the same
+# score produce the same file, which keeps diffs and golden fixtures
+# readable. Taken from the highest in use, not the count, so removing s3 and
+# inserting does not hand out s3 again.
+
+_UID_PREFIX = "s"
+
+
+def _next_uid(symbols: list) -> str:
+    highest = 0
+    for sym in symbols:
+        uid = sym.get("uid")
+        if isinstance(uid, str) and uid.startswith(_UID_PREFIX):
+            tail = uid[len(_UID_PREFIX):]
+            if tail.isdigit():
+                highest = max(highest, int(tail))
+    return f"{_UID_PREFIX}{highest + 1}"
+
+
+def _stamp_uids(symbols: list) -> None:
+    """Give a uid to every symbol that has none.
+
+    Scores written directly -- the example builder, the fixtures -- carry no
+    uids. Stamping them the first time a tool touches the score means the
+    next edit can address by id even though the first could not.
+    """
+    for sym in symbols:
+        if not sym.get("uid"):
+            sym["uid"] = _next_uid(symbols)
+
+
+def _index_of_uid(symbols: list, uid: str) -> int:
+    for i, sym in enumerate(symbols):
+        if sym.get("uid") == uid:
+            return i
+    raise ValueError(
+        f"No symbol with uid '{uid}' in the score. "
+        f"Known uids: {[s.get('uid') for s in symbols if s.get('uid')]}"
+    )
+
+
 # ── Tool 2: insert_symbol ────────────────────────────────────────────
 
 def insert_symbol(args: dict) -> dict:
@@ -139,6 +188,8 @@ def insert_symbol(args: dict) -> dict:
 
     if "symbols" not in ir:
         ir["symbols"] = []
+    _stamp_uids(ir["symbols"])
+    new_symbol["uid"] = _next_uid(ir["symbols"])
     ir["symbols"].append(new_symbol)
 
     return ir
@@ -147,13 +198,23 @@ def insert_symbol(args: dict) -> dict:
 # ── Tool 3: remove_symbol ────────────────────────────────────────────
 
 def remove_symbol(args: dict) -> dict:
-    """Remove a symbol from an IR score by index or symbol_id.
+    """Remove a symbol from an IR score.
 
     Required args: ir
-    Plus one of: index (int) or symbol_id (str)
+    Plus one of, in order of preference:
+      uid       the symbol's stable id, unaffected by later insertions
+      index     its position, which any insertion before it invalidates
+      symbol_id the catalog id, which every step in the score shares -- this
+                removes the first match and is kept only for callers that
+                relied on it
     """
     ir = copy.deepcopy(args["ir"])
     symbols = ir.get("symbols", [])
+    _stamp_uids(symbols)
+
+    if "uid" in args:
+        symbols.pop(_index_of_uid(symbols, str(args["uid"])))
+        return ir
 
     if "index" in args:
         idx = int(args["index"])
@@ -172,7 +233,10 @@ def remove_symbol(args: dict) -> dict:
                 return ir
         raise ValueError(f"No symbol with symbol_id '{target}' found in the score.")
 
-    raise ValueError("Must provide either 'index' or 'symbol_id' to identify the symbol to remove.")
+    raise ValueError(
+        "Must provide 'uid', 'index' or 'symbol_id' to identify the symbol "
+        "to remove."
+    )
 
 
 # ── Tool 4: update_symbol ────────────────────────────────────────────
@@ -180,16 +244,28 @@ def remove_symbol(args: dict) -> dict:
 def update_symbol(args: dict) -> dict:
     """Update an existing symbol in the IR score.
 
-    Required args: ir, index, updates (partial dict of fields to change)
+    Required args: ir, updates (partial dict of fields to change)
+    Plus one of: uid (stable, preferred) or index (position, invalidated by
+    any insertion before it)
     """
     ir = copy.deepcopy(args["ir"])
-    idx = int(args["index"])
     updates = args["updates"]
     symbols = ir.get("symbols", [])
+    _stamp_uids(symbols)
 
-    if idx < 0 or idx >= len(symbols):
+    if "uid" in args:
+        idx = _index_of_uid(symbols, str(args["uid"]))
+    elif "index" in args:
+        idx = int(args["index"])
+        if idx < 0 or idx >= len(symbols):
+            raise ValueError(
+                f"Index {idx} out of range. Score has {len(symbols)} symbols "
+                f"(0-{len(symbols) - 1})."
+            )
+    else:
         raise ValueError(
-            f"Index {idx} out of range. Score has {len(symbols)} symbols (0-{len(symbols) - 1})."
+            "Must provide either 'uid' or 'index' to identify the symbol to "
+            "update."
         )
 
     sym = symbols[idx]
@@ -518,6 +594,8 @@ def add_retention(args: dict) -> dict:
 
     if "symbols" not in ir:
         ir["symbols"] = []
+    _stamp_uids(ir["symbols"])
+    retention_symbol["uid"] = _next_uid(ir["symbols"])
     ir["symbols"].append(retention_symbol)
 
     return ir

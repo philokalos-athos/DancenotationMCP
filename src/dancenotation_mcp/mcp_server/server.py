@@ -194,25 +194,27 @@ TOOL_SCHEMAS = {
         },
     },
     "remove_symbol": {
-        "description": "Remove a symbol from an IR score by its index or symbol_id",
+        "description": "Remove a symbol from an IR score, addressed by its stable uid (preferred), its index, or its catalog symbol_id",
         "inputSchema": {
             "type": "object",
             "required": ["ir"],
             "properties": {
                 "ir": {"type": "object", "description": "Notation IR object to modify"},
-                "index": {"type": "integer", "description": "Index of the symbol to remove (0-based)"},
-                "symbol_id": {"type": "string", "description": "Remove the first symbol with this symbol_id"},
+                "uid": {"type": "string", "description": "Stable symbol id. Unaffected by insertions elsewhere in the score, unlike index. Assigned by the editing tools; scores written directly are stamped on first contact."},
+                "index": {"type": "integer", "description": "Zero-based position. Any insertion before it shifts this, so prefer uid when making more than one edit."},
+                "symbol_id": {"type": "string", "description": "Catalog id, e.g. support.step. Shared by every step in the score, so this removes the first match."},
             },
         },
     },
     "update_symbol": {
-        "description": "Update properties of an existing symbol in the IR score by index",
+        "description": "Update properties of an existing symbol in the IR score, addressed by its stable uid (preferred) or its index",
         "inputSchema": {
             "type": "object",
-            "required": ["ir", "index", "updates"],
+            "required": ["ir", "updates"],
             "properties": {
                 "ir": {"type": "object", "description": "Notation IR object to modify"},
-                "index": {"type": "integer", "description": "Index of the symbol to update (0-based)"},
+                "uid": {"type": "string", "description": "Stable symbol id. Unaffected by insertions elsewhere in the score, unlike index. Assigned by the editing tools; scores written directly are stamped on first contact."},
+                "index": {"type": "integer", "description": "Zero-based position. Any insertion before it shifts this, so prefer uid when making more than one edit."},
                 "updates": {"type": "object", "description": "Partial dict of fields to change (e.g. {direction: 'left', timing: {beat: 2.0}})"},
             },
         },

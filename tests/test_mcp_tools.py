@@ -976,3 +976,132 @@ class TestEndToEndWorkflow(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class StableSymbolIdTests(unittest.TestCase):
+    """Symbols are addressed by a stable id, not by their array position.
+
+    insert_symbol appends, so every insert shifts the index of everything
+    after it. A client that reads a score, notes an index, inserts something
+    earlier and then updates by that index edits the wrong symbol — and the
+    result still validates, so nothing catches it.
+
+    "symbol_id" was no help: it is the catalog id, shared by every step in
+    the score, and remove_symbol took the first match.
+    """
+
+    def _score(self):
+        return _make_ir(symbols=[
+            _sample_symbol(body_part="left_leg", beat=1.0),
+            _sample_symbol(body_part="right_leg", beat=2.0),
+            _sample_symbol(body_part="left_arm", beat=3.0),
+        ])
+
+    def _insert(self, ir, body_part="right_arm", beat=4.0):
+        return _ok(_call("insert_symbol", {
+            "ir": ir, "symbol_id": "gesture.arm", "body_part": body_part,
+            "measure": 1, "beat": beat, "duration_beats": 1.0,
+        }))
+
+    def test_an_inserted_symbol_gets_an_id(self):
+        result = self._insert(_make_ir())
+        self.assertTrue(result["symbols"][0].get("uid"),
+                        "insert_symbol assigned no uid")
+
+    def test_two_inserts_get_different_ids(self):
+        first = self._insert(_make_ir())
+        second = self._insert(first, body_part="left_arm", beat=2.0)
+        uids = [s["uid"] for s in second["symbols"]]
+        self.assertEqual(len(set(uids)), len(uids), f"uids repeat: {uids}")
+
+    def test_editing_by_id_survives_a_removal(self):
+        """The regression, and removal is where it actually bites.
+
+        insert_symbol appends, so an insert leaves existing indices alone —
+        an earlier version of this test used one and passed without
+        exercising anything. remove_symbol pops, so every index after the
+        removed symbol shifts down by one, and an index noted beforehand now
+        addresses the symbol that used to follow it.
+        """
+        score = self._insert(self._score())
+        target = score["symbols"][-1]["uid"]
+        target_part = score["symbols"][-1]["body_part"]
+        index_before = len(score["symbols"]) - 1
+
+        shifted = _ok(_call("remove_symbol", {"ir": score, "index": 0}))
+        self.assertNotEqual(
+            shifted["symbols"].index(
+                next(s for s in shifted["symbols"] if s["uid"] == target)),
+            index_before,
+            "the removal did not move the target, so this proves nothing")
+
+        edited = _ok(_call("update_symbol", {
+            "ir": shifted, "uid": target, "updates": {"level": "high"},
+        }))
+        touched = [s for s in edited["symbols"] if s.get("level") == "high"]
+        self.assertEqual(len(touched), 1, "more than one symbol was changed")
+        self.assertEqual(touched[0]["uid"], target)
+        self.assertEqual(touched[0]["body_part"], target_part)
+
+    def test_the_stale_index_would_have_hit_the_wrong_symbol(self):
+        """States the defect directly: the same index, before and after a
+        removal, names two different symbols."""
+        score = self._insert(self._score())
+        was_at_2 = score["symbols"][2]["uid"]
+        shifted = _ok(_call("remove_symbol", {"ir": score, "index": 0}))
+        now_at_2 = shifted["symbols"][2]["uid"]
+        self.assertNotEqual(
+            was_at_2, now_at_2,
+            "index 2 named the same symbol before and after a removal, so "
+            "the drift this guards against is not being reproduced")
+
+    def test_removing_by_id_removes_that_one(self):
+        score = self._insert(self._score())
+        target = score["symbols"][1]["uid"]
+        result = _ok(_call("remove_symbol", {"ir": score, "uid": target}))
+        self.assertNotIn(target, [s.get("uid") for s in result["symbols"]])
+        self.assertEqual(len(result["symbols"]), len(score["symbols"]) - 1)
+
+    def test_an_unknown_id_is_an_error_not_a_silent_miss(self):
+        for tool, extra in (("remove_symbol", {}),
+                            ("update_symbol", {"updates": {"level": "high"}})):
+            with self.subTest(tool=tool):
+                resp = _call(tool, {"ir": self._score(), "uid": "s999", **extra})
+                self.assertIn("error", resp)
+                self.assertIn("s999", _err(resp))
+
+    def test_a_score_written_without_ids_still_works_by_index(self):
+        """Scores built directly — the example builder, the fixtures — carry
+        no uids, and must keep working."""
+        score = self._score()
+        self.assertNotIn("uid", score["symbols"][0])
+        result = _ok(_call("update_symbol", {
+            "ir": score, "index": 1, "updates": {"level": "low"},
+        }))
+        self.assertEqual(result["symbols"][1]["level"], "low")
+
+    def test_touching_a_score_stamps_the_symbols_it_already_had(self):
+        """So the second edit can use ids even when the first could not."""
+        result = self._insert(self._score())
+        for symbol in result["symbols"]:
+            self.assertTrue(symbol.get("uid"),
+                            f"{symbol['body_part']} was left without a uid")
+
+    def test_the_declared_schema_accepts_what_the_tool_accepts(self):
+        """The tool learned about uid; its published schema must say so.
+
+        update_symbol's schema listed index as required, so a client reading
+        the schema would have been told uid addressing is not allowed while
+        the implementation accepted it. Same drift as the retention type
+        whitelists — two descriptions of one contract, one of them updated.
+        """
+        from dancenotation_mcp.mcp_server.server import TOOL_SCHEMAS
+        for tool in ("remove_symbol", "update_symbol"):
+            with self.subTest(tool=tool):
+                schema = TOOL_SCHEMAS[tool]["inputSchema"]
+                self.assertIn("uid", schema["properties"],
+                              f"{tool} accepts uid but does not declare it")
+                self.assertNotIn(
+                    "index", schema.get("required", []),
+                    f"{tool} declares index required, which forbids the uid "
+                    f"form its implementation accepts")

@@ -3,151 +3,453 @@
   "$id": "https://example.local/schemas/notation-ir.schema.json",
   "title": "DanceNotation IR",
   "type": "object",
-  "required": ["metadata", "symbols"],
+  "required": [
+    "metadata",
+    "symbols"
+  ],
   "properties": {
     "metadata": {
       "type": "object",
-      "required": ["ir_version", "schema_version"],
+      "required": [
+        "ir_version",
+        "schema_version"
+      ],
       "properties": {
-        "title": {"type": "string"},
-        "source_prompt": {"type": "string"},
-        "ir_version": {"type": "string"},
-        "schema_version": {"type": "string"},
-        "choreographer": {"type": "string"},
-        "notator": {"type": "string"},
-        "notation_date": {"type": "string"},
-        "company": {"type": "string"},
-        "music_title": {"type": "string"},
-        "music_composer": {"type": "string"},
-        "copyright": {"type": "string"}
+        "title": {
+          "type": "string"
+        },
+        "source_prompt": {
+          "type": "string"
+        },
+        "ir_version": {
+          "type": "string"
+        },
+        "schema_version": {
+          "type": "string"
+        },
+        "choreographer": {
+          "type": "string"
+        },
+        "notator": {
+          "type": "string"
+        },
+        "notation_date": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        },
+        "music_title": {
+          "type": "string"
+        },
+        "music_composer": {
+          "type": "string"
+        },
+        "copyright": {
+          "type": "string"
+        }
       }
     },
     "symbols": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["symbol_id", "body_part", "timing"],
+        "required": [
+          "symbol_id",
+          "body_part",
+          "timing"
+        ],
         "properties": {
-          "symbol_id": {"type": "string"},
+          "symbol_id": {
+            "type": "string"
+          },
           "body_part": {
             "type": "string",
             "enum": [
-              "left_arm", "right_arm", "left_leg", "right_leg", "torso", "head",
-              "left_upper_arm", "right_upper_arm", "left_lower_arm", "right_lower_arm",
-              "left_hand", "right_hand",
-              "left_upper_leg", "right_upper_leg", "left_lower_leg", "right_lower_leg",
-              "left_foot", "right_foot",
-              "left_shoulder", "right_shoulder", "left_elbow", "right_elbow",
-              "left_wrist", "right_wrist", "left_hip", "right_hip",
-              "left_knee", "right_knee", "left_ankle", "right_ankle",
-              "upper_spine", "lower_spine", "neck",
-              "left_fingers", "right_fingers", "left_toes", "right_toes",
-              "pelvis", "whole_body"
+              "left_arm",
+              "right_arm",
+              "left_leg",
+              "right_leg",
+              "torso",
+              "head",
+              "left_upper_arm",
+              "right_upper_arm",
+              "left_lower_arm",
+              "right_lower_arm",
+              "left_hand",
+              "right_hand",
+              "left_upper_leg",
+              "right_upper_leg",
+              "left_lower_leg",
+              "right_lower_leg",
+              "left_foot",
+              "right_foot",
+              "left_shoulder",
+              "right_shoulder",
+              "left_elbow",
+              "right_elbow",
+              "left_wrist",
+              "right_wrist",
+              "left_hip",
+              "right_hip",
+              "left_knee",
+              "right_knee",
+              "left_ankle",
+              "right_ankle",
+              "upper_spine",
+              "lower_spine",
+              "neck",
+              "left_fingers",
+              "right_fingers",
+              "left_toes",
+              "right_toes",
+              "pelvis",
+              "whole_body"
             ]
           },
           "direction": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "enum": [
-              "place", "forward", "backward", "left", "right",
-              "diagonal_forward_right", "diagonal_forward_left",
-              "diagonal_backward_right", "diagonal_backward_left",
+              "place",
+              "forward",
+              "backward",
+              "left",
+              "right",
+              "diagonal_forward_right",
+              "diagonal_forward_left",
+              "diagonal_backward_right",
+              "diagonal_backward_left",
               null
             ]
           },
-          "level": {"type": ["string", "null"], "enum": ["high", "middle", "low", null]},
+          "level": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "high",
+              "middle",
+              "low",
+              null
+            ]
+          },
           "timing": {
             "type": "object",
-            "required": ["measure", "beat", "duration_beats"],
+            "required": [
+              "measure",
+              "beat",
+              "duration_beats"
+            ],
             "properties": {
-              "measure": {"type": "integer", "minimum": 1},
-              "beat": {"type": "number", "minimum": 0},
-              "duration_beats": {"type": "number", "exclusiveMinimum": 0}
+              "measure": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "beat": {
+                "type": "number",
+                "minimum": 0
+              },
+              "duration_beats": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              }
             }
           },
           "rotation_degrees": {
-            "type": ["number", "null"],
+            "type": [
+              "number",
+              "null"
+            ],
             "minimum": 0,
             "maximum": 720,
             "description": "Exact rotation in degrees for turn-family symbols"
           },
           "flexion_degrees": {
-            "type": ["number", "null"],
+            "type": [
+              "number",
+              "null"
+            ],
             "minimum": 0,
             "maximum": 180,
             "description": "Joint flexion/extension degree"
           },
           "stage_position": {
-            "type": ["object", "null"],
+            "type": [
+              "object",
+              "null"
+            ],
             "properties": {
               "zone": {
                 "type": "string",
                 "enum": [
-                  "downstage_left", "downstage_center", "downstage_right",
-                  "center_left", "center", "center_right",
-                  "upstage_left", "upstage_center", "upstage_right"
+                  "downstage_left",
+                  "downstage_center",
+                  "downstage_right",
+                  "center_left",
+                  "center",
+                  "center_right",
+                  "upstage_left",
+                  "upstage_center",
+                  "upstage_right"
                 ]
               },
-              "x": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
-              "y": {"type": ["number", "null"], "minimum": 0, "maximum": 1}
+              "x": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0,
+                "maximum": 1
+              },
+              "y": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0,
+                "maximum": 1
+              }
             },
-            "required": ["zone"]
+            "required": [
+              "zone"
+            ]
           },
           "facing": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "enum": [
-              "downstage", "upstage", "stage_left", "stage_right",
-              "diagonal_downstage_left", "diagonal_downstage_right",
-              "diagonal_upstage_left", "diagonal_upstage_right",
+              "downstage",
+              "upstage",
+              "stage_left",
+              "stage_right",
+              "diagonal_downstage_left",
+              "diagonal_downstage_right",
+              "diagonal_upstage_left",
+              "diagonal_upstage_right",
               null
             ]
           },
           "retention": {
-            "type": ["string", "null"],
-            "enum": ["hold", "release", "cancel", null]
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "hold",
+              "release",
+              "cancel",
+              null
+            ]
           },
           "effort_graph": {
-            "type": ["object", "null"],
+            "type": [
+              "object",
+              "null"
+            ],
             "properties": {
-              "weight": {"type": ["string", "null"], "enum": ["strong", "light", null]},
-              "time": {"type": ["string", "null"], "enum": ["sudden", "sustained", null]},
-              "space": {"type": ["string", "null"], "enum": ["direct", "indirect", null]},
-              "flow": {"type": ["string", "null"], "enum": ["bound", "free", null]}
+              "weight": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "strong",
+                  "light",
+                  null
+                ]
+              },
+              "time": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "sudden",
+                  "sustained",
+                  null
+                ]
+              },
+              "space": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "direct",
+                  "indirect",
+                  null
+                ]
+              },
+              "flow": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "bound",
+                  "free",
+                  null
+                ]
+              }
             }
           },
           "cancellation_mode": {
-            "type": ["string", "null"],
-            "enum": ["return_to_natural", "hold", "explicit_cancel", null]
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "return_to_natural",
+              "hold",
+              "explicit_cancel",
+              null
+            ]
           },
           "modifiers": {
             "type": "object",
             "properties": {
-              "degree": {"type": ["number", "integer"]},
-              "stretch": {"type": ["number", "integer"]},
-              "rotation": {"type": ["number", "integer"]},
-              "pin_length": {"type": ["number", "integer"]},
-              "rest_height": {"type": ["number", "integer"]},
-              "repeat_count": {"type": "integer", "minimum": 1},
-              "attach_to": {"type": "string"},
-              "attach_side": {"type": "string", "enum": ["auto", "left", "right", "top", "bottom"]},
-              "measure_header": {"type": "boolean"},
-              "repeat_span_to": {"type": "string"},
-              "pin_head": {"type": "string", "enum": ["circle", "diamond"]},
-              "separator_mode": {"type": "string", "enum": ["single", "double", "hooked"]},
-              "line_style": {"type": "string", "enum": ["single", "double", "dotted", "double_dotted"]},
-              "level_fill_top": {"type": "string", "enum": ["high", "middle", "low", "blank"]},
-              "level_fill_bottom": {"type": "string", "enum": ["high", "middle", "low", "blank"]},
-              "whitespace": {"type": "boolean"},
+              "degree": {
+                "type": [
+                  "number",
+                  "integer"
+                ]
+              },
+              "stretch": {
+                "type": [
+                  "number",
+                  "integer"
+                ]
+              },
+              "rotation": {
+                "type": [
+                  "number",
+                  "integer"
+                ]
+              },
+              "pin_length": {
+                "type": [
+                  "number",
+                  "integer"
+                ]
+              },
+              "rest_height": {
+                "type": [
+                  "number",
+                  "integer"
+                ]
+              },
+              "repeat_count": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "attach_to": {
+                "type": "string"
+              },
+              "attach_side": {
+                "type": "string",
+                "enum": [
+                  "auto",
+                  "left",
+                  "right",
+                  "top",
+                  "bottom"
+                ]
+              },
+              "measure_header": {
+                "type": "boolean"
+              },
+              "repeat_span_to": {
+                "type": "string"
+              },
+              "pin_head": {
+                "type": "string",
+                "enum": [
+                  "circle",
+                  "diamond"
+                ]
+              },
+              "separator_mode": {
+                "type": "string",
+                "enum": [
+                  "single",
+                  "double",
+                  "hooked"
+                ]
+              },
+              "line_style": {
+                "type": "string",
+                "enum": [
+                  "single",
+                  "double",
+                  "dotted",
+                  "double_dotted"
+                ]
+              },
+              "level_fill_top": {
+                "type": "string",
+                "enum": [
+                  "high",
+                  "middle",
+                  "low",
+                  "blank"
+                ]
+              },
+              "level_fill_bottom": {
+                "type": "string",
+                "enum": [
+                  "high",
+                  "middle",
+                  "low",
+                  "blank"
+                ]
+              },
+              "whitespace": {
+                "type": "boolean"
+              },
               "surface_marks": {
                 "type": "array",
-                "items": {"type": "string", "enum": ["left", "right", "forward", "backward"]}
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "left",
+                    "right",
+                    "forward",
+                    "backward"
+                  ]
+                }
               },
-              "joint_area": {"type": "string"},
-              "oscillations": {"type": "integer", "minimum": 0},
+              "joint_area": {
+                "type": "string"
+              },
+              "oscillations": {
+                "type": "integer",
+                "minimum": 0
+              },
               "arrowheads": {
                 "type": "object",
                 "properties": {
-                  "head": {"type": "string", "enum": ["single", "double", "open"]},
-                  "tail": {"type": "string", "enum": ["single", "double", "open"]}
+                  "head": {
+                    "type": "string",
+                    "enum": [
+                      "single",
+                      "double",
+                      "open"
+                    ]
+                  },
+                  "tail": {
+                    "type": "string",
+                    "enum": [
+                      "single",
+                      "double",
+                      "open"
+                    ]
+                  }
                 }
               },
               "spring_jump": {
@@ -155,31 +457,136 @@
                 "properties": {
                   "takeoff": {
                     "type": "array",
-                    "items": {"type": "string", "enum": ["left", "right"]}
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "left",
+                        "right"
+                      ]
+                    }
                   },
                   "landing": {
                     "type": "array",
-                    "items": {"type": "string", "enum": ["left", "right"]}
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "left",
+                        "right"
+                      ]
+                    }
                   }
                 }
               },
-              "effort_weight": {"type": ["string", "null"], "enum": ["strong", "light", null]},
-              "effort_time": {"type": ["string", "null"], "enum": ["sudden", "sustained", null]},
-              "effort_space": {"type": ["string", "null"], "enum": ["direct", "indirect", null]},
-              "effort_flow": {"type": ["string", "null"], "enum": ["bound", "free", null]},
-              "contact_type": {"type": ["string", "null"], "enum": ["touch", "slide", "strike", "grasp", null]},
-              "contact_surface": {"type": ["string", "null"], "enum": ["front", "back", "inner", "outer", null]},
-              "sequential_type": {"type": ["string", "null"], "enum": ["successive", "simultaneous", "sequential", null]},
-              "sequential_origin": {"type": ["string", "null"], "description": "Body part where sequential movement initiates"},
-              "tempo": {"type": "integer"},
-              "label": {"type": "string"},
-              "source_text": {"type": "string"},
+              "effort_weight": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "strong",
+                  "light",
+                  null
+                ]
+              },
+              "effort_time": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "sudden",
+                  "sustained",
+                  null
+                ]
+              },
+              "effort_space": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "direct",
+                  "indirect",
+                  null
+                ]
+              },
+              "effort_flow": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "bound",
+                  "free",
+                  null
+                ]
+              },
+              "contact_type": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "touch",
+                  "slide",
+                  "strike",
+                  "grasp",
+                  null
+                ]
+              },
+              "contact_surface": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "front",
+                  "back",
+                  "inner",
+                  "outer",
+                  null
+                ]
+              },
+              "sequential_type": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "successive",
+                  "simultaneous",
+                  "sequential",
+                  null
+                ]
+              },
+              "sequential_origin": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Body part where sequential movement initiates"
+              },
+              "tempo": {
+                "type": "integer"
+              },
+              "label": {
+                "type": "string"
+              },
+              "source_text": {
+                "type": "string"
+              },
               "beat_grouping": {
                 "type": "array",
-                "items": {"type": "integer"},
+                "items": {
+                  "type": "integer"
+                },
                 "description": "Beat grouping for irregular meters, e.g. [3,2,2] for 7/8"
               }
             }
+          },
+          "uid": {
+            "type": "string",
+            "description": "Stable per-symbol identifier, assigned by the editing tools. Addresses a symbol across insertions, which array indices cannot. Absent on scores written directly; the tools stamp them on first contact."
           }
         }
       }
@@ -188,11 +595,23 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["name", "start_measure", "end_measure"],
+        "required": [
+          "name",
+          "start_measure",
+          "end_measure"
+        ],
         "properties": {
-          "name": {"type": "string"},
-          "start_measure": {"type": "integer", "minimum": 1},
-          "end_measure": {"type": "integer", "minimum": 1}
+          "name": {
+            "type": "string"
+          },
+          "start_measure": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "end_measure": {
+            "type": "integer",
+            "minimum": 1
+          }
         }
       }
     },
@@ -200,12 +619,37 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["source_symbol_index", "target_symbol_index", "bow_type"],
+        "required": [
+          "source_symbol_index",
+          "target_symbol_index",
+          "bow_type"
+        ],
         "properties": {
-          "source_symbol_index": {"type": "integer", "minimum": 0},
-          "target_symbol_index": {"type": "integer", "minimum": 0},
-          "bow_type": {"type": "string", "enum": ["touch", "near", "grasp", "support_on"]},
-          "side": {"type": "string", "enum": ["left", "right"], "default": "right"}
+          "source_symbol_index": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "target_symbol_index": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "bow_type": {
+            "type": "string",
+            "enum": [
+              "touch",
+              "near",
+              "grasp",
+              "support_on"
+            ]
+          },
+          "side": {
+            "type": "string",
+            "enum": [
+              "left",
+              "right"
+            ],
+            "default": "right"
+          }
         }
       }
     },
@@ -215,13 +659,65 @@
       "items": {
         "type": "object",
         "properties": {
-          "weight": {"type": ["string", "null"], "enum": ["strong", "light", null]},
-          "time": {"type": ["string", "null"], "enum": ["sudden", "sustained", null]},
-          "space": {"type": ["string", "null"], "enum": ["direct", "indirect", null]},
-          "flow": {"type": ["string", "null"], "enum": ["bound", "free", null]},
-          "measure": {"type": "integer", "minimum": 1},
-          "beat": {"type": "number", "minimum": 1},
-          "symbol_index": {"type": ["integer", "null"], "minimum": 0}
+          "weight": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "strong",
+              "light",
+              null
+            ]
+          },
+          "time": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "sudden",
+              "sustained",
+              null
+            ]
+          },
+          "space": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "direct",
+              "indirect",
+              null
+            ]
+          },
+          "flow": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "bound",
+              "free",
+              null
+            ]
+          },
+          "measure": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "beat": {
+            "type": "number",
+            "minimum": 1
+          },
+          "symbol_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          }
         }
       }
     },
@@ -232,11 +728,30 @@
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["measure", "numerator", "denominator"],
+            "required": [
+              "measure",
+              "numerator",
+              "denominator"
+            ],
             "properties": {
-              "measure": {"type": "integer", "minimum": 1},
-              "numerator": {"type": "integer", "minimum": 1, "maximum": 24},
-              "denominator": {"type": "integer", "enum": [2, 4, 8, 16]}
+              "measure": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "numerator": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 24
+              },
+              "denominator": {
+                "type": "integer",
+                "enum": [
+                  2,
+                  4,
+                  8,
+                  16
+                ]
+              }
             }
           }
         },
@@ -244,48 +759,108 @@
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["performer_id", "measure", "beat", "position"],
+            "required": [
+              "performer_id",
+              "measure",
+              "beat",
+              "position"
+            ],
             "properties": {
-              "performer_id": {"type": "string"},
-              "measure": {"type": "integer", "minimum": 1},
-              "beat": {"type": "number", "minimum": 1},
+              "performer_id": {
+                "type": "string"
+              },
+              "measure": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "beat": {
+                "type": "number",
+                "minimum": 1
+              },
               "position": {
                 "type": "object",
-                "required": ["zone"],
+                "required": [
+                  "zone"
+                ],
                 "properties": {
                   "zone": {
                     "type": "string",
                     "enum": [
-                      "downstage_left", "downstage_center", "downstage_right",
-                      "center_left", "center", "center_right",
-                      "upstage_left", "upstage_center", "upstage_right",
-                      "wing_left", "wing_right"
+                      "downstage_left",
+                      "downstage_center",
+                      "downstage_right",
+                      "center_left",
+                      "center",
+                      "center_right",
+                      "upstage_left",
+                      "upstage_center",
+                      "upstage_right",
+                      "wing_left",
+                      "wing_right"
                     ]
                   },
-                  "x": {"type": ["number", "null"]},
-                  "y": {"type": ["number", "null"]}
+                  "x": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "y": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  }
                 }
               },
               "facing": {
-                "type": ["string", "null"],
+                "type": [
+                  "string",
+                  "null"
+                ],
                 "enum": [
-                  "downstage", "upstage", "stage_left", "stage_right",
-                  "diagonal_downstage_left", "diagonal_downstage_right",
-                  "diagonal_upstage_left", "diagonal_upstage_right",
+                  "downstage",
+                  "upstage",
+                  "stage_left",
+                  "stage_right",
+                  "diagonal_downstage_left",
+                  "diagonal_downstage_right",
+                  "diagonal_upstage_left",
+                  "diagonal_upstage_right",
                   null
                 ]
               },
               "path_to_next": {
-                "type": ["string", "null"],
-                "enum": ["straight", "curved", "spiral", "zigzag", null]
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "straight",
+                  "curved",
+                  "spiral",
+                  "zigzag",
+                  null
+                ]
               },
               "sex": {
-                "type": ["string", "null"],
+                "type": [
+                  "string",
+                  "null"
+                ],
                 "description": "Pin head shape per the LabanWriter floor-plan convention: female (white/open) is the documented default, male (black/filled), or neuter (tack) when dancers can be either.",
-                "enum": ["male", "female", "neuter", null]
+                "enum": [
+                  "male",
+                  "female",
+                  "neuter",
+                  null
+                ]
               },
               "caption": {
-                "type": ["string", "null"],
+                "type": [
+                  "string",
+                  "null"
+                ],
                 "description": "Optional caption text for this position, per the LabanWriter manual's 'Caption Squares' (typed captions below the floor plan)."
               }
             }
