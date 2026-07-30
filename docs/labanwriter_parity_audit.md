@@ -325,17 +325,73 @@ system break. None of La vivandière pp. 63-150 has been searched for one yet.
 
 ### Staff proportions
 
-The engraved staff is narrower than ours relative to its own height. Measured
-on La vivandière p84: staff x 1312..1455 = 143 units on a 2727-wide page, over
-eight measures filling about 62% of the 3774-unit height, so roughly 292 units
-per measure — a width-to-measure-height ratio of 0.49. Ours is 184 over 240,
-or 0.77.
+Open, and the measurement is harder than it looks.
 
-The ratio is the comparison that survives scaling; raw share of page width
-does not, because the plate sets one system beside the piano reduction while
-we tile four systems across. The figure rests on one page and on a height
-estimate rather than on measured bar lines, so it is recorded as a lead, not
-yet as a correction.
+Our staff is wider than every plate that could be measured cleanly, but not
+by a figure firm enough to move a constant on.
+
+Method: detect vertical rules on the page, keep triples spaced 80–260 units
+apart whose middle line is centred — that is a three-line staff — then take
+bar lines as dark rows within that staff's own x-range. On La vivandière:
+
+| plate | staff width | median measure height | width / measure height |
+|-------|-------------|-----------------------|------------------------|
+| p72   | 112         | 268                   | 0.42                   |
+| p84   | 105         | 236                   | 0.44                   |
+| p90   | 142         | 206                   | 0.69                   |
+| ours  | 184         | 240                   | 0.77                   |
+
+Two agree closely and one does not, which is the clue: **width over measure
+height is not an invariant of the engraving.** Under the Third Principle a
+measure's height is its beat count times the chosen unit, so the ratio moves
+with the time signature. p90 is not evidence of a looser staff; it is
+probably evidence of a shorter measure.
+
+The invariant to compare is staff width over the length of one beat, which
+needs each plate's beats per measure. No detector reads that; it was read by
+eye, from the piano reduction engraved alongside each Laban staff on the same
+vertical time axis — count the beamed groups between two bar lines. p72 and
+p84 carry three beats to the measure, p90 two.
+
+| plate | staff width | measure height | beats | beat height | width / beat |
+|-------|-------------|----------------|-------|-------------|--------------|
+| p72   | 112         | 268            | 3     | 89.3        | 1.25         |
+| p84   | 105         | 236            | 3     | 78.7        | 1.33         |
+| p90   | 142         | 206            | 2     | 103.0       | 1.38         |
+| ours  | 184         | 240            | 4     | 60.0        | 3.07         |
+
+The three plates agree — 1.25, 1.33, 1.38, mean 1.32 — once the beat count is
+read rather than assumed. It was the assumption of three beats on p90 that
+made it look like an outlier at 2.07, and that in turn is what made the
+width-over-measure-height figures look scattered. **Our staff is 2.3 times
+too wide for its beat.**
+
+Either constant can carry the correction, and they are not equivalent:
+
+- `BEAT_HEIGHT` 60 → 139. Keeps column widths, so symbol geometry is
+  untouched. Makes a four-beat measure 556 units, and an eight-measure system
+  about 4450 — which is roughly one system to a page, and that is what the
+  plates do. Also changes how long a symbol is for its duration, the quantity
+  Knust fixes at a centimetre to the crotchet, so it is the constant that
+  ought to be anchored to a source rather than to a ratio.
+- Staff width 184 → 79, about 7.9 units a column. Every symbol would be
+  drawn in a third of its current width; the ten graded foot marks and the
+  level fills are unlikely to survive that legibly.
+
+Both regenerate every golden fixture, and the first changes how many systems
+fit on a page. Neither should be applied without the change being wanted.
+
+An earlier revision of this section reported 0.49 from p84 alone as though it
+were settled. It was one page, and the measure height was estimated from the
+fraction of page height the staff occupied rather than measured from bar
+lines. Both numbers moved when done properly.
+
+To settle: read the time signature off three single-staff plates by eye,
+compute staff width over beat height for each, and compare against ours
+(184 over BEAT_HEIGHT 60 = 3.07). Only then decide whether the correction
+belongs in COLUMN_WIDTHS or in BEAT_HEIGHT — they move the ratio the same
+way, but BEAT_HEIGHT also sets how long a symbol is for its duration, which
+Knust fixes at a centimetre to the crotchet.
 
 Next parity priorities:
 1. Shift more renderer branching from symbol-id checks to catalog behavior
