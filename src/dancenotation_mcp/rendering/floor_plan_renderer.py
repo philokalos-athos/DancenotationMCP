@@ -88,14 +88,30 @@ def _zone_center(zone: str, sub_x: float | None = None, sub_y: float | None = No
     return cx, cy
 
 
+# Pin-head shapes cycled by performer when the score does not state a sex.
+#
+# This plan is a deliverable -- generate_score writes it to PDF as well as SVG
+# -- so anything said only in colour is gone the moment it is printed. Two
+# performers used to be identical white circles differing in stroke colour.
+#
+# Soirée musicale p58 tells its two apart by sign: one a filled dot, the other
+# a small open circle. Black and white pin heads are Labanotation's own
+# distinction, so cycling them is not an invention; the third shape is the
+# tack already used for "neuter". Beyond three there is no plate evidence and
+# colour is all that is left, which is recorded in the audit doc.
+# Female first: the LabanWriter manual documents the white pin as the
+# default when no sex is given, and a lone dancer should still get it.
+_PIN_SHAPE_CYCLE = ("female", "male", "neuter")
+
+
 def _render_pin_head(px: float, py: float, sex: str | None, color: str) -> str:
     """Render a dancer pin head per the LabanWriter floor-plan convention:
     female (white/open, the documented default) / male (black/filled) /
-    neuter (tack shape). `color` still distinguishes performers from each
-    other — a modern addition layered on top of the authentic shape
-    encoding, since the manual's monochrome convention doesn't need to
-    disambiguate more than one or two dancers by eye the way a multi-
-    performer computational score does.
+    neuter (tack shape).
+
+    ``sex`` is what the score states. When it states nothing the caller passes
+    a shape from ``_PIN_SHAPE_CYCLE`` instead, so that two performers differ
+    in more than colour.
     """
     if sex == "male":
         return f'<circle cx="{px:.1f}" cy="{py:.1f}" r="5" fill="{color}"/>'
@@ -106,6 +122,32 @@ def _render_pin_head(px: float, py: float, sex: str | None, color: str) -> str:
         )
     # Female is the documented default (also used when sex is unset).
     return f'<circle cx="{px:.1f}" cy="{py:.1f}" r="5" fill="white" stroke="{color}" stroke-width="1.5"/>'
+
+
+def _render_travel_arrowhead(x1: float, y1: float, x2: float, y2: float,
+                             color: str) -> str:
+    """The arrowhead that says which way along the path the dancer went.
+
+    Every path on Soirée musicale p58 carries one, the curved one included.
+    Ours drew the dashed line and stopped, so a plan showed where a dancer had
+    been and not the order. The facing arrows already had heads; the travel
+    path did not.
+    """
+    angle = math.atan2(y2 - y1, x2 - x1)
+    spread = math.pi * 0.82
+    # Backed off the endpoint by the pin's own radius. Drawn at the endpoint
+    # the head lands exactly under the pin, which is painted after it and
+    # covers it completely -- present in the markup, absent from the page, and
+    # the assertion that it exists passes either way.
+    setback = 7.0
+    tip_x = x2 - setback * math.cos(angle)
+    tip_y = y2 - setback * math.sin(angle)
+    pts = [(tip_x, tip_y)]
+    for sign in (1, -1):
+        a = angle + sign * spread
+        pts.append((tip_x + 5.5 * math.cos(a), tip_y + 5.5 * math.sin(a)))
+    points = " ".join(f"{x:.1f},{y:.1f}" for x, y in pts)
+    return f'<polygon class="fp-arrow" points="{points}" fill="{color}"/>'
 
 
 def render_floor_plan_svg(ir: dict, measure_range: tuple[int, int] | None = None) -> str:
@@ -206,6 +248,13 @@ def render_floor_plan_svg(ir: dict, measure_range: tuple[int, int] | None = None
 
     for pidx, (performer_id, entries) in enumerate(by_performer.items()):
         color = colors[pidx % len(colors)]
+        # Wrap each performer so their marks are attributable, and so a test
+        # can ask whether two of them survive being printed in black.
+        elements.append(
+            f'<g class="fp-performer" data-performer-index="{pidx}" '
+            f'data-performer-id="{escape(str(performer_id))}">'
+        )
+        default_shape = _PIN_SHAPE_CYCLE[pidx % len(_PIN_SHAPE_CYCLE)]
         entries.sort(key=lambda e: (int(e.get("measure", 1)), float(e.get("beat", 1.0))))
 
         positions: list[tuple[float, float]] = []
@@ -227,15 +276,20 @@ def render_floor_plan_svg(ir: dict, measure_range: tuple[int, int] | None = None
                     f'<path d="M {x1:.1f} {y1:.1f} Q {mx:.1f} {my:.1f} {x2:.1f} {y2:.1f}" '
                     f'fill="none" stroke="{color}" stroke-width="1" stroke-dasharray="4,3"/>'
                 )
+                # Aimed along the tangent at the end, which for a quadratic is
+                # the line from the control point to the endpoint.
+                elements.append(_render_travel_arrowhead(mx, my, x2, y2, color))
             else:
                 elements.append(
                     f'<line x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" '
                     f'stroke="{color}" stroke-width="1" stroke-dasharray="4,3"/>'
                 )
+                elements.append(_render_travel_arrowhead(x1, y1, x2, y2, color))
 
         # Draw dancer positions
         for i, (px, py) in enumerate(positions):
-            elements.append(_render_pin_head(px, py, entries[i].get("sex"), color))
+            elements.append(_render_pin_head(
+                px, py, entries[i].get("sex") or default_shape, color))
 
             # Facing arrow
             facing = entries[i].get("facing")
@@ -255,7 +309,8 @@ def render_floor_plan_svg(ir: dict, measure_range: tuple[int, int] | None = None
                 ax2 = ax + 4 * math.cos(arr_angle2)
                 ay2 = ay - 4 * math.sin(arr_angle2)
                 elements.append(
-                    f'<polygon points="{ax:.1f},{ay:.1f} {ax1:.1f},{ay1:.1f} {ax2:.1f},{ay2:.1f}" '
+                    f'<polygon class="fp-facing" '
+                    f'points="{ax:.1f},{ay:.1f} {ax1:.1f},{ay1:.1f} {ax2:.1f},{ay2:.1f}" '
                     f'fill="{color}"/>'
                 )
 
@@ -266,6 +321,8 @@ def render_floor_plan_svg(ir: dict, measure_range: tuple[int, int] | None = None
                     f'<text x="{px:.1f}" y="{py + 13:.1f}" text-anchor="middle" '
                     f'font-size="6.5" fill="{color}" font-family="sans-serif">{escape(str(caption))}</text>'
                 )
+
+        elements.append("</g>")
 
     return "\n".join([
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{TOTAL_WIDTH}" height="{total_h}" '

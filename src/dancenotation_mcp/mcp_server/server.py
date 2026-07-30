@@ -18,6 +18,7 @@ from dancenotation_mcp.rendering.pdf_renderer import svg_to_pdf
 from dancenotation_mcp.rendering.svg_renderer import render_svg
 from dancenotation_mcp.rendering.tikz_renderer import render_tikz
 from dancenotation_mcp.validation.repair import repair_ir
+from dancenotation_mcp.validation.validator import RETENTION_TYPES
 from dancenotation_mcp.validation.validator import validate_ir
 
 from dancenotation_mcp.mcp_server.tools import (
@@ -281,13 +282,13 @@ TOOL_SCHEMAS = {
         },
     },
     "add_retention": {
-        "description": "Add a retention symbol (hold, release, or cancel) to sustain or end a movement",
+        "description": "Add a retention symbol to sustain or end a movement: hold (round sign), space_hold (diamond), spot_hold (diamond with dot), or cancel/release (decrease sign)",
         "inputSchema": {
             "type": "object",
             "required": ["ir", "type", "body_part", "measure", "beat"],
             "properties": {
                 "ir": {"type": "object", "description": "Notation IR object to modify"},
-                "type": {"type": "string", "enum": ["hold", "release", "cancel"], "description": "Retention type"},
+                "type": {"type": "string", "enum": list(RETENTION_TYPES), "description": "Retention type; release is a synonym of cancel"},
                 "body_part": {"type": "string", "description": "Body part for the retention"},
                 "measure": {"type": "integer", "description": "Measure number"},
                 "beat": {"type": "number", "description": "Beat within the measure"},

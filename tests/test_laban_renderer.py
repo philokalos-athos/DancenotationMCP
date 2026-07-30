@@ -334,10 +334,16 @@ class LabanRendererTests(unittest.TestCase):
             svg = render_laban_svg(ir)
             self.assertIn('class="laban-annotation path"', svg, symbol_id)
 
-    def test_bare_surface_symbols_render_as_contact_annotation(self):
+    def test_bare_surface_symbols_reach_a_dispatch_branch(self):
         """surface.contact/brush/glide (symbol_id prefix "surface", distinct
-        from the "contact" family prefix) had no dispatch branch — only
-        "contact" family was handled, not "surface".
+        from the "contact" family prefix) had no dispatch branch at all — only
+        "contact" was handled — and fell through.
+
+        They were first routed to the contact renderer, which stopped them
+        falling through but made all three engrave as contact.touch. The
+        catalog settles that they are their own signs, each with its own glyph
+        and staff_column, so they now have their own branch. See
+        SurfaceFamilyTest.
         """
         ir = _minimal_ir(symbols=[{
             "symbol_id": "surface.brush",
@@ -348,7 +354,7 @@ class LabanRendererTests(unittest.TestCase):
             "modifiers": {},
         }])
         svg = render_laban_svg(ir)
-        self.assertIn('class="laban-annotation contact"', svg)
+        self.assertIn('class="laban-annotation surface"', svg)
 
     def test_non_header_music_rest_renders_as_music_annotation(self):
         """music.rest.* symbols not used as a measure header (no
@@ -419,10 +425,13 @@ class LabanRendererTests(unittest.TestCase):
             },
         ])
         svg = render_laban_svg(ir)
-        # hold: filled circle + tie arc (has both a <circle> and a <path>)
+        # hold: the round retention sign, Knust vol 2 Fig. 78a — an empty
+        # circle and nothing else. This asserted a filled disc under a tie
+        # arc, which is not in Fig. 78; the arc was invented.
         self.assertRegex(
             svg,
-            r'data-symbol-id="retention\.hold\.arm">.*?<circle[^/]*/>.*?<path',
+            r'data-symbol-id="retention\.hold\.arm">'
+            r'<circle[^>]*fill="none"[^>]*/></g>',
         )
         # release: X mark (two crossing <line> elements, no <circle>/<path>)
         self.assertRegex(
@@ -570,8 +579,9 @@ class LabanRendererTests(unittest.TestCase):
             "modifiers": {},
         }])
         svg = render_laban_svg(ir)
+        # The <symbol> definition is still emitted for other consumers of the
+        # markup; the score itself draws inline so length can carry duration.
         self.assertIn('id="laban-dir-forward-middle"', svg)
-        self.assertIn('href="#laban-dir-forward-middle"', svg)
 
     def test_facing_indicator_rendered(self):
         """When facing differs from direction, a facing arrow should appear."""
@@ -774,7 +784,10 @@ class GoldenParityTests(unittest.TestCase):
         self.assertIn('data-symbol-id="flexion.knee.90"', self.rendered)
 
     def test_retention_present(self):
-        self.assertIn('class="laban-annotation retention"', self.rendered)
+        # laban-symbol, not laban-annotation: a retention sign is engraved in
+        # the column of the body part it holds, because that column is half of
+        # what it says (Knust vol 1 Rule III, p67).
+        self.assertIn('class="laban-symbol retention"', self.rendered)
 
     def test_whitespace_symbol(self):
         self.assertIn('class="laban-symbol whitespace"', self.rendered)
@@ -1033,8 +1046,22 @@ class PlaceholderGeometryTest(unittest.TestCase):
         import re as _re
 
         def line_len(svg):
-            m = _re.search(r'<line x1="[\d.]+" y1="([\d.]+)" x2="[\d.]+" y2="([\d.]+)"', svg)
-            return abs(float(m.group(2)) - float(m.group(1)))
+            """Length of the vertical stem.
+
+            Selected by x1 == x2 rather than by being the first <line> in the
+            group, and with the sign allowed in the coordinate pattern. The
+            first version did neither: `[\\d.]+` does not match a negative
+            coordinate, so once a four-beat stem grew tall enough to start
+            above the slot origin the regex fell through to a serif — whose
+            two endpoints share a y — and reported the long sign as 0.0 long.
+            """
+            for m in _re.finditer(
+                    r'<line x1="(-?[\d.]+)" y1="(-?[\d.]+)" '
+                    r'x2="(-?[\d.]+)" y2="(-?[\d.]+)"', svg):
+                x1, y1, x2, y2 = (float(g) for g in m.groups())
+                if abs(x1 - x2) < 0.05:
+                    return abs(y2 - y1)
+            raise AssertionError("no vertical stem drawn")
 
         self.assertLess(line_len(short), line_len(long))
 
@@ -1128,6 +1155,1940 @@ class QualityAliasIdentityTest(unittest.TestCase):
         self.assertNotIn("<text", group.group(0))
 
 
+class FootPartGradeTest(unittest.TestCase):
+    """The part of the foot taking weight is a graded scale, not a list.
+
+    Knust §225 (plate vol. II p27) runs it from the front of the foot down and
+    then up the heel: 1/1 full point (tips of toes), 3/4, 1/2 demi-pointe (the
+    normal high support), 1/4, 1/8 (heel only slightly raised), the whole foot,
+    then four heel gradations by how far the toes are lifted. His note: the
+    marks "indicate, first, which part of the foot takes the weight, and
+    second, how far the toes are lifted away from the floor".
+
+    Two things follow that the first implementation did not have. The scale is
+    ordered, so neighbouring degrees must differ; and it is orthogonal to
+    level — the same marks appear on hatched, white and black signs (a-f
+    against g-k, l-p against q-u).
+    """
+
+    GRADES = ["point_1_1", "point_3_4", "point_1_2", "point_1_4", "point_1_8",
+              "whole_foot", "heel_1", "heel_2", "heel_3", "heel_4"]
+
+    def _mark(self, grade, level="middle"):
+        svg = render_laban_svg(_minimal_ir([{
+            "symbol_id": "support.step",
+            "body_part": "left_leg",
+            "direction": "forward",
+            "level": level,
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {"foot_part": grade},
+        }]))
+        m = re.search(r'<g class="laban-pre-sign"[^>]*>(.*?)</g>', svg, re.S)
+        return m.group(1) if m else None
+
+    def test_every_grade_on_the_scale_draws_a_distinct_mark(self):
+        seen = {}
+        for grade in self.GRADES:
+            if grade == "whole_foot":
+                continue          # understood by default, see below
+            mark = self._mark(grade)
+            self.assertIsNotNone(mark, f"{grade} drew no mark")
+            clash = seen.get(mark)
+            self.assertIsNone(clash, f"{grade} renders like {clash}")
+            seen[mark] = grade
+
+    def test_the_whole_foot_is_understood_and_draws_nothing(self):
+        # Knust: "This contact symbol is only used in exceptional cases,
+        # because in medium level and low supports standing on the whole foot
+        # is understood."
+        for level in ("middle", "low"):
+            with self.subTest(level=level):
+                self.assertIsNone(self._mark("whole_foot", level))
+
+    def test_an_explicit_whole_foot_mark_can_still_be_asked_for(self):
+        svg = render_laban_svg(_minimal_ir([{
+            "symbol_id": "support.step",
+            "body_part": "left_leg",
+            "direction": "forward",
+            "level": "middle",
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {"foot_part": "whole_foot", "foot_part_explicit": True},
+        }]))
+        self.assertIn("laban-pre-sign", svg)
+
+    def test_the_mark_is_the_same_at_every_level(self):
+        # The scale is orthogonal to level: a-f and g-k are the same marks on
+        # hatched and black signs.
+        marks = {lvl: self._mark("point_1_4", lvl)
+                 for lvl in ("high", "middle", "low")}
+        self.assertEqual(len(set(marks.values())), 1,
+                         f"mark changed with level: {marks}")
+
+
+class DurationIsSymbolLengthTest(unittest.TestCase):
+    """The length of a direction symbol IS how long the movement lasts.
+
+    That is Labanotation's time encoding, and it was not happening. The <use>
+    box tracked duration — 58, 118, 238 units for one, two and four beats — but
+    the <symbol> viewBox is 24x44 with preserveAspectRatio unset, so SVG scaled
+    the glyph uniformly and centred it in the box. The drawn sign came out the
+    same size whatever the duration, floating in empty space, and a four-beat
+    step engraved exactly like a one-beat one.
+    """
+
+    def _drawn_extent(self, duration):
+        """(height, width) of the ink actually drawn for the symbol.
+
+        Measured from the emitted geometry rather than from the layout box: a
+        <use> box can be any height while the glyph inside it stays one size,
+        which is exactly the defect.
+        """
+        svg = render_laban_svg(_minimal_ir([{
+            "symbol_id": "support.step",
+            "body_part": "left_leg",
+            "direction": "forward",
+            "level": "middle",
+            "timing": {"measure": 1, "beat": 1, "duration_beats": duration},
+            "modifiers": {},
+        }]))
+        g = re.search(r'<g class="laban-symbol"[^>]*>(.*?)</g>', svg, re.S)
+        self.assertIsNotNone(g, "no direction symbol emitted")
+        body = g.group(1)
+        use = re.search(r'<use [^>]*x="([\d.]+)" y="([\d.]+)" '
+                        r'width="([\d.]+)" height="([\d.]+)"', body)
+        if use:
+            # Uniform scaling: the glyph can only be as tall as its own aspect
+            # allows, whatever the box says.
+            w = float(use.group(3))
+            return min(float(use.group(4)), w * (40.0 / 20.0)), w
+        path = re.search(r'<path d="([^"]+)"', body)
+        self.assertIsNotNone(path, "symbol drew neither a <use> nor a path")
+        nums = [float(n) for n in re.findall(r'-?\d+\.?\d*', path.group(1))]
+        xs, ys = nums[0::2], nums[1::2]
+        return max(ys) - min(ys), max(xs) - min(xs)
+
+    def test_symbol_length_is_strictly_proportional_to_duration(self):
+        """Knust's Third Principle, stated as a foundation of the system:
+
+            "The length of the symbol indicates how long the movement lasts.
+            For example, if a centimetre is chosen for the length of a crochet,
+            a semi-breve will be 4 cm long, a minim 2 cm, a crochet 1 cm, a
+            quaver 1/2 cm."
+
+        So the relation is not merely monotonic — it is linear. The first
+        implementation was monotonic but not proportional: one beat went
+        through a shared <symbol>, which scales uniformly and so capped the
+        drawn height, while longer ones were drawn inline at their true size.
+        """
+        heights = {d: self._drawn_extent(d)[0] for d in (1, 2, 4)}
+        self.assertAlmostEqual(heights[2] / heights[1], 2.0, delta=0.15,
+                               msg=f"two beats vs one: {heights}")
+        self.assertAlmostEqual(heights[4] / heights[1], 4.0, delta=0.3,
+                               msg=f"four beats vs one: {heights}")
+
+    def test_a_long_symbol_keeps_its_level_marking(self):
+        """The middle-level dot lives in the shared <symbol> def, so a symbol
+        long enough to be drawn inline lost it silently — level marking is not
+        something a duration change may drop."""
+        for duration in (1, 2, 4):
+            with self.subTest(duration=duration):
+                svg = render_laban_svg(_minimal_ir([{
+                    "symbol_id": "support.step",
+                    "body_part": "left_leg",
+                    "direction": "forward",
+                    "level": "middle",
+                    "timing": {"measure": 1, "beat": 1,
+                               "duration_beats": duration},
+                    "modifiers": {},
+                }]))
+                self.assertIn("<circle", svg, "middle-level dot missing")
+
+    DIAGONALS = ["diagonal_forward_left", "diagonal_forward_right",
+                 "diagonal_backward_left", "diagonal_backward_right"]
+
+    def _extent_for(self, direction, duration):
+        svg = render_laban_svg(_minimal_ir([{
+            "symbol_id": "support.step",
+            "body_part": "left_leg",
+            "direction": direction,
+            "level": "middle",
+            "timing": {"measure": 1, "beat": 1, "duration_beats": duration},
+            "modifiers": {},
+        }]))
+        m = re.search(r'<g class="laban-symbol"[^>]*>.*?<path d="([^"]+)"',
+                      svg, re.S)
+        self.assertIsNotNone(m, f"no path for {direction}")
+        nums = [float(n) for n in re.findall(r'-?\d+\.?\d*', m.group(1))]
+        xs, ys = nums[0::2], nums[1::2]
+        return max(ys) - min(ys), max(xs) - min(xs)
+
+    def test_a_diagonal_stays_inside_its_column_however_long_it_is(self):
+        """Diagonals were built by rotating the whole shape 45 degrees, so a
+        tall box spread far sideways: in the 33-measure score they became giant
+        slanted bars crossing the staff and the page was unreadable.
+
+        Length carries duration; width is the column and must not move with it.
+        Every per-symbol test was green when this shipped — only rendering the
+        whole score showed it.
+        """
+        from dancenotation_mcp.rendering.laban_layout import COLUMN_WIDTHS
+        column = COLUMN_WIDTHS["left_support"]
+        for direction in self.DIAGONALS:
+            for duration in (1, 2, 4):
+                with self.subTest(direction=direction, duration=duration):
+                    _, width = self._extent_for(direction, duration)
+                    self.assertLessEqual(
+                        width, column + 1,
+                        f"{direction} at {duration} beats is {width:.0f} wide, "
+                        f"column is {column}")
+
+    def _corners(self, direction):
+        svg = render_laban_svg(_minimal_ir([{
+            "symbol_id": "support.step",
+            "body_part": "left_leg",
+            "direction": direction,
+            "level": "middle",
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {},
+        }]))
+        m = re.search(r'<g class="laban-symbol"[^>]*>.*?<path d="([^"]+)"',
+                      svg, re.S)
+        self.assertIsNotNone(m, f"no path for {direction}")
+        nums = [float(n) for n in re.findall(r'-?\d+\.?\d*', m.group(1))]
+        return list(zip(nums[0::2], nums[1::2]))
+
+    def test_a_diagonal_is_a_quadrilateral_with_a_slanted_edge(self):
+        """Knust Fig. 13 (vol. II p3): the diagonal sign is a rectangle with
+        one edge cut as a straight slant — a quadrilateral whose two sides are
+        different heights. It was drawn as a pentagon: both sides equal, with a
+        point pushed to one corner. That is the forward shape with its apex
+        moved, not the third basic shape the figure gives.
+        """
+        for direction in self.DIAGONALS:
+            with self.subTest(direction=direction):
+                corners = self._corners(direction)
+                self.assertEqual(
+                    len(corners), 4,
+                    f"{direction} has {len(corners)} corners, Fig. 13 has 4")
+                xs = sorted({round(x, 1) for x, _ in corners})
+                self.assertEqual(len(xs), 2, "corners should sit on two sides")
+                left_ys = [y for x, y in corners if round(x, 1) == xs[0]]
+                right_ys = [y for x, y in corners if round(x, 1) == xs[1]]
+                self.assertNotAlmostEqual(
+                    max(left_ys) - min(left_ys), max(right_ys) - min(right_ys),
+                    delta=0.5,
+                    msg="both sides are the same height, so nothing slants")
+
+    def test_a_sideways_sign_is_a_triangle(self):
+        """Knust Fig. 12 (vol. II p3) gives the sideways sign as a plain
+        triangle, apex toward the named side, and his examples 220a and 221a
+        show exactly that in the support column. It was drawn as a pentagon —
+        a rectangular body with a point added on one side.
+        """
+        for direction in ("left", "right"):
+            with self.subTest(direction=direction):
+                corners = self._corners(direction)
+                self.assertEqual(
+                    len(corners), 3,
+                    f"{direction} has {len(corners)} corners, Fig. 12 has 3")
+                # Two corners share the base edge and one is the apex
+                # opposite. Which side the base is on depends on the
+                # direction, so do not assume it is the left pair.
+                xs = sorted(x for x, _ in corners)
+                self.assertTrue(
+                    abs(xs[0] - xs[1]) < 0.5 or abs(xs[1] - xs[2]) < 0.5,
+                    f"no shared base edge in {xs}")
+
+    def test_the_sideways_apex_points_to_the_named_side(self):
+        left_x = [x for x, _ in self._corners("left")]
+        right_x = [x for x, _ in self._corners("right")]
+        # The apex is the lone corner; for "left" it is the smallest x.
+        self.assertEqual(min(left_x), sorted(left_x)[0])
+        self.assertEqual(sorted(left_x)[1], sorted(left_x)[2],
+                         "left's base should be the right-hand edge")
+        self.assertEqual(sorted(right_x)[0], sorted(right_x)[1],
+                         "right's base should be the left-hand edge")
+
+    def test_a_diagonal_still_lengthens_with_duration(self):
+        for direction in self.DIAGONALS:
+            with self.subTest(direction=direction):
+                h1, _ = self._extent_for(direction, 1)
+                h4, _ = self._extent_for(direction, 4)
+                self.assertGreater(h4, h1 * 3.0,
+                                   f"{direction}: {h1} -> {h4}")
+
+    def test_the_head_does_not_stretch_with_the_body(self):
+        """A pentagon's point must stay a point, not become a spike."""
+        for duration in (1, 2, 4):
+            with self.subTest(duration=duration):
+                _, width = self._drawn_extent(duration)
+                self.assertAlmostEqual(width, 26.0, delta=1.0,
+                                       msg="symbol width drifted with duration")
+
+
+class DurationSignLengthTest(unittest.TestCase):
+    """The timing.duration.* signs obey the Third Principle too.
+
+    The direction symbols were fixed to draw length linearly in duration, but
+    timing.duration.* is a separate code path that never got the same law. It
+    scaled the drawn line by an arithmetic table — 1.0, 1.5, 2.0, 2.5, 3.0,
+    3.5, 4.0 for values whose real durations are 1/8, 1/4, 1/2, 1, 2, 3 and 4
+    beats. So a 32 : 1 span of time was engraved 4 : 1, and no single step of
+    the scale had the right ratio either.
+    """
+
+    # symbol id suffix -> the duration it names, in beats
+    VALUES = {"1_8": 0.125, "1_4": 0.25, "1_2": 0.5,
+              "1": 1.0, "2": 2.0, "3": 3.0, "4": 4.0}
+
+    def _drawn_length(self, suffix):
+        """Length of the duration stem, from the stem line's own endpoints.
+
+        Read from y1/y2 of the stem rather than from every number in the
+        group: the two serifs are drawn at the same y as the stem ends, so a
+        min/max over all coordinates would silently agree with a stem of any
+        length as long as the serifs were right.
+        """
+        svg = render_laban_svg(_minimal_ir([{
+            "symbol_id": f"timing.duration.{suffix}",
+            "body_part": "torso",
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {},
+        }]))
+        group = re.search(
+            r'<g[^>]*data-duration="' + re.escape(suffix) + r'"[^>]*>(.*?)</g>',
+            svg, re.S)
+        self.assertIsNotNone(group, f"timing.duration.{suffix} drew nothing")
+        # The stem is the vertical line: x1 == x2.
+        for line in re.finditer(
+                r'<line x1="(-?[\d.]+)" y1="(-?[\d.]+)" '
+                r'x2="(-?[\d.]+)" y2="(-?[\d.]+)"', group.group(1)):
+            x1, y1, x2, y2 = (float(g) for g in line.groups())
+            if abs(x1 - x2) < 0.05:
+                return abs(y2 - y1)
+        self.fail(f"timing.duration.{suffix} drew no vertical stem")
+
+    def test_stem_length_is_proportional_to_the_value_it_names(self):
+        """One beat against every other value, at the ratio Knust states."""
+        unit = self._drawn_length("1")
+        self.assertGreater(unit, 0.0, "the one-beat stem has no length")
+        for suffix, beats in self.VALUES.items():
+            with self.subTest(value=suffix):
+                drawn = self._drawn_length(suffix)
+                self.assertAlmostEqual(
+                    drawn / unit, beats, delta=max(0.05, beats * 0.05),
+                    msg=(f"timing.duration.{suffix} names {beats} beats but "
+                         f"draws {drawn:.1f} against {unit:.1f} for one beat"))
+
+    def test_the_longest_value_is_not_engraved_like_the_shortest(self):
+        """The failure this began as: 1/8 and 4 differed by 6 units of ink.
+
+        Stated as a span rather than a ratio so it stays meaningful even if
+        the unit scale is retuned.
+        """
+        shortest = self._drawn_length("1_8")
+        longest = self._drawn_length("4")
+        self.assertGreater(
+            longest / shortest, 20.0,
+            f"1/8 beat draws {shortest:.1f} and 4 beats {longest:.1f} — a "
+            f"32 : 1 span of time engraved {longest / shortest:.1f} : 1")
+
+
+class SupportPreSignTest(unittest.TestCase):
+    """A support whose distinction is carried by a pre-sign must draw it.
+
+    support.heel.forward and support.step.forward engrave the same direction
+    symbol, and that is correct — the direction symbol encodes direction and
+    level only. What tells them apart is a small sign attached beside it,
+    confirmed on Soirée musicale p58 where x marks, hooked signs and hatched
+    flags sit adjacent to the support symbols without replacing them.
+
+    Nothing is invented here: the signs already exist as their own catalog
+    family (foot.surface.heel, foot.action.stamp and the rest, each with its
+    own glyph and renderer). What was missing was the attachment.
+
+    kneel, pivot, balance, hop and lunge are deliberately NOT wired. Per the
+    plate research they are not foot pre-signs — kneeling puts the knee itself
+    down as the weight-bearing part, a pivot is a turn sign, and the others are
+    compound positions with no dedicated glyph. Guessing a sign for them would
+    be inventing notation.
+
+    slide was wired here and has been taken out. Knust vol 1 p45: "The round
+    retention sign is only written within a support sign in order to indicate
+    a slide." It is a sign *inside* the symbol, not beside it, and it belongs
+    to a different family of statement — the foot pre-signs say which part of
+    the foot takes the weight, a slide says the weight stays on the foot while
+    it travels. See SlideIsARetentionSignInsideTheSupportTest.
+    """
+
+    WIRED = {
+        "support.heel": "foot.surface.heel",
+        "support.toe": "foot.surface.toe_tip",
+        "support.stamp": "foot.action.stamp",
+    }
+    NOT_WIRED = ["support.kneel", "support.balance", "support.lunge",
+                 "support.hop_support", "support.pivot_support"]
+
+    def _markup(self, symbol_id):
+        svg = render_laban_svg(_minimal_ir([{
+            "symbol_id": f"{symbol_id}.forward",
+            "body_part": "left_leg",
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {},
+        }]))
+        # Strip the id, or "does support.heel differ from support.step" is
+        # answered by the id alone and passes whatever the drawing does.
+        return re.sub(r'data-symbol-id="[^"]*"', "", svg)
+
+    def test_a_wired_support_differs_from_a_plain_step(self):
+        plain = self._markup("support.step")
+        for support in self.WIRED:
+            with self.subTest(support=support):
+                self.assertNotEqual(self._markup(support), plain)
+
+    def test_the_pre_sign_does_not_replace_the_direction_symbol(self):
+        # The direction glyph must survive; the pre-sign sits beside it.
+        for support in self.WIRED:
+            with self.subTest(support=support):
+                self.assertIn('data-direction="forward"', self._markup(support))
+
+    def test_each_wired_support_draws_its_own_pre_sign(self):
+        seen = {}
+        for support in self.WIRED:
+            svg = self._markup(support)
+            m = re.search(r'<g class="laban-pre-sign"[^>]*>(.*?)</g>', svg, re.S)
+            self.assertIsNotNone(m, f"{support} drew no pre-sign")
+            clash = seen.get(m.group(1))
+            self.assertIsNone(clash, f"{support} pre-sign matches {clash}")
+            seen[m.group(1)] = support
+
+    def test_supports_without_a_settled_sign_get_none(self):
+        for support in self.NOT_WIRED:
+            with self.subTest(support=support):
+                self.assertNotIn("laban-pre-sign", self._markup(support))
+
+    def test_the_pre_sign_flanks_the_direction_symbol(self):
+        """Knust puts these marks on the support sign, not beside the column.
+
+        Dictionary of Kinetography Laban §225-231, plate vol. II p27: the
+        part-of-foot marks are "hooks or dashes ... attached to the preceding
+        support sign", drawn flanking the direction symbol at its own edges.
+        The first implementation placed them clear of the column entirely,
+        where they read as a separate annotation rather than as part of the
+        support.
+        """
+        from dancenotation_mcp.rendering.laban_layout import COLUMN_WIDTHS
+        svg = self._markup("support.heel")
+        m = re.search(r'<g class="laban-symbol"[^>]*>.*?<path d="([^"]+)"',
+                      svg, re.S)
+        self.assertIsNotNone(m, "no direction symbol emitted")
+        xs = [float(n) for n in re.findall(r'-?\d+\.?\d*', m.group(1))][0::2]
+        sym_left, sym_right = min(xs), max(xs)
+        pre = re.search(r'<g class="laban-pre-sign"[^>]*>(.*?)</g>', svg, re.S)
+        self.assertIsNotNone(pre, "no pre-sign emitted")
+        body = pre.group(1)
+        # What matters is that the mark is *attached*: it starts on the sign's
+        # own edges. It then reaches outward, which the plate shows plainly —
+        # the hooks in 225 l-p extend well clear of the sign. An earlier
+        # version of this test demanded the mark stay inside the sign's bounds,
+        # which the plate contradicts.
+        starts = [float(m.group(1)) for m in
+                  re.finditer(r'[ML] ([\d.]+) [\d.]+', body)]
+        starts += [float(m.group(1)) for m in
+                   re.finditer(r'x1="([\d.]+)"', body)]
+        self.assertTrue(starts, "pre-sign has no start coordinates")
+        for x in starts:
+            self.assertTrue(
+                abs(x - sym_left) < 0.6 or abs(x - sym_right) < 0.6,
+                f"mark starts at x={x}, detached from the sign "
+                f"({sym_left}-{sym_right})")
+
+
+class CaptionPlacementTest(unittest.TestCase):
+    """A caption belongs beside the staff, not across it.
+
+    Captions were drawn at the symbol's own x, so they landed on the staff and
+    over the notation — in one 33-measure score, 23 of 91 sat inside the staff
+    lines, one of them exactly on the centre line.
+
+    The plates put this text in the margin: Soirée musicale p58 runs
+    "(DRY ELEGANT BOW)" vertically beside the staff, and La vivandière keeps
+    dancer identification below it. Nothing is written across the notation.
+    """
+
+    def _svg(self):
+        return render_laban_svg(_minimal_ir([
+            {
+                "symbol_id": "support.step",
+                "body_part": "left_leg",
+                "direction": "forward",
+                "level": "middle",
+                "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+                "modifiers": {"label": "grand plie 2nd"},
+            },
+            {
+                "symbol_id": "support.step",
+                "body_part": "right_leg",
+                "direction": "backward",
+                "level": "low",
+                "timing": {"measure": 1, "beat": 3, "duration_beats": 1},
+                "modifiers": {"label": "flat-back table"},
+            },
+        ]))
+
+    def _staff_bounds(self, svg):
+        xs = sorted({
+            round(float(m.group(1)), 1)
+            for m in re.finditer(
+                r'<line x1="([\d.]+)" y1="([\d.]+)" x2="\1" y2="([\d.]+)"([^>]*)>', svg)
+            if abs(float(m.group(3)) - float(m.group(2))) > 30
+            and "dasharray" not in m.group(4)
+        })
+        self.assertGreaterEqual(len(xs), 3, "staff lines not found")
+        return xs[0], xs[-1]
+
+    def test_no_caption_is_written_across_the_staff(self):
+        svg = self._svg()
+        left, right = self._staff_bounds(svg)
+        # Attribute order is not guaranteed, so match the class anywhere in the
+        # tag rather than assuming x comes first.
+        captions = [
+            (float(re.search(r'\sx="([\d.]+)"', m.group(1)).group(1)), m.group(2))
+            for m in re.finditer(
+                r'<text([^>]*class="laban-caption"[^>]*)>([^<]*)</text>', svg)
+        ]
+        self.assertTrue(captions, "no captions rendered")
+        for x, text in captions:
+            self.assertFalse(
+                left - 2 <= x <= right + 2,
+                f"caption {text!r} sits at x={x}, across the staff ({left}-{right})")
+
+    def test_captions_are_still_rendered(self):
+        svg = self._svg()
+        self.assertIn("grand plie 2nd", svg)
+        self.assertIn("flat-back table", svg)
+
+    def test_captions_at_the_same_moment_do_not_sit_on_each_other(self):
+        """Captions all took one margin x, so where several fall at the same
+        height their vertical strips overlapped into an unreadable stack.
+
+        Only y matters for a rotated caption: two at the same x are fine if
+        they are far apart vertically, and collide if they are not.
+        """
+        svg = render_laban_svg(_minimal_ir([
+            {
+                "symbol_id": "support.step",
+                "body_part": part,
+                "direction": "forward",
+                "level": "middle",
+                "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+                "modifiers": {"label": f"caption {i}"},
+            }
+            for i, part in enumerate(["left_leg", "right_leg", "left_arm",
+                                      "right_arm", "torso"])
+        ]))
+        placed = [
+            (float(re.search(r'\sx="([\d.]+)"', m.group(1)).group(1)),
+             float(re.search(r'\sy="([\d.]+)"', m.group(1)).group(1)))
+            for m in re.finditer(
+                r'<text([^>]*class="laban-caption"[^>]*)>', svg)
+        ]
+        self.assertEqual(len(placed), 5, "not every caption was rendered")
+        for i, a in enumerate(placed):
+            for b in placed[i + 1:]:
+                if abs(a[0] - b[0]) < 6:      # same lane
+                    self.assertGreaterEqual(
+                        abs(a[1] - b[1]), 30,
+                        f"captions at {a} and {b} overlap in the same lane")
+
+
+class SystemLayoutTest(unittest.TestCase):
+    """Systems run side by side across the page, not stacked into one column.
+
+    Measured on the reference plates: La vivandière p91 and p97 each carry two
+    three-line staves side by side, and the page is 1 : 1.37 portrait. Stacking
+    every system vertically gave one unbounded column — a 33-measure score came
+    out 360 x 7428, an aspect of 1 : 20.6, which is not a page at all.
+
+    Measure height was already right (about 186px against the plates' ~190 at
+    150dpi); what was wrong was the direction systems flow and how many
+    measures one holds.
+    """
+
+    def _score(self, measures):
+        return _minimal_ir([{
+            "symbol_id": "support.step",
+            "body_part": "left_leg",
+            "direction": "forward",
+            "level": "middle",
+            "timing": {"measure": m, "beat": 1, "duration_beats": 1},
+            "modifiers": {},
+        } for m in range(1, measures + 1)])
+
+    def test_a_long_score_places_systems_side_by_side(self):
+        layout = compute_laban_layout(self._score(33))
+        self.assertGreater(len(layout["systems"]), 1, "score did not wrap")
+        lefts = {round(s["staff_left"], 1) for s in layout["systems"]}
+        self.assertGreater(
+            len(lefts), 1,
+            f"every system sits at the same x ({lefts}) — they are stacked")
+
+    def test_a_long_score_is_not_an_unbounded_column(self):
+        layout = compute_laban_layout(self._score(33))
+        aspect = layout["height"] / layout["width"]
+        self.assertLess(
+            aspect, 4.0,
+            f"canvas is {layout['width']}x{layout['height']} — aspect 1:{aspect:.1f}, "
+            f"the plates are 1:1.37")
+
+    def test_a_short_score_still_gets_one_system(self):
+        layout = compute_laban_layout(self._score(3))
+        self.assertEqual(len(layout["systems"]), 1)
+
+
+class SurfaceFamilyTest(unittest.TestCase):
+    """surface.* are their own signs, not aliases of contact.*.
+
+    They routed into ``_render_contact_annotation``, where the type comes from
+    parts[1] — for a surface id that is "contact"/"glide"/"brush", so
+    surface.contact hit the touch default and surface.glide with it.
+
+    The catalog settles that they are distinct rather than aliases: each
+    carries its own glyph (U+224B, U+25CD, U+2248) and its own
+    ``staff_column`` of "surface". Where a family really is an alias — quality.*
+    against effort.* — the shared glyph is kept and only the authored id
+    preserved; that is not this case.
+    """
+
+    IDS = ["surface.brush", "surface.contact", "surface.glide"]
+
+    def _markup(self, symbol_id):
+        svg = render_laban_svg(_minimal_ir([{
+            "symbol_id": symbol_id,
+            "body_part": "torso",
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {},
+        }]))
+        i = svg.find(f'data-symbol-id="{symbol_id}"')
+        self.assertNotEqual(i, -1, f"{symbol_id} not rendered")
+        start = svg.rfind("<g", 0, i)
+        return re.sub(r'data-symbol-id="[^"]*"', "",
+                      svg[start:svg.find("</g>", start)])
+
+    def test_the_three_surface_signs_render_distinctly(self):
+        seen = {}
+        for symbol_id in self.IDS:
+            shape = self._markup(symbol_id)
+            clash = seen.get(shape)
+            self.assertIsNone(clash, f"{symbol_id} renders like {clash}")
+            seen[shape] = symbol_id
+
+    def test_a_surface_sign_is_not_a_contact_sign(self):
+        contact = self._markup("contact.touch")
+        for symbol_id in self.IDS:
+            with self.subTest(symbol=symbol_id):
+                self.assertNotEqual(self._markup(symbol_id), contact)
+
+    def test_surface_signs_keep_their_authored_id(self):
+        for symbol_id in self.IDS:
+            with self.subTest(symbol=symbol_id):
+                svg = render_laban_svg(_minimal_ir([{
+                    "symbol_id": symbol_id,
+                    "body_part": "torso",
+                    "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+                    "modifiers": {},
+                }]))
+                self.assertIn(f'data-symbol-id="{symbol_id}"', svg)
+
+
+class SeparatorModeTest(unittest.TestCase):
+    """Six separators shared one glyph.
+
+    ``_render_separator`` read ``modifiers.separator_mode``, defaulting to
+    "single" — a field nothing populates — while the catalog stated the mode
+    for each entry in ``behavior.preferred_separator_mode`` and
+    ``behavior.cap_shape``, and marked the flipped staff separator with
+    ``behavior.flip_variant``. The LabanWriter manual lists the flipped staff
+    separator as its own feature, so that one in particular must not collapse
+    onto the unflipped form.
+    """
+
+    IDS = ["separator.single", "separator.double", "separator.hook",
+           "separator.final", "separator.staff", "separator.staff.flipped"]
+
+    def _markup(self, symbol_id, **extra):
+        symbol = {
+            "symbol_id": symbol_id,
+            "body_part": "torso",
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {},
+        }
+        symbol.update(extra)
+        svg = render_laban_svg(_minimal_ir([symbol]))
+        i = svg.find(f'data-symbol-id="{symbol_id}"')
+        self.assertNotEqual(i, -1, f"{symbol_id} not rendered")
+        start = svg.rfind("<g", 0, i)
+        return re.sub(r'data-symbol-id="[^"]*"', "",
+                      svg[start:svg.find("</g>", start)])
+
+    def test_every_separator_renders_distinctly(self):
+        seen = {}
+        for symbol_id in self.IDS:
+            shape = self._markup(symbol_id)
+            clash = seen.get(shape)
+            self.assertIsNone(clash, f"{symbol_id} renders like {clash}")
+            seen[shape] = symbol_id
+
+    def test_the_flipped_staff_separator_is_a_mirror_of_the_plain_one(self):
+        plain = self._markup("separator.staff")
+        flipped = self._markup("separator.staff.flipped")
+        self.assertNotEqual(plain, flipped)
+        # Same number of strokes — flipping turns the hooks, it does not add.
+        self.assertEqual(len(re.findall(r"<line", plain)),
+                         len(re.findall(r"<line", flipped)))
+
+    def test_an_explicit_separator_mode_still_wins(self):
+        by_catalog = self._markup("separator.single")
+        forced = self._markup("separator.single",
+                              modifiers={"separator_mode": "double"})
+        self.assertNotEqual(by_catalog, forced)
+
+
+class EffortGradingTest(unittest.TestCase):
+    """``effort.<factor>.<pole>.increasing`` grades the element; the grading was
+    dropped.
+
+    ``_render_effort_diamond`` took factor from parts[1] and pole from
+    parts[2], then stopped — parts[3] was never read, so a bound flow and a
+    bound flow that is increasing engraved identically. In LMA a growing or
+    diminishing effort is the element plus a grading mark, so the element keeps
+    its stroke and the grading is added to it.
+    """
+
+    GRADED = [
+        ("effort.flow.bound", "effort.flow.bound.increasing"),
+        ("effort.flow.free", "effort.flow.free.increasing"),
+        ("effort.space.direct", "effort.space.direct.increasing"),
+        ("effort.space.indirect", "effort.space.indirect.increasing"),
+        ("effort.time.sudden", "effort.time.sudden.increasing"),
+        ("effort.time.sustained", "effort.time.sustained.increasing"),
+        ("effort.weight.strong", "effort.weight.strong.increasing"),
+        ("effort.weight.light", "effort.weight.light.decreasing"),
+    ]
+
+    def _markup(self, symbol_id):
+        svg = render_laban_svg(_minimal_ir([{
+            "symbol_id": symbol_id,
+            "body_part": "torso",
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {},
+        }]))
+        i = svg.find(f'data-symbol-id="{symbol_id}"')
+        self.assertNotEqual(i, -1, f"{symbol_id} not rendered")
+        start = svg.rfind("<g", 0, i)
+        return re.sub(r'data-symbol-id="[^"]*"', "",
+                      svg[start:svg.find("</g>", start)])
+
+    def test_a_graded_element_differs_from_the_plain_one(self):
+        for plain, graded in self.GRADED:
+            with self.subTest(symbol=graded):
+                self.assertNotEqual(self._markup(plain), self._markup(graded))
+
+    def test_the_element_stroke_survives_the_grading(self):
+        # The grading is added to the element, it does not replace it.
+        for plain, graded in self.GRADED:
+            with self.subTest(symbol=graded):
+                marked = self._markup(graded)
+                for line in re.findall(r'<line[^>]*/>', self._markup(plain)):
+                    self.assertIn(line, marked, "element stroke lost")
+
+    def test_increasing_and_decreasing_are_not_the_same_mark(self):
+        rising = self._markup("effort.weight.strong.increasing")
+        falling = self._markup("effort.weight.light.decreasing")
+        # Different poles too, so compare only the grading marks.
+        self.assertNotEqual(
+            re.findall(r'<path[^>]*/>', rising),
+            re.findall(r'<path[^>]*/>', falling))
+
+
+class InherentLevelTest(unittest.TestCase):
+    """A support whose level is inherent must engrave at that level.
+
+    In Labanotation a support's level IS the state of the leg — DNB
+    Fundamentals: "a low level corresponds to a bent leg, a middle level to a
+    straight leg, and a high level to being up on the toes". So plié is a low
+    support and relevé a high one; they are not pre-signs added to a symbol,
+    they are that symbol's own shading, which the renderer already draws.
+
+    The catalog gave those entries free allowed_levels, so nothing pinned them
+    and they engraved byte-identical to a plain step. The rule applied: when
+    the catalog allows exactly one level, that is the level, and the symbol
+    need not repeat it.
+
+    They still coincide with a plain step at the matching level. That is
+    correct — a low-level step IS a plié step.
+    """
+
+    def _glyph(self, symbol_id, **extra):
+        symbol = {
+            "symbol_id": symbol_id,
+            "body_part": "left_leg",
+            "direction": "forward",
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {},
+        }
+        symbol.update(extra)
+        svg = render_laban_svg(_minimal_ir([symbol]))
+        m = re.search(r'data-direction="[a-z_]+" data-level="([a-z]+)"', svg)
+        self.assertIsNotNone(m, f"no direction glyph for {symbol_id}")
+        return m.group(1)
+
+    def test_plie_is_a_low_support(self):
+        self.assertEqual(self._glyph("support.plie.forward"), "low")
+
+    def test_releve_and_rise_are_high_supports(self):
+        self.assertEqual(self._glyph("support.releve.forward"), "high")
+        self.assertEqual(self._glyph("support.rise.forward"), "high")
+
+    def test_lower_is_a_low_support(self):
+        self.assertEqual(self._glyph("support.lower.forward"), "low")
+
+    def test_a_plain_step_still_takes_any_level(self):
+        # Nothing is pinned on step; it must keep defaulting to middle and
+        # honour whatever the score asks for.
+        self.assertEqual(self._glyph("support.step.forward"), "middle")
+        self.assertEqual(self._glyph("support.step.forward", level="high"), "high")
+
+    def test_an_explicit_level_still_wins_over_the_inherent_one(self):
+        self.assertEqual(self._glyph("support.plie.forward", level="high"), "high")
+
+
+class JumpSubtypeTest(unittest.TestCase):
+    """A jump id names a subtype the renderer never read.
+
+    ``_render_jump_annotation`` read ``modifiers.spring_jump``,
+    ``modifiers.stretch`` and level, but not the id, and nothing injects those
+    modifiers from the id — so a score built from catalog ids engraved
+    jump.small, jump.large, jump.assemble, jump.sissonne and jump.spring
+    identically.
+
+    The boundary that must hold: a jump sign carries no compass direction. That
+    part of the collapse is correct notation — the travel direction lives in
+    the direction symbols in the support columns — and is asserted below so a
+    later pass cannot "fix" it by inventing signs.
+    """
+
+    SUBTYPES = ["small", "large", "assemble", "sissonne", "spring"]
+
+    def _markup(self, symbol_id, **extra):
+        symbol = {
+            "symbol_id": symbol_id,
+            "body_part": "torso",
+            "level": "middle",
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {},
+        }
+        symbol.update(extra)
+        svg = render_laban_svg(_minimal_ir([symbol]))
+        i = svg.find(f'data-symbol-id="{symbol_id}"')
+        self.assertNotEqual(i, -1, f"{symbol_id} not rendered")
+        start = svg.rfind("<g", 0, i)
+        return re.sub(r'data-symbol-id="[^"]*"', "",
+                      svg[start:svg.find("</g>", start)])
+
+    def test_each_jump_subtype_renders_distinctly(self):
+        seen = {}
+        for subtype in self.SUBTYPES:
+            shape = self._markup(f"jump.{subtype}")
+            clash = seen.get(shape)
+            self.assertIsNone(clash, f"jump.{subtype} renders like jump.{clash}")
+            seen[shape] = subtype
+        self.assertEqual(len(seen), len(self.SUBTYPES))
+
+    def test_a_jump_carries_no_compass_direction(self):
+        # Correct shared notation: the travel direction is in the support
+        # columns, not on the jump sign. These must stay identical.
+        for direction in ("forward", "backward", "left"):
+            with self.subTest(direction=direction):
+                self.assertEqual(
+                    self._markup("jump.small", direction=direction),
+                    self._markup("jump.small", direction="right"))
+
+    def test_level_still_reaches_the_jump_sign(self):
+        low = self._markup("jump.small", level="low")
+        high = self._markup("jump.small", level="high")
+        self.assertNotEqual(low, high)
+
+    def test_explicit_modifiers_still_win(self):
+        plain = self._markup("jump.small")
+        sprung = self._markup("jump.small", modifiers={"spring_jump": True})
+        self.assertNotEqual(plain, sprung)
+
+
+class PinBowTurnSubtypeTest(unittest.TestCase):
+    """pin, bow and turn each name a subtype in the id that never reached the
+    drawing. Three instances of one defect, so they are asserted together.
+
+    pin is the clearest: ``_render_pin_annotation`` read
+    ``modifiers.pin_head``, which nothing populates, while the catalog's own
+    ``behavior.cap_shape`` sat unread beside it — pin.entry declares
+    "diamond_head" and still drew the default triangle.
+    """
+
+    FAMILIES = {
+        "pin": ["generic", "entry", "hold", "floorplan_exit"],
+        "bow": ["hook", "horizontal", "vertical", "small"],
+        "turn": ["pivot", "spin", "half", "full"],
+    }
+
+    def _markup(self, symbol_id, **extra):
+        symbol = {
+            "symbol_id": symbol_id,
+            "body_part": "torso",
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {},
+        }
+        symbol.update(extra)
+        svg = render_laban_svg(_minimal_ir([symbol]))
+        i = svg.find(f'data-symbol-id="{symbol_id}"')
+        self.assertNotEqual(i, -1, f"{symbol_id} not rendered")
+        start = svg.rfind("<g", 0, i)
+        return re.sub(r'data-symbol-id="[^"]*"', "",
+                      svg[start:svg.find("</g>", start)])
+
+    def test_each_subtype_renders_distinctly(self):
+        for family, subtypes in self.FAMILIES.items():
+            seen = {}
+            for subtype in subtypes:
+                shape = self._markup(f"{family}.{subtype}")
+                clash = seen.get(shape)
+                self.assertIsNone(
+                    clash, f"{family}.{subtype} renders like {family}.{clash}")
+                seen[shape] = subtype
+
+    def test_pin_head_comes_from_the_catalog_behavior(self):
+        # pin.entry declares cap_shape "diamond_head"; pin.hold "hold_bar".
+        self.assertNotEqual(self._markup("pin.entry"), self._markup("pin.generic"))
+        self.assertNotEqual(self._markup("pin.hold"), self._markup("pin.generic"))
+
+    def test_an_explicit_modifier_still_overrides_the_id(self):
+        for family, override in (("pin", {"pin_head": "diamond"}),
+                                 ("bow", {"bow_type": "vertical"})):
+            with self.subTest(family=family):
+                base = self._markup(f"{family}.{self.FAMILIES[family][0]}")
+                forced = self._markup(f"{family}.{self.FAMILIES[family][0]}",
+                                      modifiers=override)
+                self.assertNotEqual(base, forced)
+
+    def test_turn_amount_and_turn_type_are_separate_distinctions(self):
+        # half/full is how far; pivot/spin is what kind. Neither may collapse.
+        self.assertNotEqual(self._markup("turn.half"), self._markup("turn.full"))
+        self.assertNotEqual(self._markup("turn.pivot"), self._markup("turn.spin"))
+
+
+class SequentialKindTest(unittest.TestCase):
+    """A sequential id names a kind; the renderer never read the id at all.
+
+    ``_render_sequential_annotation`` drew one wavy line plus an arrow whose
+    direction came from ``modifiers.wave_direction`` (default "upward"), a field
+    nothing populates. So a simultaneous movement, a successive one, a ripple
+    and a proximal-to-distal sequence all engraved as the same upward wave,
+    although the catalog gives each its own glyph.
+
+    ``wave.arm``/``body``/``leg`` are NOT part of this — the catalog gives all
+    three the same glyph U+223F, and the limb is carried by placement. Forcing
+    those apart would be inventing signs.
+    """
+
+    KINDS = [
+        "sequential.simultaneous",
+        "sequential.ripple",
+        "sequential.successive.upward",
+        "sequential.successive.downward",
+        "sequential.successive.lateral",
+        "sequential.sequential.proximal_to_distal",
+        "sequential.sequential.distal_to_proximal",
+        "sequential.wave.body",
+    ]
+
+    def _markup(self, symbol_id, **extra):
+        symbol = {
+            "symbol_id": symbol_id,
+            "body_part": "torso",
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {},
+        }
+        symbol.update(extra)
+        svg = render_laban_svg(_minimal_ir([symbol]))
+        i = svg.find(f'data-symbol-id="{symbol_id}"')
+        self.assertNotEqual(i, -1, f"{symbol_id} not rendered")
+        start = svg.rfind("<g", 0, i)
+        return re.sub(r'data-symbol-id="[^"]*"', "",
+                      svg[start:svg.find("</g>", start)])
+
+    def test_each_sequential_kind_renders_distinctly(self):
+        seen = {}
+        for symbol_id in self.KINDS:
+            shape = self._markup(symbol_id)
+            clash = seen.get(shape)
+            self.assertIsNone(clash, f"{symbol_id} renders like {clash}")
+            seen[shape] = symbol_id
+        self.assertEqual(len(seen), len(self.KINDS))
+
+    def test_the_wave_limbs_share_one_glyph_by_design(self):
+        # Same catalog glyph; the limb comes from placement, not the mark.
+        arm = self._markup("sequential.wave.arm")
+        leg = self._markup("sequential.wave.leg")
+        self.assertEqual(arm, leg)
+
+    def test_an_explicit_wave_direction_modifier_still_wins(self):
+        by_id = self._markup("sequential.successive.upward")
+        overridden = self._markup("sequential.successive.upward",
+                                  modifiers={"wave_direction": "downward"})
+        self.assertNotEqual(by_id, overridden)
+
+
+class ShapePoleTest(unittest.TestCase):
+    """A shape id names a family AND a pole; both must reach the drawing.
+
+    ``_render_shape_symbol`` keyed only on ``parts[1]``, the family, and drew
+    one fixed glyph for it. The pole in ``parts[2]`` was never read, so every
+    semantic opposite engraved identically — spreading as enclosing, rising as
+    sinking, growing as shrinking — although the catalog gives each pole its own
+    glyph (wall.spreading U+2194 vs wall.enclosing U+2195, and so on).
+
+    The poles are directional opposites along LMA's three dimensions, so the
+    family keeps its form and the pole sets the sense.
+    """
+
+    POLES = {
+        "ball": ["bulging", "hollowing"],
+        "door": ["spreading", "enclosing"],
+        "flow": ["growing", "shrinking"],
+        "pin": ["rising", "sinking", "lengthening", "shortening"],
+        "screw": ["advancing", "retreating", "forward", "backward"],
+        "table": ["spreading", "enclosing"],
+        "wall": ["spreading", "enclosing", "widening", "narrowing"],
+    }
+
+    def _markup(self, symbol_id):
+        svg = render_laban_svg(_minimal_ir([{
+            "symbol_id": symbol_id,
+            "body_part": "torso",
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {},
+        }]))
+        i = svg.find(f'data-symbol-id="{symbol_id}"')
+        self.assertNotEqual(i, -1, f"{symbol_id} not rendered")
+        start = svg.rfind("<g", 0, i)
+        # Strip the id: two symbols drawn identically still differ by it, and
+        # keeping it would make every comparison below pass for free.
+        return re.sub(r'data-symbol-id="[^"]*"', "",
+                      svg[start:svg.find("</g>", start)])
+
+    def test_poles_within_a_family_render_distinctly(self):
+        for family, poles in self.POLES.items():
+            seen = {}
+            for pole in poles:
+                shape = self._markup(f"shape.{family}.{pole}")
+                clash = seen.get(shape)
+                self.assertIsNone(
+                    clash,
+                    f"shape.{family}.{pole} renders like shape.{family}.{clash}")
+                seen[shape] = pole
+
+    def test_every_shape_symbol_is_unique_across_families(self):
+        seen = {}
+        for family, poles in self.POLES.items():
+            for pole in poles:
+                symbol_id = f"shape.{family}.{pole}"
+                shape = self._markup(symbol_id)
+                clash = seen.get(shape)
+                self.assertIsNone(clash, f"{symbol_id} renders like {clash}")
+                seen[shape] = symbol_id
+        self.assertEqual(len(seen), sum(len(p) for p in self.POLES.values()))
+
+    def test_an_explicit_shape_type_modifier_still_selects_the_family(self):
+        # The modifier override predates the id parsing and must keep working.
+        by_id = self._markup("shape.wall.spreading")
+        svg = render_laban_svg(_minimal_ir([{
+            "symbol_id": "shape.wall.spreading",
+            "body_part": "torso",
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {"shape_type": "ball"},
+        }]))
+        self.assertNotIn(by_id.strip("<g >"), svg)
+
+
+class BodyActionMarkTest(unittest.TestCase):
+    """The body action must be visible, not just its direction and level.
+
+    body.* symbols drew the direction symbol alone, so the action —
+    which is the whole point of the sign — was invisible: body.tilt.forward.high
+    and body.bend.forward.high engraved identically, and so did contract and
+    release, which the catalog itself records as mirror opposites (glyph U+2282
+    vs U+2283, and U+2312 vs U+2322 for bend vs stretch).
+    """
+
+    ACTIONS = ["bend", "stretch", "tilt", "contract", "release"]
+
+    def _markup(self, symbol_id, **extra):
+        symbol = {
+            "symbol_id": symbol_id,
+            "body_part": "torso",
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {},
+        }
+        symbol.update(extra)
+        svg = render_laban_svg(_minimal_ir([symbol]))
+        i = svg.find(f'data-symbol-id="{symbol_id}"')
+        self.assertNotEqual(i, -1, f"{symbol_id} not rendered")
+        start = svg.rfind("<g", 0, i)
+        return re.sub(r'data-symbol-id="[^"]*"', "",
+                      svg[start:svg.find("</g>", start)])
+
+    def test_each_body_action_is_distinguishable(self):
+        seen = {}
+        for action in self.ACTIONS:
+            shape = self._markup(f"body.{action}.forward.high")
+            clash = seen.get(shape)
+            self.assertIsNone(clash, f"body.{action} renders like body.{clash}")
+            seen[shape] = action
+
+    def test_mirror_pairs_are_not_identical(self):
+        for a, b in (("contract", "release"), ("bend", "stretch")):
+            with self.subTest(pair=f"{a}/{b}"):
+                self.assertNotEqual(self._markup(f"body.{a}.place.middle"),
+                                    self._markup(f"body.{b}.place.middle"))
+
+    def test_direction_and_level_still_reach_the_symbol(self):
+        # The action mark must not displace the direction symbol. Asserted on
+        # the data attributes rather than the <use> href: a symbol longer than
+        # one beat is drawn inline so its length can carry its duration, and
+        # then there is no href to look for.
+        markup = self._markup("body.tilt.forward.high")
+        self.assertIn('data-direction="forward"', markup)
+        self.assertIn('data-level="high"', markup)
+
+
+class RetentionColumnTest(unittest.TestCase):
+    """A retention sign means different things in different columns.
+
+    Knust vol 1 Rule III, p67: "The round retention sign placed in a support
+    column means that the body part shown retains the weight." And p75, on
+    the same sign: "When written in the support column, the round retention
+    sign has basically a different meaning than when it appears in a gesture
+    column, where it represents retention in the body."
+
+    So the column is not decoration, it is half the meaning. All 21
+    retention.* entries were routed to the annotation lane at one margin x,
+    which collapses those two meanings into one mark in one place — and
+    discards which body part is being held.
+
+    The shared glyph is not the defect and must not be "fixed": Knust has
+    three retention signs in the whole system — round, diamond for retention
+    in space, and one special case — never one per body part.
+    """
+
+    def _placed(self, symbol_id, body_part):
+        ir = {
+            "schema_version": "1.0",
+            "metadata": {"title": "retention probe"},
+            "symbols": [{
+                "symbol_id": symbol_id, "body_part": body_part,
+                "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+                "modifiers": {},
+            }],
+        }
+        layout = compute_laban_layout(ir)
+        placed = layout["placed_symbols"]
+        self.assertTrue(
+            placed,
+            f"{symbol_id} on {body_part} was not placed on the staff; it is "
+            f"in the annotation lane, where the column cannot mean anything")
+        return layout, placed[0]
+
+    # Every body category the retention family covers, with a body part that
+    # exercises a different column.
+    BODY_PARTS = (("retention.hold.leg", "left_leg"),
+                  ("retention.hold.arm", "left_arm"),
+                  ("retention.hold.hand", "left_hand"),
+                  ("retention.hold.head", "head"),
+                  ("retention.hold.full_body", "whole_body"),
+                  ("retention.cancel.arm", "right_arm"))
+
+    def test_a_retention_sign_is_drawn_inside_the_staff(self):
+        """All of them, not just the leg — arm and hand columns sit outside
+        the drawn support box and it is easy to mistake that for an overflow.
+        The box outlines the support columns only, as it does on Soirée
+        musicale p58 and La vivandière p84; the staff is wider than the box."""
+        for symbol_id, body_part in self.BODY_PARTS:
+            with self.subTest(body_part=body_part):
+                layout, entry = self._placed(symbol_id, body_part)
+                self.assertGreaterEqual(entry["x_left"], layout["staff_left"])
+                self.assertLessEqual(entry["x_right"], layout["staff_right"])
+
+    def test_the_column_distinguishes_holding_weight_from_holding_a_position(
+            self):
+        """The two meanings Knust contrasts must land in different columns."""
+        _, support = self._placed("retention.hold.leg", "left_leg")
+        _, gesture = self._placed("retention.hold.arm", "left_arm")
+        self.assertNotEqual(
+            support["column"], gesture["column"],
+            "a retention on the leg and one on the arm share a column, so "
+            "'retains the weight' and 'retention in the body' are the same "
+            "mark in the same place")
+
+    def _ink(self, symbol_id, body_part, **extra):
+        symbol = {"symbol_id": symbol_id, "body_part": body_part,
+                  "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+                  "modifiers": {}}
+        symbol.update(extra)
+        svg = render_laban_svg({
+            "schema_version": "1.0",
+            "metadata": {"title": "retention probe"},
+            "symbols": [symbol],
+        })
+        group = re.search(
+            r'<g[^>]*data-symbol-id="' + re.escape(symbol_id) + r'"[^>]*>'
+            r'(.*?)</g>', svg, re.S)
+        self.assertIsNotNone(group, f"{symbol_id} drew nothing")
+        return group.group(1)
+
+    def test_a_retention_sign_is_not_drawn_as_a_direction_symbol(self):
+        """Moving it onto the staff must not turn it into one.
+
+        This is the failure that hit flexion and extension: routed to a
+        body-part column, they came out as place-middle direction symbols and
+        their own renderer became dead code. The three placement assertions
+        above all pass while that happens — the sign is in the right column
+        and drawn wrong, which is the same information loss the other way
+        round.
+        """
+        retention = self._ink("retention.hold.leg", "left_leg")
+        direction = self._ink("direction.forward", "left_leg",
+                              direction="place", level="middle")
+        self.assertNotEqual(
+            re.sub(r'data-symbol-id="[^"]*"', "", retention),
+            re.sub(r'data-symbol-id="[^"]*"', "", direction),
+            "a retention sign is engraved identically to a place-middle "
+            "direction symbol")
+
+    def test_the_round_retention_sign_is_an_empty_circle(self):
+        """Knust vol 2, Fig. 78a: the round retention sign is drawn as an
+        empty circle, and vol 1 p74 says so in words while explaining why —
+        "The symbol for this cross of axes (101c) contains a small, empty
+        circle. The connection between the two ideas of the retention in the
+        body and the cross of the body axes becomes evident."
+
+        We drew a filled disc with a tie arc over it. The arc is not in
+        Fig. 78 at all.
+        """
+        ink = self._ink("retention.hold.leg", "left_leg")
+        circles = re.findall(r'<circle[^>]*>', ink)
+        self.assertTrue(circles, "the round retention sign drew no circle")
+        for circle in circles:
+            self.assertNotRegex(
+                circle, r'fill="#[0-9a-fA-F]{6}"',
+                f"the round retention sign is filled: {circle}")
+
+    def test_cancelling_a_retention_draws_the_decrease_sign(self):
+        """Knust vol 1 p39: "The general cancellation sign of Kinetography is
+        the decrease sign (79a), which is derived from the music decrescendo
+        sign." Fig. 79a is two straight lines meeting at a point above and
+        splaying apart below.
+
+        We drew a single diagonal slash, which is not in Fig. 79 anywhere.
+        """
+        ink = self._ink("retention.cancel.torso", "torso")
+        lines = re.findall(
+            r'<line x1="(-?[\d.]+)" y1="(-?[\d.]+)" '
+            r'x2="(-?[\d.]+)" y2="(-?[\d.]+)"', ink)
+        self.assertEqual(len(lines), 2,
+                         f"the decrease sign is two strokes, drew {len(lines)}")
+        (ax1, ay1, ax2, ay2), (bx1, by1, bx2, by2) = (
+            tuple(float(v) for v in pair) for pair in lines)
+        # They meet at the top and are apart at the bottom.
+        self.assertAlmostEqual(ax1, bx1, delta=0.2, msg="strokes do not meet")
+        self.assertAlmostEqual(ay1, by1, delta=0.2, msg="strokes do not meet")
+        self.assertGreater(abs(ax2 - bx2), 3.0, "strokes do not splay apart")
+        self.assertGreater(ay2, ay1, "the sign opens upward, not downward")
+
+    def test_release_and_cancel_are_the_same_sign(self):
+        """They name one operation, and the notation has one sign for it.
+
+        "Cancel X Retention" and "Release X Position" are the same act, and
+        Knust's general cancellation sign is a single sign. They were drawn as
+        an x and a slash — two invented glyphs for one thing. Kept as separate
+        ids because add_retention exposes both in its type enum.
+        """
+        cancel = self._ink("retention.cancel.torso", "torso")
+        release = self._ink("retention.release.torso", "torso")
+        self.assertEqual(cancel, release,
+                         "release and cancel engrave differently")
+
+    def test_space_hold_and_spot_hold_are_diamonds(self):
+        """Knust vol 2 Fig. 78b and 78c, missing from the catalog entirely.
+
+        78b, retention in space, is an empty diamond; vol 1 p87: "This
+        retention is written with the diamond-shaped retention sign (251b)."
+        78c, retention at a spot, is the same diamond with a filled dot in it.
+        """
+        space = self._ink("retention.space_hold.arm", "left_arm")
+        spot = self._ink("retention.spot_hold.arm", "left_arm")
+        for name, ink in (("space hold", space), ("spot hold", spot)):
+            with self.subTest(sign=name):
+                path = re.search(r'<path d="([^"]+)"', ink)
+                self.assertIsNotNone(path, f"{name} drew no diamond")
+                self.assertEqual(
+                    len(re.findall(r'[ML]', path.group(1))), 4,
+                    f"{name} is not a four-cornered diamond")
+        self.assertNotIn("<circle", space,
+                         "the space hold carries a dot; only the spot hold does")
+        self.assertIn("<circle", spot, "the spot hold has no dot")
+
+    def test_which_body_part_is_held_survives_rendering(self):
+        """Four body parts, four columns — the id says which, and it is the
+        column that has to carry it, since the glyph is shared by design."""
+        columns = {}
+        for symbol_id, body_part in (("retention.hold.leg", "left_leg"),
+                                     ("retention.hold.arm", "left_arm"),
+                                     ("retention.hold.head", "head"),
+                                     ("retention.hold.hand", "left_hand")):
+            _, entry = self._placed(symbol_id, body_part)
+            columns[symbol_id] = entry["column"]
+        self.assertEqual(
+            len(set(columns.values())), len(columns),
+            f"retention signs on different body parts share columns: "
+            f"{columns}")
+
+
+class BrokenRetentionSignTest(unittest.TestCase):
+    """Releasing a contact is written with the broken retention sign.
+
+    Knust vol 1 p39: "The end of a relationship, e.g. the release of a
+    contact, is expressed by a special cancellation sign derived from the
+    retention sign (the broken retention sign). It can be designed in two
+    ways, as in Fig. 79c or as in Fig. 79c'."
+
+    Fig. 79c and 79c' are the round retention sign cut into two arcs that are
+    then slid apart — sideways in 79c, up and down in 79c'. Derived from the
+    retention sign, in other words, exactly as the sentence says.
+
+    contact.release drew two short straight strokes with a gap: a broken
+    version of contact.touch's caret. A plausible guess, and derived from the
+    wrong sign.
+    """
+
+    def _ink(self, symbol_id):
+        svg = render_laban_svg({
+            "schema_version": "1.0",
+            "metadata": {"title": "release probe"},
+            "symbols": [{"symbol_id": symbol_id, "body_part": "left_hand",
+                         "timing": {"measure": 1, "beat": 1,
+                                    "duration_beats": 1},
+                         "modifiers": {}}],
+        })
+        group = re.search(
+            r'data-symbol-id="' + re.escape(symbol_id) + r'"[^>]*>(.*?)</g>',
+            svg, re.S)
+        self.assertIsNotNone(group, f"{symbol_id} drew nothing")
+        return group.group(1)
+
+    def test_the_release_sign_is_built_from_arcs(self):
+        """A broken circle, not two straight strokes."""
+        ink = self._ink("contact.release")
+        arcs = [d for d in re.findall(r'<path d="([^"]+)"', ink)
+                if "A" in d or "Q" in d or "C" in d]
+        self.assertEqual(
+            len(arcs), 2,
+            f"expected two arcs of a broken circle, got {len(arcs)}: {ink}")
+
+    def test_the_two_halves_are_pulled_apart(self):
+        """Broken, not merely a circle drawn in two strokes."""
+        nums = r"-?\d*\.?\d+"
+        arcs = [d for d in re.findall(r'<path d="([^"]+)"',
+                                      self._ink("contact.release"))
+                if "A" in d or "Q" in d or "C" in d]
+        starts = []
+        for d in arcs:
+            n = [float(v) for v in re.findall(nums, d)]
+            starts.append((n[0], n[1]))
+        self.assertGreater(
+            abs(starts[0][0] - starts[1][0]) + abs(starts[0][1] - starts[1][1]),
+            2.0, "the two halves sit on top of each other")
+
+    def test_it_is_not_the_touch_sign_with_a_gap(self):
+        self.assertNotEqual(self._ink("contact.release"),
+                            self._ink("contact.touch"))
+
+
+class RetentionIdsAreNotCombinatorialTest(unittest.TestCase):
+    """One id per retention sign, not one per sign-and-body-part pair.
+
+    The family held 35 entries: five types crossed with seven body categories
+    (arm, leg, torso, head, hand, shoulder, full_body). The category in the id
+    duplicated the IR's own body_part field, which is what actually places the
+    sign — BODY_TO_COLUMN reads body_part, never the id suffix.
+
+    Same padding that was pruned out of actions.json when 216 turn and jump
+    entries went: turn.right duplicated the direction field the way
+    retention.hold.arm duplicated body_part. The glyph metric scored the family
+    as 35 entries producing 4 glyphs, and that reading was right.
+    """
+
+    def test_the_catalog_has_one_entry_per_sign(self):
+        catalog = load_symbol_catalog()
+        retention = sorted(s for s in catalog if s.startswith("retention."))
+        self.assertEqual(
+            retention,
+            ["retention.cancel", "retention.hold", "retention.release",
+             "retention.space_hold", "retention.spot_hold"],
+            "retention ids still name a body category")
+
+    def test_one_id_serves_every_body_part_it_may_attach_to(self):
+        catalog = load_symbol_catalog()
+        allowed = set(catalog["retention.hold"].get("allowed_body_parts", []))
+        for body_part in ("left_arm", "right_leg", "torso", "head",
+                          "left_hand", "right_shoulder", "whole_body"):
+            with self.subTest(body_part=body_part):
+                self.assertIn(body_part, allowed)
+
+    def test_the_body_part_still_decides_the_column(self):
+        """Dropping it from the id must not drop it from the engraving."""
+        columns = {}
+        for body_part in ("left_leg", "left_arm", "head", "left_hand"):
+            layout = compute_laban_layout({
+                "schema_version": "1.0",
+                "metadata": {"title": "prune probe"},
+                "symbols": [{"symbol_id": "retention.hold",
+                             "body_part": body_part,
+                             "timing": {"measure": 1, "beat": 1,
+                                        "duration_beats": 1},
+                             "modifiers": {}}],
+            })
+            columns[body_part] = layout["placed_symbols"][0]["column"]
+        self.assertEqual(len(set(columns.values())), len(columns),
+                         f"body parts share a column: {columns}")
+
+
+class RetentionInsideADirectionSymbolTest(unittest.TestCase):
+    """A retention sign written inside a direction symbol makes it undeviating.
+
+    Knust vol 1 p45: "For undeviating movements retention signs are written
+    within a direction sign ... A retention in space within a direction sign
+    (122a) indicates an undeviating curve or an undeviating step. A 'retention
+    at a spot' sign written within a direction sign (122b) indicates an
+    undeviating movement towards an aim." Vol 1 p88 again, on the same
+    construction: "a direction sign which contains a space retention sign".
+
+    The IR already carries the field. The renderer dropped it: a step with
+    retention "space_hold" and one with none came out byte-identical.
+    """
+
+    def _step(self, retention=None):
+        symbol = {"symbol_id": "support.step", "body_part": "left_leg",
+                  "direction": "forward", "level": "middle",
+                  "timing": {"measure": 1, "beat": 1, "duration_beats": 2},
+                  "modifiers": {}}
+        if retention is not None:
+            symbol["retention"] = retention
+        svg = render_laban_svg({"schema_version": "1.0",
+                                "metadata": {"title": "undeviating probe"},
+                                "symbols": [symbol]})
+        group = re.search(
+            r'<g class="laban-symbol"[^>]*data-symbol-id="support\.step"'
+            r'[^>]*>(.*?)</g>', svg, re.S)
+        self.assertIsNotNone(group, "the step drew nothing")
+        return group.group(1)
+
+    def test_a_space_hold_inside_a_step_is_drawn(self):
+        plain = self._step()
+        marked = self._step("space_hold")
+        self.assertNotEqual(
+            plain, marked,
+            "a step marked undeviating engraves identically to a plain step")
+
+    def test_the_two_holds_are_told_apart(self):
+        """122a means an undeviating curve, 122b an undeviating movement
+        towards an aim. Different instructions, different marks."""
+        self.assertNotEqual(self._step("space_hold"), self._step("spot_hold"))
+
+    def test_the_two_holds_are_told_apart_to_the_eye(self):
+        """The string comparison above passed while the two looked identical.
+
+        The mark sits at the symbol's centre and so does the middle-level
+        dot, so an outlined diamond with a dot drawn inside it and an
+        outlined diamond sitting over the level dot come out as the same
+        picture. The markup differed — one had an extra <circle> — and the
+        assertion was satisfied by that difference while the rendering was
+        ambiguous. Fig. 122b is filled, which is the distinction the plate
+        actually prints.
+        """
+        space = self._step("space_hold")
+        spot = self._step("spot_hold")
+        space_diamond = re.findall(r'<path d="M [^"]+" fill="([^"]*)"', space)
+        spot_diamond = re.findall(r'<path d="M [^"]+" fill="([^"]*)"', spot)
+        self.assertIn("none", space_diamond,
+                      "the space hold's diamond is not open")
+        self.assertNotIn(
+            "none", spot_diamond[1:],
+            "the spot hold's diamond is open, so over the middle-level dot it "
+            "is indistinguishable from a space hold")
+
+    def test_the_mark_sits_inside_the_direction_symbol(self):
+        """Inside, not beside — that is the whole construction."""
+        marked = self._step("space_hold")
+        nums = r"-?\d*\.?\d+"
+        outline = re.search(r'<path d="([^"]+)"', marked)
+        self.assertIsNotNone(outline, "no direction outline drawn")
+        body = [float(n) for n in re.findall(nums, outline.group(1))]
+        xs, ys = body[0::2], body[1::2]
+
+        diamonds = re.findall(r'<path d="([^"]+)"', marked)[1:]
+        self.assertTrue(diamonds, "the retention sign drew no path")
+        for d in diamonds:
+            dn = [float(n) for n in re.findall(nums, d)]
+            for x in dn[0::2]:
+                self.assertGreaterEqual(x, min(xs))
+                self.assertLessEqual(x, max(xs))
+            for y in dn[1::2]:
+                self.assertGreaterEqual(y, min(ys))
+                self.assertLessEqual(y, max(ys))
+
+
+class SlideIsARetentionSignInsideTheSupportTest(unittest.TestCase):
+    """A slide is the round retention sign written inside the support sign.
+
+    Knust vol 1 p45, two sentences after the undeviating passage: "Slide. The
+    round retention sign is only written within a support sign in order to
+    indicate a slide (see D 233a, H 524b, L III 780e). The retention sign
+    indicates that the foot in question keeps the body weight."
+
+    The nine support.slide_support.* entries carried
+    behavior.pre_sign: foot.action.slide, which draws a mark flanking the
+    support sign. Slide came in with the foot pre-signs -- heel, toe, ball,
+    the graded points -- and it is not one of them: those say which part of
+    the foot bears the weight, and a slide says the weight stays on the foot
+    while it travels.
+    """
+
+    def _ink(self, symbol_id):
+        svg = render_laban_svg({
+            "schema_version": "1.0",
+            "metadata": {"title": "slide probe"},
+            "symbols": [{"symbol_id": symbol_id, "body_part": "left_leg",
+                         "direction": "forward", "level": "middle",
+                         "timing": {"measure": 1, "beat": 1,
+                                    "duration_beats": 2},
+                         "modifiers": {}}],
+        })
+        group = re.search(
+            r'<g class="laban-symbol"[^>]*data-symbol-id="'
+            + re.escape(symbol_id) + r'"[^>]*>(.*?)</g>', svg, re.S)
+        self.assertIsNotNone(group, f"{symbol_id} drew nothing")
+        return group.group(1)
+
+    def test_a_slide_draws_no_pre_sign(self):
+        self.assertNotIn(
+            "laban-pre-sign", self._ink("support.slide_support.forward"),
+            "the slide is drawn as a foot pre-sign beside the support sign")
+
+    def test_a_slide_draws_the_round_retention_sign_inside(self):
+        ink = self._ink("support.slide_support.forward")
+        outline = re.search(r'<path d="([^"]+)"', ink)
+        self.assertIsNotNone(outline, "no support outline drawn")
+        nums = r"-?\d*\.?\d+"
+        body = [float(n) for n in re.findall(nums, outline.group(1))]
+        xs, ys = body[0::2], body[1::2]
+
+        rings = [c for c in re.findall(r'<circle[^>]*>', ink)
+                 if 'fill="none"' in c]
+        self.assertTrue(rings, "the slide drew no round retention sign")
+        for ring in rings:
+            cx = float(re.search(r'cx="(' + nums + r')"', ring).group(1))
+            cy = float(re.search(r'cy="(' + nums + r')"', ring).group(1))
+            self.assertGreaterEqual(cx, min(xs))
+            self.assertLessEqual(cx, max(xs))
+            self.assertGreaterEqual(cy, min(ys))
+            self.assertLessEqual(cy, max(ys))
+
+    def test_a_plain_step_is_not_a_slide(self):
+        self.assertNotIn('fill="none"',
+                         "".join(re.findall(r'<circle[^>]*>',
+                                            self._ink("support.step.forward"))),
+                         "a plain step carries the slide's retention sign")
+
+
+class FlexionExtensionRoutingTest(unittest.TestCase):
+    """Flexion and extension marks are annotation signs, not direction symbols.
+
+    ``_symbol_family("extension.ankle.45")`` is "extension", which appears in
+    neither PRIMARY_FAMILIES nor ANNOTATION_FAMILIES, so ``_resolve_column``
+    fell through to the body-part mapping and all 54 catalog entries were drawn
+    on the staff as ``place``-``middle`` direction symbols — the wrong sign
+    entirely. ``_render_flexion_symbol`` was dead code for every one of them.
+
+    The degree is in the id (``.45``/``.90``/``.full``), which the renderer also
+    never read: it took degree from modifiers only.
+    """
+
+    def _markup(self, symbol_id, body_part="left_leg", **extra):
+        symbol = {
+            "symbol_id": symbol_id,
+            "body_part": body_part,
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {},
+        }
+        symbol.update(extra)
+        svg = render_laban_svg(_minimal_ir([symbol]))
+        i = svg.find(f'data-symbol-id="{symbol_id}"')
+        self.assertNotEqual(i, -1, f"{symbol_id} not rendered")
+        start = svg.rfind("<g", 0, i)
+        markup = svg[start:svg.find("</g>", start)]
+        # Strip the id, or every comparison below passes trivially: two symbols
+        # drawn identically still differ by their data-symbol-id.
+        return re.sub(r'data-symbol-id="[^"]*"', "", markup)
+
+    def test_flexion_marks_are_not_drawn_as_direction_symbols(self):
+        for symbol_id in ("flexion.knee.90", "extension.ankle.45",
+                          "flexion.elbow.full", "extension.spine.90"):
+            with self.subTest(symbol=symbol_id):
+                markup = self._markup(symbol_id)
+                self.assertNotIn('class="laban-symbol"', markup,
+                                 "drawn as a direction glyph")
+                self.assertIn("laban-annotation flexion", markup)
+
+    def test_degree_comes_from_the_id(self):
+        shapes = {
+            degree: self._markup(f"flexion.knee.{degree}")
+            for degree in ("45", "90", "full")
+        }
+        self.assertEqual(len(set(shapes.values())), 3,
+                         f"degrees render alike: {list(shapes)}")
+
+    def test_flexion_and_extension_of_the_same_joint_differ(self):
+        self.assertNotEqual(self._markup("flexion.knee.90"),
+                            self._markup("extension.knee.90"))
+
+    def test_explicit_degree_modifier_still_wins(self):
+        by_id = self._markup("flexion.knee.45")
+        overridden = self._markup("flexion.knee.45", modifiers={"degree": 3})
+        self.assertNotEqual(by_id, overridden)
+
+
+class ContactSymbolIdParsingTest(unittest.TestCase):
+    """A contact id names two things — the contact type and, optionally, the
+    body surface — and both must reach the drawing.
+
+    ``contact_type`` was taken from the *last* dotted segment, so
+    ``contact.grasp.front`` resolved its type to "front", missed the grasp
+    staple and drew the generic touch caret. Only the bare ``contact.grasp``
+    ever rendered correctly. The surface suffix was ignored entirely: it was
+    read from modifiers only. 38 symbols collapsed onto one glyph.
+    """
+
+    TYPES = ["touch", "slide", "strike", "grasp", "brush", "carry",
+             "press", "release", "interlock", "support"]
+    SURFACES = ["front", "back", "inner", "outer"]
+
+    def _markup(self, symbol_id):
+        svg = render_laban_svg(_minimal_ir([{
+            "symbol_id": symbol_id,
+            "body_part": "right_arm",
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {},
+        }]))
+        i = svg.find(f'data-symbol-id="{symbol_id}"')
+        self.assertNotEqual(i, -1, f"{symbol_id} not rendered")
+        start = svg.rfind("<g", 0, i)
+        return re.sub(r'data-symbol-id="[^"]*"', "",
+                      svg[start:svg.find("</g>", start)])
+
+    def test_each_contact_type_has_its_own_shape(self):
+        seen = {}
+        for name in self.TYPES:
+            shape = self._markup(f"contact.{name}")
+            clash = seen.get(shape)
+            self.assertIsNone(clash, f"contact.{name} renders like contact.{clash}")
+            seen[shape] = name
+        self.assertEqual(len(seen), len(self.TYPES))
+
+    def test_surface_suffix_does_not_replace_the_contact_type(self):
+        # contact.grasp.front must still draw a grasp, plus a front mark.
+        bare = self._markup("contact.grasp")
+        for surface in self.SURFACES:
+            with self.subTest(surface=surface):
+                marked = self._markup(f"contact.grasp.{surface}")
+                self.assertNotEqual(marked, bare, "surface mark not drawn")
+                # every path of the bare grasp must survive
+                for path in re.findall(r'<path[^>]*>', bare):
+                    self.assertIn(path, marked, "grasp shape lost")
+
+    def test_each_surface_marks_a_different_side(self):
+        seen = {self._markup("contact.touch")}
+        for surface in self.SURFACES:
+            shape = self._markup(f"contact.touch.{surface}")
+            self.assertNotIn(shape, seen, f"contact.touch.{surface} is a duplicate")
+            seen.add(shape)
+
+
+class FloorPlanMarkerGeometryTest(unittest.TestCase):
+    """The four floor.* staff-annotation sub-families mean different things and
+    must not share one glyph.
+
+    ``_render_stage_marker`` drew a dot plus an abbreviation taken from
+    ``symbol["stage_position"]["zone"]``. None of these catalog symbols carries
+    that field, so all 31 fell back to the same dot and a literal "?" — a
+    facing, a group formation, a travel path and a stage zone all engraved
+    identically, though the id names each one.
+    """
+
+    FAMILIES = {
+        "facing": ["downstage", "upstage", "stage_left", "stage_right",
+                   "downstage_left", "downstage_right",
+                   "upstage_left", "upstage_right"],
+        "zone": ["center", "center_left", "center_right",
+                 "downstage_center", "downstage_left", "downstage_right",
+                 "upstage_center", "upstage_left", "upstage_right",
+                 "wings_left", "wings_right"],
+        "path": ["straight", "curved", "circular", "spiral", "zigzag",
+                 "figure_eight"],
+        "formation": ["circle", "line", "diagonal", "v_shape", "cluster",
+                      "scatter"],
+    }
+
+    def _markup(self, symbol_id):
+        svg = render_laban_svg(_minimal_ir([{
+            "symbol_id": symbol_id,
+            "body_part": "torso",
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {},
+        }]))
+        start = svg.find(f'data-symbol-id="{symbol_id}"')
+        self.assertNotEqual(start, -1, f"{symbol_id} not rendered")
+        start = svg.rfind("<g", 0, start)
+        body = svg[start:svg.find("</g>", start)]
+        # Only the id is stripped. Do NOT blank the coordinates: every symbol
+        # here renders in the same slot, so coordinates *are* the shape — an
+        # arrow pointing up and one pointing down differ only in a y value.
+        return re.sub(r'data-symbol-id="[^"]*"', "", body)
+
+    def test_every_floor_marker_renders_a_distinct_shape(self):
+        seen = {}
+        for family, names in self.FAMILIES.items():
+            for name in names:
+                symbol_id = f"floor.{family}.{name}"
+                shape = self._markup(symbol_id)
+                clash = seen.get(shape)
+                self.assertIsNone(
+                    clash, f"{symbol_id} renders identically to {clash}")
+                seen[shape] = symbol_id
+        self.assertEqual(len(seen), sum(len(v) for v in self.FAMILIES.values()))
+
+    def test_floor_markers_carry_no_placeholder_text(self):
+        for family, names in self.FAMILIES.items():
+            with self.subTest(family=family):
+                self.assertNotIn("?", self._markup(f"floor.{family}.{names[0]}"))
+
+
+class DirectionImpliedBySymbolIdTest(unittest.TestCase):
+    """A symbol id that names a direction must render as that direction.
+
+    564 of the 906 catalog ids encode one (`support.step.backward`), and the
+    list_symbols → insert_symbol workflow hands those ids straight to the score.
+    Without inference the renderer fell back to the `place` glyph: a score that
+    says "step backward" engraved as "step in place", silently and with no
+    diagnostic. Explicit IR fields always win over the id.
+    """
+
+    def _glyph(self, symbol_id, **extra):
+        symbol = {
+            "symbol_id": symbol_id,
+            "body_part": "left_leg",
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {},
+        }
+        symbol.update(extra)
+        svg = render_laban_svg(_minimal_ir([symbol]))
+        # Read the data attributes, not the <use> href: direction symbols are
+        # drawn inline so their length can be proportional to duration, and
+        # there is no href to look for.
+        m = re.search(r'data-direction="([a-z_]+)" data-level="([a-z]+)"', svg)
+        self.assertIsNotNone(m, f"no direction glyph emitted for {symbol_id}")
+        return m.group(1), m.group(2)
+
+    def test_direction_in_the_id_is_used_when_the_ir_omits_it(self):
+        for symbol_id, expected in (
+            ("support.step.backward", "backward"),
+            ("support.step.forward", "forward"),
+            ("support.balance.diagonal_backward_left", "diagonal_backward_left"),
+            ("gesture.arm.forward.high", "forward"),
+        ):
+            with self.subTest(symbol=symbol_id):
+                self.assertEqual(self._glyph(symbol_id)[0], expected)
+
+    def test_level_in_the_id_is_used_when_the_ir_omits_it(self):
+        self.assertEqual(self._glyph("support.step.forward.low")[1], "low")
+        self.assertEqual(self._glyph("gesture.arm.forward.high")[1], "high")
+
+    def test_explicit_ir_fields_win_over_the_id(self):
+        direction, level = self._glyph(
+            "support.step.backward", direction="forward", level="low")
+        self.assertEqual((direction, level), ("forward", "low"))
+
+    def test_ids_naming_no_direction_still_fall_back_to_place(self):
+        self.assertEqual(self._glyph("support.step")[0], "place")
+
+
+class BarLineTest(unittest.TestCase):
+    """A measure line is solid across the staff and dashed outside it.
+
+    Verified at high magnification on the OPENING MARCH plate of Soirée
+    musicale: the rule is solid between the outer staff lines, stops exactly on
+    them with no overhang, and continues outward on both sides as a dashed line.
+    The dashed part is a time reference — on that plate it runs the full page
+    width, tying the same count across four dancers' staves and out to the count
+    numbers in the margin.
+
+    How far it should reach is layout-dependent and was not measurable to a
+    constant (staff detection was unreliable across plates and the answer
+    differs between single- and multi-staff pages), so we run it to the notation
+    column extent: everything drawn at that moment in time.
+    """
+
+    def _render(self):
+        svg = render_laban_svg(_minimal_ir())
+        horizontals = [
+            (float(a), float(b), "dasharray" in rest)
+            for a, _, b, rest in re.findall(
+                r'<line x1="([\d.]+)" y1="([\d.]+)" x2="([\d.]+)" y2="\2"([^>]*)>', svg)
+        ]
+        # Staff position must come from the render, not from
+        # build_column_positions(0.0) -- the staff is laid out at an offset.
+        verticals = sorted({
+            round(float(m.group(1)), 1)
+            for m in re.finditer(
+                r'<line x1="([\d.]+)" y1="([\d.]+)" x2="\1" y2="([\d.]+)"([^>]*)>', svg)
+            if abs(float(m.group(3)) - float(m.group(2))) > 30
+            and "dasharray" not in m.group(4)
+        })
+        return horizontals, verticals[0], verticals[-1]
+
+    def test_solid_measure_rule_stops_on_the_outer_staff_lines(self):
+        horizontals, left, right = self._render()
+        solid = [h for h in horizontals if not h[2]]
+        self.assertTrue(solid, "no solid horizontal rules rendered")
+        for x1, x2, _ in solid:
+            self.assertGreaterEqual(round(x1, 1), left - 0.1,
+                                    f"rule starts at {x1}, staff starts at {left}")
+            self.assertLessEqual(round(x2, 1), right + 0.1,
+                                 f"rule ends at {x2}, staff ends at {right}")
+
+    def test_measure_rule_continues_outside_the_staff_as_dashes(self):
+        horizontals, left, right = self._render()
+        dashed = [h for h in horizontals if h[2]]
+        self.assertTrue(dashed, "no dashed measure-line extensions rendered")
+        self.assertTrue(any(x2 <= left + 0.1 for x1, x2, _ in dashed),
+                        f"no dashed extension left of {left}: {dashed}")
+        self.assertTrue(any(x1 >= right - 0.1 for x1, x2, _ in dashed),
+                        f"no dashed extension right of {right}: {dashed}")
+
+
+class StartingPositionAreaTest(unittest.TestCase):
+    """The starting position is drawn as the staff continuing below the opening
+    double bar and closed by a rule at the bottom — all solid lines.
+
+    Verified against the OPENING plate of the Soirée musicale score, where every
+    staff shows the three staff lines running down past the double bar into the
+    starting-position area, a solid closing rule beneath it, and the starting
+    direction symbols inside. Nothing there is dashed; this renderer was drawing
+    a dashed box, which reads as a UI affordance rather than notation.
+    """
+
+    def _svg(self):
+        return render_laban_svg(_minimal_ir())
+
+    def test_starting_position_area_is_not_dashed(self):
+        svg = self._svg()
+        start = svg.find('class="laban-starting-position"')
+        self.assertNotEqual(start, -1, "starting-position area not rendered")
+        block = svg[start:svg.find("</g>", start)]
+        self.assertNotIn("stroke-dasharray", block)
+
+    def test_staff_lines_continue_through_the_starting_position(self):
+        svg = self._svg()
+        start = svg.find('class="laban-starting-position"')
+        block = svg[start:svg.find("</g>", start)]
+        verticals = {
+            round(float(m.group(1)), 1)
+            for m in re.finditer(
+                r'<line x1="([\d.]+)" y1="[\d.]+" x2="\1" y2="[\d.]+', block)
+        }
+        self.assertEqual(len(verticals), 3,
+                         f"expected the three staff lines, got {sorted(verticals)}")
+
+    def test_starting_position_area_is_closed_at_the_bottom(self):
+        svg = self._svg()
+        start = svg.find('class="laban-starting-position"')
+        block = svg[start:svg.find("</g>", start)]
+        horizontals = [
+            m for m in re.finditer(
+                r'<line x1="([\d.]+)" y1="([\d.]+)" x2="([\d.]+)" y2="\2"', block)
+        ]
+        self.assertTrue(horizontals, "no closing rule beneath the starting position")
+
+
+class SupportSymbolTouchesCentreLineTest(unittest.TestCase):
+    """A support symbol touches the centre line -- that contact is what marks it
+    as a support, so it carries meaning and is not a spacing choice.
+
+    Measured over 57 notation plates of the reference score (397 direction-sized
+    components): median width 100% of the column, 88% touching the centre line,
+    and when a symbol is narrower than its column the gap opens on the *outer*
+    side (p90 41%) not the centre side (p90 15%). See
+    docs/labanwriter_parity_audit.md.
+    """
+
+    def _placed(self, body_part="right_leg"):
+        ir = _minimal_ir([{
+            "symbol_id": "support.step",
+            "body_part": body_part,
+            "direction": "forward",
+            "level": "low",
+            "timing": {"measure": 1, "beat": 1, "duration_beats": 1},
+            "modifiers": {},
+        }])
+        svg = render_laban_svg(ir)
+        # Direction symbols are drawn inline so their length can be
+        # proportional to duration, so the extent comes from the path.
+        m = re.search(r'<g class="laban-symbol"[^>]*>.*?<path d="([^"]+)"',
+                      svg, re.S)
+        self.assertIsNotNone(m, "no path emitted for the support symbol")
+        nums = [float(n) for n in re.findall(r'-?\d+\.?\d*', m.group(1))]
+        xs = nums[0::2]
+        x, w = min(xs), max(xs) - min(xs)
+        centre = float(re.search(
+            r'<line x1="([\d.]+)" y1="[\d.]+" x2="\1" y2="[\d.]+" '
+            r'stroke="#111827" stroke-width="2.5"/>', svg).group(1))
+        return x, w, centre
+
+    def test_right_support_symbol_starts_at_the_centre_line(self):
+        x, _, centre = self._placed("right_leg")
+        self.assertAlmostEqual(x, centre, delta=1.5,
+                               msg=f"symbol starts at {x}, centre line at {centre}")
+
+    def test_left_support_symbol_ends_at_the_centre_line(self):
+        x, w, centre = self._placed("left_leg")
+        self.assertAlmostEqual(x + w, centre, delta=1.5,
+                               msg=f"symbol ends at {x + w}, centre line at {centre}")
+
+    def test_support_symbol_spans_the_full_column_width(self):
+        from dancenotation_mcp.rendering.laban_layout import COLUMN_WIDTHS
+        _, w, _ = self._placed("right_leg")
+        self.assertAlmostEqual(w, COLUMN_WIDTHS["right_support"], delta=0.5)
+
+
 class ThreeLineStaffTest(unittest.TestCase):
     """A Labanotation staff is three vertical lines: the centre line, plus one
     line on each side delimiting the two support columns. The gesture, body,
@@ -1160,8 +3121,13 @@ class ThreeLineStaffTest(unittest.TestCase):
         self.assertAlmostEqual(left, positions["left_support"][0] + offset, places=1)
         self.assertAlmostEqual(right, positions["right_support"][1] + offset, places=1)
 
-    def _horizontal_line_spans(self):
-        """(x1, x2) of horizontal rules — bar lines and the double bars."""
+    def _horizontal_line_spans(self, dashed=False):
+        """(x1, x2) of horizontal rules, solid by default.
+
+        The dashed measure-line extensions legitimately reach past the staff to
+        the notation column extent, so a span check on every horizontal rule
+        would flag them; pass dashed=True to look at those instead.
+        """
         svg = render_laban_svg(_minimal_ir())
         spans = []
         for m in re.finditer(
@@ -1170,16 +3136,21 @@ class ThreeLineStaffTest(unittest.TestCase):
         ):
             x1, y1, x2, y2, rest = m.groups()
             if abs(float(y1) - float(y2)) < 0.01 and abs(float(x2) - float(x1)) > 20:
-                spans.append((float(x1), float(x2)))
+                if ("dasharray" in rest) == dashed:
+                    spans.append((float(x1), float(x2)))
         return spans
 
-    def test_bar_lines_do_not_overhang_the_staff(self):
-        # Bar lines cross the staff; they must not stretch across the arm and
-        # path columns, which would re-draw the box the staff lines replaced.
+    def test_solid_bar_lines_do_not_overhang_the_staff(self):
+        # The solid part of a measure line crosses the staff and stops on the
+        # outer staff lines. It must not stretch across the arm and path
+        # columns, which would re-draw the box the staff lines replaced.
+        # (The *dashed* extension does reach that far, by design — see
+        # BarLineTest.)
         positions = build_column_positions(0.0)
         support_span = positions["right_support"][1] - positions["left_support"][0]
-        self.assertTrue(self._horizontal_line_spans(), "no horizontal rules found")
-        for x1, x2 in self._horizontal_line_spans():
+        spans = self._horizontal_line_spans()
+        self.assertTrue(spans, "no solid horizontal rules found")
+        for x1, x2 in spans:
             self.assertLessEqual(
                 x2 - x1, support_span + 12,
                 f"bar line spans {x2 - x1:.0f}px, staff is only {support_span:.0f}px",

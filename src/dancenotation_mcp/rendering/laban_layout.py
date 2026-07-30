@@ -13,6 +13,7 @@ from __future__ import annotations
 from math import ceil
 
 from dancenotation_mcp.ir.catalog import load_symbol_catalog
+from dancenotation_mcp.ir.models import resolve_direction_and_level
 from dancenotation_mcp.ir.time_signatures import (
     DEFAULT_BEATS_PER_MEASURE,
     beats_for_measure,
@@ -27,28 +28,46 @@ MARGIN_Y_BOTTOM = 40
 HEADER_HEIGHT = 40
 
 COL_WIDTH = 20  # default fallback; per-column widths below override this
-CENTER_GAP = 4
+# The support columns abut the centre line with no gap: a support symbol
+# touching the centre line is what marks it as a support, so the contact
+# carries meaning. Measured over 57 plates of the reference score, 88% of
+# direction-sized symbols touch it, and symbols narrower than their column
+# keep that contact and open the gap on the outer side instead.
+CENTER_GAP = 0
 
-# ICKL-standard column widths: support widest, body medium, arm/gesture/path narrow
+# Column widths: support widest, body medium, arm/gesture/path narrow.
+#
+# Knust vol 1 p31 numbers them outward from the middle line: 1st support
+# ("the body as a whole ... steps and jumps, and turns"), 2nd leg gesture
+# ("the movements of the legs when they are not carrying the body weight"),
+# 3rd upper body, 4th arms. The leg gesture columns were missing and every
+# leg part went to a support column whatever it was doing.
 COLUMN_WIDTHS = {
     "left_path":         14,
     "left_arm_gesture":  16,
     "left_arm":          18,
     "left_body":         18,
+    "left_leg_gesture":  22,
     "left_support":      26,
     "right_support":     26,
+    "right_leg_gesture": 22,
     "right_body":        18,
     "right_arm":         18,
     "right_arm_gesture": 16,
     "right_path":        14,
 }
-BEAT_HEIGHT = 60
+BEAT_HEIGHT = 102
 ANNOTATION_WIDTH = 22
 ANNOTATION_GAP = 6
 
 LABAN_SYSTEM_CAPACITY = 8   # measures per system before wrapping
 LABAN_SYSTEM_GAP_X = 40     # horizontal gap (kept for backward compat)
-LABAN_SYSTEM_GAP_Y = 30     # vertical gap between stacked systems
+LABAN_SYSTEM_GAP_Y = 30     # vertical gap between rows of systems
+
+# Height / width of a notation plate, measured on the reference scores:
+# La vivandière pages are 2698x3668 and 2727x3775, both 1 : 1.36-1.38. Systems
+# are packed toward this proportion instead of running off in one direction.
+PAGE_ASPECT = 1.37
 
 STARTING_POSITION_HEIGHT = 60  # vertical space for starting position area
 STARTING_POSITION_GAP = 8     # gap between starting position and measure 1
@@ -60,17 +79,21 @@ STAFF_COLUMNS = [
     "left_arm_gesture",
     "left_arm",
     "left_body",
+    "left_leg_gesture",
     "left_support",
     # ── center line ──
     "right_support",
+    "right_leg_gesture",
     "right_body",
     "right_arm",
     "right_arm_gesture",
     "right_path",
 ]
 
-LEFT_COLUMNS = {"left_path", "left_arm_gesture", "left_arm", "left_body", "left_support"}
-RIGHT_COLUMNS = {"right_support", "right_body", "right_arm", "right_arm_gesture", "right_path"}
+LEFT_COLUMNS = {"left_path", "left_arm_gesture", "left_arm", "left_body",
+                "left_leg_gesture", "left_support"}
+RIGHT_COLUMNS = {"right_support", "right_leg_gesture", "right_body",
+                 "right_arm", "right_arm_gesture", "right_path"}
 
 BODY_TO_COLUMN = {
     # Legs → support columns
@@ -93,22 +116,68 @@ BODY_TO_COLUMN = {
     "left_wrist": "left_arm_gesture", "right_wrist": "right_arm_gesture",
     # Shoulders → body columns
     "left_shoulder": "left_body", "right_shoulder": "right_body",
-    # Body → center
-    "torso": "center", "head": "head",
-    "upper_spine": "center", "lower_spine": "center",
-    "neck": "head",
-    "pelvis": "center", "whole_body": "center",
+    # Trunk and head → an upper body column, NOT the centre line.
+    #
+    # These used to map to "center", a column spanning both support columns,
+    # and to "head", which is not a staff column at all. Both straddle the
+    # centre line, so a torso movement was drawn over whatever the legs were
+    # doing -- 9 units of overlap with each support at the same beat.
+    #
+    # Knust vol 1 p170: "trunk, chest, and shoulder section are, as a rule,
+    # written in one of the upper body columns as long as these columns are
+    # free, otherwise they are written in any empty gesture column." Soirée
+    # musicale p58 agrees from the other side: magnified across a bar line,
+    # the centre line carries beat ticks and nothing else.
+    #
+    # "One of" leaves the side open, so the trunk takes the left body column
+    # and the head the right. p170 names trunk, chest and shoulder, not the
+    # head; putting the head with the trunk was tried and collided with it
+    # three times in the example score, which is evidence enough that the two
+    # are not one indication. Which column the head really belongs in is not
+    # settled -- see the audit doc -- but a body column is right in the one
+    # respect that matters here: nothing may sit on the centre line.
+    #
+    # The "as long as these columns are free" half of Knust's rule needs to
+    # know what else is in the measure, and a static map cannot. Not
+    # implemented; recorded.
+    "torso": "left_body",
+    "upper_spine": "left_body", "lower_spine": "left_body",
+    "pelvis": "left_body", "whole_body": "left_body",
+    "head": "right_body", "neck": "right_body",
 }
 
 # Symbol families placed inside the main staff columns.
-PRIMARY_FAMILIES = {"support", "direction", "gesture", "body", "flexion"}
+#
+# "retention" belongs here because the column is half of what a retention
+# sign says. Knust vol 1 Rule III, p67: "The round retention sign placed in a
+# support column means that the body part shown retains the weight"; and p75:
+# "When written in the support column, the round retention sign has basically
+# a different meaning than when it appears in a gesture column, where it
+# represents retention in the body." In the annotation lane, where all 21
+# entries used to go, those two readings are one mark at one x.
+PRIMARY_FAMILIES = {"support", "direction", "gesture", "body", "retention"}
+
+# Families that put a leg in a support column rather than a leg gesture one.
+#
+# "support" is the weight itself. "travel" and "jump" are progression of the
+# body as a whole, which Knust p31 names as the first column's business along
+# with steps and turns. "retention" belongs here because the round sign in a
+# support column is precisely the statement that the part keeps the weight
+# (Rule III, p67) -- sent to the gesture column it would say the opposite.
+_WEIGHT_BEARING = {"support", "travel", "jump", "retention"}
 
 # Symbol families placed in annotation areas beside the staff.
 ANNOTATION_FAMILIES = {"turn", "jump", "path", "quality", "timing",
                        "level", "surface", "pin", "repeat", "music",
-                       "retention", "contact", "effort", "shape",
+                       "contact", "effort", "shape",
                        "floor_plan", "sequential", "bow", "dynamic",
-                       "adlib", "motif", "foothook", "digit"}
+                       "adlib", "motif", "foothook", "digit",
+                       # Flexion and extension are marks applied to a limb, not
+                       # direction symbols. "extension" was in neither set, so
+                       # _resolve_column fell through to the body-part mapping
+                       # and all 54 entries engraved as `place` direction
+                       # symbols on the staff.
+                       "flexion", "extension"}
 
 # Annotation side preference (left or right of staff).
 ANNOTATION_SIDE = {
@@ -246,16 +315,47 @@ def _resolve_column(symbol: dict, spec: dict) -> str:
         return "annotation"
 
     # Map body part to column
-    col = BODY_TO_COLUMN.get(body_part, "center")
+    col = BODY_TO_COLUMN.get(body_part, "left_body")
+
+    # A leg only belongs in a support column while it carries the weight.
+    # Knust vol 1 p31: the first columns are "for the notation of the
+    # movements of the body as a whole, i.e. progression of the body as a
+    # whole with steps and jumps, and turns of the body as a whole", and "the
+    # second columns are called the leg gesture columns. In these columns are
+    # written the movements of the legs when they are not carrying the body
+    # weight."
+    #
+    # Which of the two it is comes from the symbol, not the body part -- the
+    # same leg steps and gestures -- so BODY_TO_COLUMN alone could not decide
+    # it and sent everything to the support column.
+    if col in ("left_support", "right_support") and family not in _WEIGHT_BEARING:
+        return col.replace("_support", "_leg_gesture")
     return col
 
 
 def _beat_to_y(measure_pos: tuple[float, float], beat: float,
-               duration: float, beats_per_measure: float | None = None) -> tuple[float, float]:
+               duration: float, beats_per_measure: float | None = None,
+               system_top: float | None = None) -> tuple[float, float]:
     """Convert beat position within a measure to y-coordinates.
 
     Returns (y_bottom, y_top) — bottom of symbol, top of symbol.
     In bottom-to-top layout: beat 1 at bottom_y, beat N at top_y.
+
+    A symbol may run past the top of its own measure — that is a movement
+    held across a bar line, and the plates engrave it as one continuous sign.
+    It may not run past the top of its system: that is off the page. A
+    four-beat step on the last beat of an eight-measure system was drawn from
+    y -69, above a canvas starting at 0.
+
+    ``system_top`` clamps it. The plates do not show what a sign looks like
+    when it outruns the staff, because a notator does not put one there — on
+    La vivandière p84 the staff closes with a horizontal cap and the last
+    measure's signs finish inside it. The score-level problem is already
+    reported: the validator raises TIMING_MEASURE_OVERFLOW with the
+    carry_duration that would have to resume in the next measure. Whether the
+    remainder should be re-engraved at the foot of the next system is
+    recorded as open in docs/labanwriter_parity_audit.md; drawing it off the
+    page is wrong under every answer to that question.
     """
     m_bottom, m_top = measure_pos
     measure_height = m_bottom - m_top
@@ -265,6 +365,8 @@ def _beat_to_y(measure_pos: tuple[float, float], beat: float,
     # beat 1 starts at bottom
     y_bottom = m_bottom - (beat - 1.0) * beat_h
     y_top = y_bottom - duration * beat_h
+    if system_top is not None and y_top < system_top:
+        y_top = system_top
     return y_bottom, y_top
 
 
@@ -273,16 +375,77 @@ def _system_for_measure(m: int) -> int:
     return (m - 1) // LABAN_SYSTEM_CAPACITY
 
 
+def _with_resolved_direction(symbol: dict, spec: dict | None = None) -> dict:
+    """Copy of ``symbol`` with direction/level filled in from its id or spec.
+
+    When the catalog allows exactly one level, that IS the symbol's level and
+    the score need not repeat it — plié is a low support and relevé a high one,
+    which is the symbol's own shading rather than a sign added to it. Without
+    this they engraved at the default middle, byte-identical to a plain step.
+    """
+    direction, level = resolve_direction_and_level(symbol)
+    if level is None and spec:
+        allowed = spec.get("allowed_levels") or []
+        if len(allowed) == 1:
+            level = allowed[0]
+    if direction == symbol.get("direction") and level == symbol.get("level"):
+        return symbol
+    resolved = dict(symbol)
+    if direction is not None:
+        resolved["direction"] = direction
+    if level is not None:
+        resolved["level"] = level
+    return resolved
+
+
+CAPTION_LANE_WIDTH = 9      # horizontal step between caption lanes
+CAPTION_MIN_SEPARATION = 40  # vertical clearance two captions need to share one
+
+
+def _assign_caption_lanes(placed_symbols: list[dict]) -> None:
+    """Spread captions across lanes so they stop stacking on each other.
+
+    Every caption took the same margin x, so several falling at the same
+    height overlapped into an unreadable pile. A caption runs vertically, so
+    only its y matters: two may share a lane when they are far enough apart,
+    and are pushed outward when they are not.
+
+    Mutates ``placed_symbols`` in place, which is a private list this function
+    owns — the caller's IR is untouched.
+    """
+    captioned = [e for e in placed_symbols
+                 if e["symbol"].get("modifiers", {}).get("label")
+                 and e.get("caption_x") is not None]
+    lanes: dict[tuple[int, int], list[float]] = {}
+    for entry in sorted(captioned, key=lambda e: (e["system_index"], e["y_top"])):
+        y = (entry["y_top"] + entry["y_bottom"]) / 2
+        lane = 0
+        while True:
+            key = (entry["system_index"], lane)
+            used = lanes.setdefault(key, [])
+            if all(abs(y - other) >= CAPTION_MIN_SEPARATION for other in used):
+                used.append(y)
+                break
+            lane += 1
+        entry["caption_x"] += lane * CAPTION_LANE_WIDTH
+
+
 def compute_laban_layout(ir: dict) -> dict:
     """Compute full standard Labanotation layout from IR.
 
     When the score has more than ``LABAN_SYSTEM_CAPACITY`` measures the
-    layout wraps into multiple vertically stacked *systems*.  Each system
-    shares the same x-position; earlier measures appear at the top of the
-    page.
+    layout wraps into multiple *systems* laid out left to right across the
+    page, as the reference plates do — La vivandière p91 and p97 each carry
+    two three-line staves side by side. Stacking them instead produced one
+    unbounded column: a 33-measure score came out 360 x 7428, an aspect of
+    1 : 20.6 against the plates' 1 : 1.37.
     """
     catalog = load_symbol_catalog()
-    symbols = ir.get("symbols", [])
+    # Fill direction/level from the symbol id where the score left them out —
+    # most catalog ids name both, and without this a "support.step.backward"
+    # engraves as "place". Copies, so the caller's IR is not mutated.
+    symbols = [_with_resolved_direction(s, catalog.get(s.get("symbol_id", "")))
+               for s in ir.get("symbols", [])]
     beats_map = build_measure_beats_map(ir)
     mc = measure_count(symbols, beats_map)
 
@@ -294,11 +457,25 @@ def compute_laban_layout(ir: dict) -> dict:
     staff_w = staff_total_width()
     single_system_width = MARGIN_X + annotation_left_width + staff_w + annotation_right_width + MARGIN_X
 
+    # Systems flow left to right, wrapping to a new row when the page runs
+    # out of width. The row count is chosen so the finished canvas is close to
+    # the plates' portrait proportion rather than a strip in either direction.
+    system_h_estimate = (mc / num_systems) * 4.0 * BEAT_HEIGHT
+    per_row = max(1, min(num_systems, round(
+        (num_systems * single_system_width * system_h_estimate * PAGE_ASPECT)
+        ** 0.5 / single_system_width))) if system_h_estimate else num_systems
+
     systems: list[dict] = []
-    y_cursor = MARGIN_Y_TOP + HEADER_HEIGHT  # top of first system's content
+    row_top = MARGIN_Y_TOP + HEADER_HEIGHT   # top of the current row
+    y_cursor = row_top                       # top of this system's content
     for si in range(num_systems):
-        # All systems share the same x position (vertical stacking)
-        s_staff_left = MARGIN_X + annotation_left_width
+        column = si % per_row
+        if column == 0 and si:
+            # New row: drop below the tallest system in the row just finished.
+            row_top = max(x["canvas_bottom"] for x in systems) + LABAN_SYSTEM_GAP_Y
+        y_cursor = row_top
+        s_staff_left = (MARGIN_X + annotation_left_width
+                        + column * single_system_width)
         s_staff_right = s_staff_left + staff_w
         s_col_positions = build_column_positions(s_staff_left)
         # Center line sits between left_support and right_support
@@ -344,12 +521,10 @@ def compute_laban_layout(ir: dict) -> dict:
             "canvas_bottom": canvas_bottom,
         })
 
-        # Advance y_cursor for next system
-        y_cursor = canvas_bottom + LABAN_SYSTEM_GAP_Y
-
-    # Global canvas size — single column width, total stacked height
-    canvas_width = single_system_width
-    canvas_height = max(s["canvas_bottom"] for s in systems)
+    # Global canvas size — as many system columns as the widest row used.
+    columns_used = min(num_systems, per_row)
+    canvas_width = single_system_width * columns_used
+    canvas_height = max(s["canvas_bottom"] for s in systems) + MARGIN_Y_BOTTOM
 
     # Build a merged measure_positions dict for backward-compat (single system)
     merged_measure_positions: dict[int, tuple[float, float]] = {}
@@ -402,7 +577,10 @@ def compute_laban_layout(ir: dict) -> dict:
 
         col = _resolve_column(symbol, spec)
         m_bpm = beats_for_measure(m, beats_map)
-        y_bottom, y_top = _beat_to_y(m_pos, beat, duration, m_bpm)
+        # The system's ceiling is the top of its last measure — time runs
+        # bottom to top, so that is the highest a sign in this system may go.
+        s_top = min(top for _bottom, top in s_measure_positions.values())
+        y_bottom, y_top = _beat_to_y(m_pos, beat, duration, m_bpm, s_top)
 
         if col == "annotation":
             side = ANNOTATION_SIDE.get(family, "right")
@@ -443,6 +621,10 @@ def compute_laban_layout(ir: dict) -> dict:
                 "y_top": m_top_y - 18,
                 "y_bottom": m_top_y - 4,
                 "system_index": si,
+                # Head-column symbols sit on the centre line, so without this
+                # their captions fell back to "just right of the symbol" and
+                # landed on the staff.
+                "caption_x": s_col_positions[STAFF_COLUMNS[-1]][1] + ANNOTATION_GAP,
             })
             continue
 
@@ -470,7 +652,13 @@ def compute_laban_layout(ir: dict) -> dict:
             "y_top": y_top,
             "y_bottom": y_bottom,
             "system_index": si,
+            # Where a caption for this symbol may be written: clear of the
+            # staff, in the margin, as the plates do. Captions used to be
+            # drawn at the symbol's own x and landed across the notation.
+            "caption_x": s_col_positions[STAFF_COLUMNS[-1]][1] + ANNOTATION_GAP,
         })
+
+    _assign_caption_lanes(placed_symbols)
 
     # ── Route computation ────────────────────────────────────────────
     bridge_routes = _compute_laban_bridge_routes(annotation_entries)

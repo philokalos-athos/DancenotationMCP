@@ -286,6 +286,232 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(turn["timing"]["measure"], 2)
         self.assertEqual(turn["timing"]["beat"], 1.0)
 
+    def _ir_declaring(self, numerator, denominator, beat):
+        """A one-symbol score whose time signature is declared the way the
+        schema says to declare it: in extensions.time_signatures."""
+        return {
+            "schema_version": "1.0",
+            "metadata": {"title": "time signature probe",
+                         "ir_version": "0.2.0", "schema_version": "0.2.0"},
+            "symbols": [{
+                "symbol_id": "support.step",
+                "body_part": "left_leg",
+                "direction": "forward",
+                "level": "middle",
+                "timing": {"measure": 1, "beat": beat, "duration_beats": 1},
+                "modifiers": {},
+            }],
+            "extensions": {
+                "time_signatures": [{"measure": 1, "numerator": numerator,
+                                     "denominator": denominator}],
+                "floor_plan": [],
+            },
+        }
+
+    def test_validator_reads_the_time_signature_the_schema_defines(self):
+        """extensions.time_signatures is the canonical declaration and was
+        being ignored.
+
+        The schema defines extensions.time_signatures with measure, numerator
+        and denominator, and defines no time_signature on metadata at all.
+        ir.time_signatures.build_measure_beats_map reads it and the layout uses
+        that. The validator did not: it had a second, private implementation
+        that derived beats only from music.time.* symbols carrying
+        measure_header, and fell back to a hardcoded 4.0 otherwise. So a score
+        declaring 5/4 the schema's way had every beat past 4 reported as
+        exceeding the measure -- 57 such errors on the example score, all of
+        them false.
+        """
+        report = validate_ir(self._ir_declaring(5, 4, beat=5.0))
+        exceeded = [i for i in report["issues"]
+                    if i["code"] == "BEAT_EXCEEDS_MEASURE"]
+        self.assertEqual(
+            exceeded, [],
+            "beat 5 of a 5/4 measure was reported as exceeding the measure")
+
+    def test_an_offbeat_in_the_last_beat_of_a_measure_is_legal(self):
+        """"Four and" is inside a 4/4 measure, and was being rejected.
+
+        Two checks in the validator guard the measure boundary, and they used
+        different coordinate systems. The span check reads
+        `beat + duration - 1.0 > measure_beats` -- 1-based beat converted to a
+        0-based offset, compared against a count. BEAT_EXCEEDS_MEASURE read
+        `beat > measure_beats`, comparing a 1-based position against a count
+        directly. In 4/4 they agree at the boundary by coincidence, because
+        beat 4 is both the fourth position and four beats in. They part company
+        as soon as the beat is fractional: beat 4.5 of a 4/4 measure is the
+        second half of beat four, squarely inside the bar, and was reported as
+        exceeding it.
+        """
+        report = validate_ir(self._ir_declaring(4, 4, beat=4.5))
+        exceeded = [i for i in report["issues"]
+                    if i["code"] == "BEAT_EXCEEDS_MEASURE"]
+        self.assertEqual(exceeded, [],
+                         "beat 4.5 of a 4/4 measure was reported as "
+                         "exceeding the measure")
+
+    def test_a_beat_at_or_past_the_end_of_the_measure_is_rejected(self):
+        """The boundary itself: a measure of N beats runs [1.0, 1.0 + N)."""
+        for beats, beat, legal in ((4, 4.9, True), (4, 5.0, False),
+                                   (3, 3.9, True), (3, 4.0, False)):
+            with self.subTest(signature=f"{beats}/4", beat=beat):
+                report = validate_ir(self._ir_declaring(beats, 4, beat=beat))
+                exceeded = [i for i in report["issues"]
+                            if i["code"] == "BEAT_EXCEEDS_MEASURE"]
+                if legal:
+                    self.assertEqual(exceeded, [],
+                                     f"beat {beat} of {beats}/4 rejected")
+                else:
+                    self.assertNotEqual(exceeded, [],
+                                        f"beat {beat} of {beats}/4 accepted")
+
+    def test_a_declared_short_measure_is_still_enforced(self):
+        """The other direction: reading the declaration must not amount to
+        switching the check off. In 3/4, beat 4 is genuinely out of range."""
+        report = validate_ir(self._ir_declaring(3, 4, beat=4.0))
+        codes = {i["code"] for i in report["issues"]}
+        self.assertIn("BEAT_EXCEEDS_MEASURE", codes,
+                      "beat 4 of a 3/4 measure was accepted")
+
+    def _two_supports(self, part_a, part_b):
+        """Two supports at the same instant, on the given body parts."""
+        return {
+            "schema_version": "1.0",
+            "metadata": {"title": "column probe",
+                         "ir_version": "0.2.0", "schema_version": "0.2.0"},
+            "symbols": [{
+                "symbol_id": "support.step.forward",
+                "body_part": part,
+                "direction": "forward",
+                "level": "middle",
+                "timing": {"measure": 1, "beat": 1.0, "duration_beats": 1},
+                "modifiers": {},
+            } for part in (part_a, part_b)],
+        }
+
+    def test_both_feet_on_the_floor_is_not_a_column_conflict(self):
+        """Standing on two feet is the most ordinary thing in the notation.
+
+        COLUMN_CONFLICT buckets symbols by column, but mixed two vocabularies
+        for what a column is: PRIMARY_MOTION_COLUMNS holds catalog family
+        names ("support"), while _BODY_TO_COLUMN returns the layout's
+        side-specific names ("left_support"). A support symbol's catalog
+        staff_column is the family name, which is in the set, so the
+        side-specific refinement was skipped and both legs were compared in
+        one bucket -- 99 false conflicts on the example score.
+        """
+        report = validate_ir(self._two_supports("left_leg", "right_leg"))
+        conflicts = [i for i in report["issues"]
+                     if i["code"] == "COLUMN_CONFLICT"]
+        self.assertEqual(
+            conflicts, [],
+            "a left-leg and a right-leg support at the same beat were "
+            "reported as sharing a column")
+
+    def test_two_symbols_on_one_leg_at_once_is_still_a_conflict(self):
+        """The other half: the check must still catch a real collision.
+
+        This is what the broken fallback lost. Every column name
+        _BODY_TO_COLUMN can return is outside PRIMARY_MOTION_COLUMNS, so the
+        branch that resolved a body part to a side never passed the gate that
+        followed it -- those symbols left the check entirely.
+        """
+        report = validate_ir(self._two_supports("left_leg", "left_leg"))
+        conflicts = [i for i in report["issues"]
+                     if i["code"] == "COLUMN_CONFLICT"]
+        self.assertNotEqual(
+            conflicts, [],
+            "two supports on the same leg at the same beat were not reported")
+
+    def test_simultaneous_movement_in_different_columns_is_not_an_overlap(self):
+        """A staff exists so that limbs can move at the same time.
+
+        TIMING_OVERLAP kept one "when did the last symbol end" cursor per
+        measure, across every primary motion column at once, so a left-leg
+        step and a right-arm gesture on the same beat read as one starting
+        before the other finished. 128 such warnings on the example score --
+        simultaneity itself was being reported.
+        """
+        ir = {
+            "schema_version": "1.0",
+            "metadata": {"title": "overlap probe",
+                         "ir_version": "0.2.0", "schema_version": "0.2.0"},
+            "symbols": [
+                {"symbol_id": "support.step.forward", "body_part": "left_leg",
+                 "direction": "forward", "level": "middle",
+                 "timing": {"measure": 1, "beat": 1.0, "duration_beats": 2},
+                 "modifiers": {}},
+                {"symbol_id": "support.step.forward", "body_part": "right_leg",
+                 "direction": "forward", "level": "middle",
+                 "timing": {"measure": 1, "beat": 1.0, "duration_beats": 2},
+                 "modifiers": {}},
+                {"symbol_id": "gesture.arm", "body_part": "left_arm",
+                 "direction": "forward", "level": "high",
+                 "timing": {"measure": 1, "beat": 1.0, "duration_beats": 2},
+                 "modifiers": {}},
+            ],
+        }
+        overlaps = [i for i in validate_ir(ir)["issues"]
+                    if i["code"] == "TIMING_OVERLAP"]
+        self.assertEqual(
+            overlaps, [],
+            "three limbs moving on the same beat were reported as overlapping")
+
+    def test_one_column_still_cannot_hold_two_overlapping_symbols(self):
+        """Keying the cursor by column must not switch the check off."""
+        ir = {
+            "schema_version": "1.0",
+            "metadata": {"title": "overlap probe",
+                         "ir_version": "0.2.0", "schema_version": "0.2.0"},
+            "symbols": [
+                {"symbol_id": "support.step.forward", "body_part": "left_leg",
+                 "direction": "forward", "level": "middle",
+                 "timing": {"measure": 1, "beat": 1.0, "duration_beats": 3},
+                 "modifiers": {}},
+                {"symbol_id": "support.step.forward", "body_part": "left_leg",
+                 "direction": "backward", "level": "middle",
+                 "timing": {"measure": 1, "beat": 2.0, "duration_beats": 2},
+                 "modifiers": {}},
+            ],
+        }
+        overlaps = [i for i in validate_ir(ir)["issues"]
+                    if i["code"] == "TIMING_OVERLAP"]
+        self.assertNotEqual(
+            overlaps, [],
+            "one leg was given two overlapping supports without complaint")
+
+    def test_a_header_does_not_collide_with_the_movement_beneath_it(self):
+        """Only symbols engraved in a motion column can collide in one.
+
+        Resolving the column by body part is right for a movement, but a
+        tempo mark, an effort annotation and a repeat sign all carry a body
+        part too -- torso or whole_body -- and would resolve to the centre
+        column even though the renderer puts them in the header row, the
+        margin and the staff edge. Two gates are needed, not one: the family
+        decides whether the symbol is in a motion column at all, and the body
+        part decides which one.
+        """
+        ir = {
+            "schema_version": "1.0",
+            "metadata": {"title": "header probe",
+                         "ir_version": "0.2.0", "schema_version": "0.2.0"},
+            "symbols": [
+                {"symbol_id": "music.tempo.mark", "body_part": "torso",
+                 "direction": None, "level": None,
+                 "timing": {"measure": 1, "beat": 1.0, "duration_beats": 1},
+                 "modifiers": {"measure_header": True, "tempo": 120}},
+                {"symbol_id": "direction.forward", "body_part": "torso",
+                 "direction": "forward", "level": "middle",
+                 "timing": {"measure": 1, "beat": 1.0, "duration_beats": 1},
+                 "modifiers": {}},
+            ],
+        }
+        conflicts = [i for i in validate_ir(ir)["issues"]
+                     if i["code"] == "COLUMN_CONFLICT"]
+        self.assertEqual(
+            conflicts, [],
+            "a measure header was reported as colliding with a movement")
+
     def test_phrase_rollover_does_not_trigger_cross_measure_overlap(self):
         plan = parse_phrase("hold step forward, hold step right, turn left")
         ir = phrase_plan_to_ir(plan, "hold step forward, hold step right, turn left")

@@ -74,6 +74,34 @@ _EFFORT_POLE_TO_FACTOR = {
     for pole in poles
 }
 
+# Composite effort configurations: an effort graph is one action stroke with a
+# diagonal per participating element, so a composite is just the set of poles
+# that take part. Without these, effort.action.* fell through to the aggregate
+# diamond with nothing active and all eight engraved identically.
+#
+# The eight basic effort actions are the standard weight x time x space
+# combinations. The drives name which three factors participate (the fourth is
+# latent), and the two states in the catalog name a pair.
+_EFFORT_COMPOSITES = {
+    "action.dab":    [("weight", "light"),  ("time", "sudden"),    ("space", "direct")],
+    "action.flick":  [("weight", "light"),  ("time", "sudden"),    ("space", "indirect")],
+    "action.float":  [("weight", "light"),  ("time", "sustained"), ("space", "indirect")],
+    "action.glide":  [("weight", "light"),  ("time", "sustained"), ("space", "direct")],
+    "action.punch":  [("weight", "strong"), ("time", "sudden"),    ("space", "direct")],
+    "action.slash":  [("weight", "strong"), ("time", "sudden"),    ("space", "indirect")],
+    "action.press":  [("weight", "strong"), ("time", "sustained"), ("space", "direct")],
+    "action.wring":  [("weight", "strong"), ("time", "sustained"), ("space", "indirect")],
+    # Drives: three factors present, one absent. Poles are unspecified by the
+    # id, so each participating factor is drawn with its condensing pole.
+    "drive.action":  [("weight", "strong"), ("time", "sudden"),    ("space", "direct")],
+    "drive.passion": [("weight", "strong"), ("time", "sudden"),    ("flow", "bound")],
+    "drive.spell":   [("weight", "strong"), ("space", "direct"),   ("flow", "bound")],
+    "drive.vision":  [("time", "sudden"),   ("space", "direct"),   ("flow", "bound")],
+    # States: two factors.
+    "state.awake":     [("space", "direct"), ("time", "sudden")],
+    "state.dreamlike": [("weight", "strong"), ("flow", "bound")],
+}
+
 
 
 # ── Direction shape paths ─────────────────────────────────────────────
@@ -98,7 +126,11 @@ def _direction_path(direction: str | None, x_left: float, y_top: float,
     if direction == "forward":
         # Rectangle body with isosceles triangle point at top.
         # Triangle occupies ~27% of total height.
-        tri_h = h * 0.27
+        # The head is sized from the width, not the height. Taking it as
+        # a fraction of height turned a long-duration symbol's point
+        # into a spike; on the plates the head keeps its proportions
+        # while the body lengthens.
+        tri_h = min(h * 0.27, w * 0.55)
         rect_top = y_top + tri_h  # where rectangle starts below triangle
         return (
             f"M {cx:.1f} {y_top:.1f} "               # triangle apex
@@ -110,7 +142,11 @@ def _direction_path(direction: str | None, x_left: float, y_top: float,
 
     if direction == "backward":
         # Rectangle body with isosceles triangle point at bottom.
-        tri_h = h * 0.27
+        # The head is sized from the width, not the height. Taking it as
+        # a fraction of height turned a long-duration symbol's point
+        # into a spike; on the plates the head keeps its proportions
+        # while the body lengthens.
+        tri_h = min(h * 0.27, w * 0.55)
         rect_bottom = y_bottom - tri_h
         return (
             f"M {x_left:.1f} {y_top:.1f} "            # rectangle top-left
@@ -120,74 +156,65 @@ def _direction_path(direction: str | None, x_left: float, y_top: float,
             f"L {x_left:.1f} {rect_bottom:.1f} Z"     # triangle left base
         )
 
-    if direction == "right":
-        # Pentagon: rectangular body (~73% width) with triangle point at right.
-        body_w = w * 0.73
-        body_right = x_left + body_w
+    if direction in ("left", "right"):
+        # Knust Fig. 12: the sideways sign is a plain triangle, its apex toward
+        # the named side and its base the opposite edge. His examples 220a and
+        # 221a show exactly that in the support column. It was drawn as a
+        # pentagon -- a rectangular body with a point added on one side, which
+        # is the forward shape wearing a sideways point rather than the second
+        # basic shape.
+        if direction == "left":
+            return (
+                f"M {x_right:.1f} {y_top:.1f} "
+                f"L {x_right:.1f} {y_bottom:.1f} "
+                f"L {x_left:.1f} {cy:.1f} Z"
+            )
         return (
             f"M {x_left:.1f} {y_top:.1f} "
-            f"L {body_right:.1f} {y_top:.1f} "
             f"L {x_right:.1f} {cy:.1f} "
-            f"L {body_right:.1f} {y_bottom:.1f} "
             f"L {x_left:.1f} {y_bottom:.1f} Z"
         )
 
-    if direction == "left":
-        # Pentagon: rectangular body (~73% width) with triangle point at left.
-        body_w = w * 0.73
-        body_left = x_right - body_w
-        return (
-            f"M {x_right:.1f} {y_top:.1f} "
-            f"L {x_right:.1f} {y_bottom:.1f} "
-            f"L {body_left:.1f} {y_bottom:.1f} "
-            f"L {x_left:.1f} {cy:.1f} "
-            f"L {body_left:.1f} {y_top:.1f} Z"
-        )
-
-    # Diagonals: rotate the forward/backward shape by ±45°.
-    import math
-    _DIAG_ANGLES = {
-        "diagonal_forward_right": -math.pi / 4,    # 45° CW (upper-right)
-        "diagonal_forward_left": math.pi / 4,       # 45° CCW (upper-left)
-        "diagonal_backward_right": math.pi / 4,     # 45° CCW from backward (lower-right)
-        "diagonal_backward_left": -math.pi / 4,     # 45° CW from backward (lower-left)
+    # Diagonals stay upright in their column; what makes them diagonal is an
+    # asymmetric head, its apex pushed to the named side, not the whole shape
+    # rotated. Rotating spread the symbol sideways in proportion to its height,
+    # so once length carried duration a four-beat diagonal came out 177 units
+    # wide against a 26-unit column and crossed the whole staff. Length is the
+    # duration; the width is the column and does not move with it.
+    _DIAG_SIDES = {
+        "diagonal_forward_right": (1, "forward"),
+        "diagonal_forward_left": (-1, "forward"),
+        "diagonal_backward_right": (1, "backward"),
+        "diagonal_backward_left": (-1, "backward"),
     }
-    if direction in _DIAG_ANGLES:
-        angle = _DIAG_ANGLES[direction]
-        # Build base shape (forward for forward_*, backward for backward_*)
-        tri_h = h * 0.27
-        if direction.startswith("diagonal_forward"):
-            # Forward shape: triangle at top
-            rect_top = y_top + tri_h
-            pts = [
-                (cx, y_top),                # apex
-                (x_right, rect_top),        # triangle right base
-                (x_right, y_bottom),        # bottom-right
-                (x_left, y_bottom),         # bottom-left
-                (x_left, rect_top),         # triangle left base
-            ]
-        else:
-            # Backward shape: triangle at bottom
-            rect_bottom = y_bottom - tri_h
-            pts = [
-                (x_left, y_top),            # top-left
-                (x_right, y_top),           # top-right
-                (x_right, rect_bottom),     # triangle right base
-                (cx, y_bottom),             # apex
-                (x_left, rect_bottom),      # triangle left base
-            ]
-        # Rotate all points around center
-        cos_a, sin_a = math.cos(angle), math.sin(angle)
-        rotated = []
-        for px, py in pts:
-            dx, dy = px - cx, py - cy
-            rotated.append((cx + dx * cos_a - dy * sin_a,
-                            cy + dx * sin_a + dy * cos_a))
-        parts = [f"M {rotated[0][0]:.1f} {rotated[0][1]:.1f}"]
-        for rx, ry in rotated[1:]:
-            parts.append(f"L {rx:.1f} {ry:.1f}")
-        parts.append("Z")
-        return " ".join(parts)
+    if direction in _DIAG_SIDES:
+        side, base = _DIAG_SIDES[direction]
+        # Knust Fig. 13: the diagonal sign is a rectangle with one edge cut as
+        # a straight slant -- a quadrilateral whose two sides are different
+        # heights. Not the forward shape with its apex moved, which is a
+        # pentagon and a different basic shape.
+        slant = min(h * 0.3, w * 0.9)
+        if base == "forward":
+            # Top edge slants; the named side is the tall one.
+            tall_y, short_y = y_top, y_top + slant
+            left_y = tall_y if side < 0 else short_y
+            right_y = short_y if side < 0 else tall_y
+            return (
+                f"M {x_left:.1f} {left_y:.1f} "
+                f"L {x_right:.1f} {right_y:.1f} "
+                f"L {x_right:.1f} {y_bottom:.1f} "
+                f"L {x_left:.1f} {y_bottom:.1f} Z"
+            )
+        # Bottom edge slants; the named side reaches lowest.
+        tall_y, short_y = y_bottom, y_bottom - slant
+        left_y = tall_y if side < 0 else short_y
+        right_y = short_y if side < 0 else tall_y
+        return (
+            f"M {x_left:.1f} {y_top:.1f} "
+            f"L {x_right:.1f} {y_top:.1f} "
+            f"L {x_right:.1f} {right_y:.1f} "
+            f"L {x_left:.1f} {left_y:.1f} Z"
+        )
 
     # place / unknown → full-width rectangle (no triangle point)
     return (
@@ -233,18 +260,71 @@ class _RenderContext:
         self.split_clip_counter = 0
 
 
+# The catalog states each separator's mode in behavior; these translate its
+# spellings into the drawing modes below.
+_SEPARATOR_CAP_MODES = {
+    "single_bar": "single",
+    "double_bar": "double",
+    "single_hook": "hook",
+    "hooked": "hooked",
+}
+
+# separator.final carries no behavior block, so its mode comes from the id.
+_SEPARATOR_ID_MODES = {"separator.final": "final"}
+
+
 def _render_separator(entry: dict) -> str:
-    """Render separator lines across the staff."""
+    """Render a separator, in the mode the catalog asks for.
+
+    Mode selection order: an explicit ``modifiers.separator_mode``, else the
+    catalog's ``behavior.preferred_separator_mode``, else its ``cap_shape``,
+    else a per-id fallback, else a single rule.
+    """
     symbol = entry["symbol"]
     symbol_id = symbol.get("symbol_id", "")
     modifiers = symbol.get("modifiers", {})
-    mode = modifiers.get("separator_mode", "single")
+    # separator_mode came from modifiers alone, defaulting to "single" -- a
+    # field nothing populates -- so all six separators drew one plain rule,
+    # while the catalog stated each one's mode in behavior. An explicit
+    # modifier still wins.
+    behavior = (entry.get("spec") or {}).get("behavior", {})
+    mode = (modifiers.get("separator_mode")
+            or behavior.get("preferred_separator_mode")
+            or _SEPARATOR_CAP_MODES.get(behavior.get("cap_shape", ""))
+            or _SEPARATOR_ID_MODES.get(symbol_id, "single"))
+    # The manual lists the flipped staff separator as its own feature: the
+    # hooks turn to the other side rather than a stroke being added.
+    flipped = bool(behavior.get("flip_variant")) or symbol_id.endswith(".flipped")
 
     x_left = entry["x_left"]
     x_right = entry["x_right"]
     cy = (entry["y_top"] + entry["y_bottom"]) / 2
 
     svg = f'<g class="laban-symbol separator" data-symbol-id="{escape(symbol_id)}">'
+
+    if mode == "final":
+        # U+2AFC: the heaviest rule, closing a score rather than dividing it.
+        for offset, width in ((-2.5, "1"), (0.0, "2.2"), (2.5, "1")):
+            svg += (
+                f'<line x1="{x_left:.1f}" y1="{cy + offset:.1f}" '
+                f'x2="{x_right:.1f}" y2="{cy + offset:.1f}" '
+                f'stroke="#111827" stroke-width="{width}"/>'
+            )
+        svg += '</g>'
+        return svg
+
+    if mode == "hook":
+        # U+231F: a single rule with one hook, against the staff separator's
+        # pair of them.
+        svg += (
+            f'<line x1="{x_left:.1f}" y1="{cy:.1f}" x2="{x_right:.1f}" y2="{cy:.1f}" '
+            f'stroke="#111827" stroke-width="1"/>'
+            f'<line x1="{x_right:.1f}" y1="{cy:.1f}" '
+            f'x2="{x_right:.1f}" y2="{cy + 4:.1f}" '
+            f'stroke="#111827" stroke-width="1"/>'
+        )
+        svg += '</g>'
+        return svg
 
     if mode == "double":
         svg += (
@@ -254,7 +334,7 @@ def _render_separator(entry: dict) -> str:
             f'stroke="#111827" stroke-width="1"/>'
         )
     elif mode == "hooked":
-        hook = 4
+        hook = -4 if flipped else 4
         svg += (
             f'<line x1="{x_left:.1f}" y1="{cy:.1f}" x2="{x_right:.1f}" y2="{cy:.1f}" '
             f'stroke="#111827" stroke-width="1"/>'
@@ -274,7 +354,7 @@ def _render_separator(entry: dict) -> str:
     return svg
 
 
-def _render_modifier_overlays(svg: str, modifiers: dict,
+def _render_modifier_overlays(svg: str, modifiers: dict, caption_x: float | None,
                               x_left: float, x_right: float,
                               y_top: float, y_bottom: float) -> str:
     """Append modifier visual overlays to an in-progress SVG group string.
@@ -344,11 +424,21 @@ def _render_modifier_overlays(svg: str, modifiers: dict,
             svg += f'<circle cx="{dx:.1f}" cy="{dot_y:.1f}" r="{dot_r}" fill="#111827"/>'
 
     # ── Label ────────────────────────────────────────────────────────
+    # Captions go in the margin, clear of the staff. Drawn at the symbol's own
+    # x they landed across the notation -- in one 33-measure score, 23 of 91
+    # sat inside the staff lines and one exactly on the centre line. The plates
+    # keep this text beside the staff, running vertically (Soirée musicale p58,
+    # "(DRY ELEGANT BOW)"), never over it.
     label = modifiers.get("label")
     if label:
+        if caption_x is None:
+            caption_x = x_right + 8
+        cap_y = (y_top + y_bottom) / 2
         svg += (
-            f'<text x="{cx:.1f}" y="{y_bottom + 10:.1f}" text-anchor="middle" '
-            f'font-size="7" fill="#475569">{escape(label)}</text>'
+            f'<text class="laban-caption" x="{caption_x:.1f}" y="{cap_y:.1f}" '
+            f'text-anchor="start" font-size="7" fill="#475569" '
+            f'transform="rotate(-90, {caption_x:.1f}, {cap_y:.1f})">'
+            f'{escape(label)}</text>'
         )
 
     # ── Source text ──────────────────────────────────────────────────
@@ -360,6 +450,261 @@ def _render_modifier_overlays(svg: str, modifiers: dict,
         )
 
     return svg
+
+
+# Which part of the foot takes the weight, as Knust grades it (Dictionary of
+# Kinetography Laban §225, plate vol. II p27). One ordered scale running from
+# the front of the foot down and then up the heel:
+#
+#   point_1_1  full point, on the tips of the toes, instep arched
+#   point_3_4  on the whole of the toes, instep arched
+#   point_1_2  demi-pointe, toes and ball, heel at 45 degrees -- the normal
+#              high support
+#   point_1_4  quarter point
+#   point_1_8  ball and toes, heel only slightly raised
+#   whole_foot understood by default in medium and low supports, so drawn only
+#              when explicitly asked for
+#   heel_1..4  on the heels, by how far the toes are lifted from the floor
+#
+# What each timing.duration.<value> id names, in beats, so the sign can be
+# drawn to scale.
+#
+# The suffix is read as a beat count, fractions included: 1_8 is an eighth of
+# a beat, 4 is four beats. That is the only self-consistent reading of the set
+# -- taking the suffix as a note value relative to a whole would make 1_8 a
+# quaver and 1 a semi-breve, leaving 2, 3 and 4 as two, three and four
+# semi-breves, which is not a duration scale anyone writes. The catalog
+# carries no gloss either way (the names are just "Duration 1_8" and so on),
+# so the reading is recorded in docs/labanwriter_parity_audit.md as resting on
+# internal consistency rather than on a source.
+#
+# Written out rather than parsed so the mapping is inspectable beside the sign
+# that uses it.
+_DURATION_SIGN_BEATS = {
+    "1_8": 0.125, "1_4": 0.25, "1_2": 0.5,
+    "1": 1.0, "2": 2.0, "3": 3.0, "4": 4.0,
+}
+
+# Knust's note: the marks "indicate, first, which part of the foot takes the
+# weight, and second, how far the toes are lifted away from the floor". The
+# scale is orthogonal to level -- the same marks appear on hatched, white and
+# black signs (his a-f against g-k, l-p against q-u).
+_FOOT_PART_GRADES = (
+    "point_1_1", "point_3_4", "point_1_2", "point_1_4", "point_1_8",
+    "whole_foot", "heel_1", "heel_2", "heel_3", "heel_4",
+)
+
+# Existing catalog foot signs mapped onto the scale, so a support declaring
+# behavior.pre_sign still resolves without a second vocabulary.
+_PRE_SIGN_TO_GRADE = {
+    "foot.surface.toe_tip": "point_1_1",
+    "foot.surface.demi_pointe": "point_1_2",
+    "foot.surface.ball": "point_1_8",
+    "foot.surface.full_sole": "whole_foot",
+    "foot.surface.heel": "heel_1",
+    "foot.surface.instep": "point_3_4",
+    "foot.surface.metatarsal": "point_1_4",
+    # Actions rather than parts of the foot. Knust writes stamping and sliding
+    # with their own signs (§720 and following); they are not points on the
+    # foot-part scale and keep marks of their own until those forms are
+    # sourced from the plates.
+    "foot.action.stamp": "action_stamp",
+    "foot.action.slide": "action_slide",
+}
+
+
+def _foot_part_mark(grade: str, x: float, y: float, side: int,
+                    reach: float) -> str:
+    """One half of a foot-part mark, on the given side of the support sign.
+
+    ``side`` is -1 on the left of the sign and +1 on the right; the two halves
+    mirror each other, as the plate shows.
+    """
+    d = side * reach
+
+    if grade == "point_1_1":
+        # 225a: a broad shallow curve sweeping out and down.
+        return (f'<path d="M {x:.1f} {y - reach * 0.6:.1f} '
+                f'q {d:.1f} {reach * 0.4:.1f} {d:.1f} {reach * 1.2:.1f}" '
+                f'fill="none" stroke="#111827" stroke-width="1.1"/>')
+    if grade == "point_3_4":
+        # 225b: a curl at the corner.
+        return (f'<path d="M {x:.1f} {y:.1f} q {d:.1f} 0 {d:.1f} {reach:.1f} '
+                f'q 0 {reach * 0.7:.1f} {-d * 0.7:.1f} {reach * 0.3:.1f}" '
+                f'fill="none" stroke="#111827" stroke-width="1.1"/>')
+    if grade == "point_1_2":
+        # 225c,d: the plain hook of the normal high support.
+        return (f'<path d="M {x:.1f} {y:.1f} q {d:.1f} 0 {d:.1f} {reach:.1f}" '
+                f'fill="none" stroke="#111827" stroke-width="1.1"/>')
+    if grade == "point_1_4":
+        # 225e: a hook ending in a filled dot.
+        return (f'<path d="M {x:.1f} {y:.1f} q {d:.1f} 0 {d:.1f} {reach:.1f}" '
+                f'fill="none" stroke="#111827" stroke-width="1.1"/>'
+                f'<circle cx="{x + d:.1f}" cy="{y + reach:.1f}" r="1.3" '
+                f'fill="#111827"/>')
+    if grade == "point_1_8":
+        # 225f: a short straight dash.
+        return (f'<line x1="{x:.1f}" y1="{y:.1f}" '
+                f'x2="{x + d:.1f}" y2="{y:.1f}" '
+                f'stroke="#111827" stroke-width="1.3"/>')
+    if grade == "whole_foot":
+        # 225l: an arrowhead pointing away from the sign.
+        return (f'<path d="M {x:.1f} {y - reach * 0.7:.1f} '
+                f'L {x + d:.1f} {y:.1f} '
+                f'L {x:.1f} {y + reach * 0.7:.1f}" '
+                f'fill="none" stroke="#111827" stroke-width="1.1"/>')
+    if grade == "heel_1":
+        # 225m: a hook curving down to a filled dot.
+        return (f'<path d="M {x:.1f} {y - reach * 0.5:.1f} '
+                f'q {d:.1f} 0 {d:.1f} {reach:.1f}" '
+                f'fill="none" stroke="#111827" stroke-width="1.1"/>'
+                f'<circle cx="{x + d:.1f}" cy="{y + reach * 0.5:.1f}" r="1.5" '
+                f'fill="#111827"/>')
+    if grade == "heel_2":
+        # 225n: an angled hook turning up and out.
+        return (f'<path d="M {x:.1f} {y + reach * 0.4:.1f} '
+                f'L {x + d * 0.8:.1f} {y + reach * 0.4:.1f} '
+                f'L {x + d:.1f} {y - reach * 0.5:.1f}" '
+                f'fill="none" stroke="#111827" stroke-width="1.1"/>')
+    if grade == "heel_3":
+        # 225o: a hook with a small loop, and a dot.
+        return (f'<path d="M {x:.1f} {y:.1f} q {d:.1f} 0 {d:.1f} {-reach:.1f} '
+                f'q 0 {-reach * 0.6:.1f} {-d * 0.6:.1f} {-reach * 0.2:.1f}" '
+                f'fill="none" stroke="#111827" stroke-width="1.1"/>'
+                f'<circle cx="{x + d * 0.5:.1f}" cy="{y + reach * 0.6:.1f}" '
+                f'r="1.2" fill="#111827"/>')
+    if grade == "heel_4":
+        # 225p: a shallow hook curving up.
+        return (f'<path d="M {x:.1f} {y + reach * 0.5:.1f} '
+                f'q {d:.1f} 0 {d:.1f} {-reach:.1f}" '
+                f'fill="none" stroke="#111827" stroke-width="1.1"/>')
+    if grade == "action_stamp":
+        # An accented contact: a wedge driven in towards the sign.
+        return (f'<path d="M {x + d:.1f} {y - reach * 0.6:.1f} '
+                f'L {x:.1f} {y:.1f} '
+                f'L {x + d:.1f} {y + reach * 0.6:.1f} Z" fill="#111827"/>')
+    # action_slide: a long flat stroke, for travel along the floor.
+    return (f'<line x1="{x:.1f}" y1="{y - reach * 0.35:.1f}" '
+            f'x2="{x + d * 1.2:.1f}" y2="{y - reach * 0.35:.1f}" '
+            f'stroke="#111827" stroke-width="1.2"/>'
+            f'<line x1="{x:.1f}" y1="{y + reach * 0.35:.1f}" '
+            f'x2="{x + d * 1.2:.1f}" y2="{y + reach * 0.35:.1f}" '
+            f'stroke="#111827" stroke-width="1.2"/>')
+
+
+def _render_pre_sign(entry: dict, x_left: float, x_right: float,
+                     y_top: float, y_bottom: float) -> str:
+    """Draw the foot-part mark flanking a support sign.
+
+    Knust §225-231 and plate vol. II p27: these are "hooks or dashes ...
+    attached to the preceding support sign", drawn on both sides of the
+    direction symbol and mirrored. Which mark is drawn says which part of the
+    foot takes the weight, on the graded scale in ``_FOOT_PART_GRADES``.
+
+    The grade comes from ``modifiers.foot_part`` if the score states one, else
+    from the support's own ``behavior.pre_sign`` in the catalog.
+    """
+    symbol = entry["symbol"]
+    modifiers = symbol.get("modifiers", {})
+    grade = modifiers.get("foot_part")
+    if not grade:
+        pre_sign_id = (entry.get("spec") or {}).get("behavior", {}).get("pre_sign")
+        grade = _PRE_SIGN_TO_GRADE.get(pre_sign_id or "")
+    if not grade or grade not in _FOOT_PART_GRADES + ("action_stamp", "action_slide"):
+        return ""
+
+    # "Standing on the whole foot ... is only used in exceptional cases,
+    # because in medium level and low supports standing on the whole foot is
+    # understood." So it draws nothing unless the score insists.
+    if grade == "whole_foot" and not modifiers.get("foot_part_explicit"):
+        return ""
+
+    w = x_right - x_left
+    # Sized from the plate: the hooks reach out about a third of the sign's
+    # width. A 4px cap made every grade an indistinguishable nub -- the marks
+    # were textually distinct and visually identical.
+    reach = max(w * 0.34, 6.0)
+    cy = (y_top + y_bottom) / 2
+    marks = "".join(
+        _foot_part_mark(grade, x, cy, side, reach)
+        for side, x in ((-1, x_left), (1, x_right))
+    )
+    return (f'<g class="laban-pre-sign" data-foot-part="{escape(grade)}">'
+            f'{marks}</g>')
+
+
+def _render_body_action_mark(symbol_id: str, x_left: float, x_right: float,
+                             y_top: float, y_bottom: float) -> str:
+    """Mark on a staff symbol saying *which* action it is.
+
+    A body.* or floor.* symbol used to draw its direction symbol and nothing
+    else, so the action — the point of the sign — was invisible:
+    body.tilt.forward.high and body.bend.forward.high engraved identically, as
+    did contract and release, and so did fall, roll and slide. The catalog
+    records contract/release as mirror opposites (glyph U+2282/U+2283) and
+    bend/stretch likewise (U+2312/U+2322); the marks below follow that pairing.
+
+    The exact ICKL form of these marks is not settled from a plate — see
+    docs/labanwriter_parity_audit.md. What is settled is that they must differ.
+    """
+    if not symbol_id.startswith(("body.", "floor.")):
+        return ""
+    parts = symbol_id.split(".")
+    action = parts[1] if len(parts) > 1 else ""
+
+    cx = (x_left + x_right) / 2
+    cy = (y_top + y_bottom) / 2
+    r = min((x_right - x_left) / 2 - 2, 5.0)
+    if r <= 1:
+        return ""
+
+    if action in ("contract", "release"):
+        # Mirror pair. Sign follows the catalog's own glyphs: contract is
+        # U+2282 (opens right, bows left), release U+2283 (opens left).
+        s = 1 if action == "contract" else -1
+        return (
+            f'<path d="M {cx + s * r:.1f} {cy - r:.1f} '
+            f'Q {cx - s * r:.1f} {cy:.1f} {cx + s * r:.1f} {cy + r:.1f}" '
+            f'fill="none" stroke="#111827" stroke-width="1.4"/>'
+        )
+    if action in ("bend", "stretch"):
+        # Mirror pair: arc bowing up (bend) or down (stretch).
+        s = -1 if action == "bend" else 1
+        return (
+            f'<path d="M {cx - r:.1f} {cy:.1f} '
+            f'Q {cx:.1f} {cy + s * r * 1.4:.1f} {cx + r:.1f} {cy:.1f}" '
+            f'fill="none" stroke="#111827" stroke-width="1.4"/>'
+        )
+    if action == "tilt":
+        return (
+            f'<line x1="{cx - r:.1f}" y1="{cy + r:.1f}" '
+            f'x2="{cx + r:.1f}" y2="{cy - r:.1f}" '
+            f'stroke="#111827" stroke-width="1.4"/>'
+        )
+    # floor.* actions, following the same catalog glyph hints:
+    # fall U+21A7 (downward), roll U+21B7 (turning), slide U+21AC (along).
+    if action == "fall":
+        return (
+            f'<line x1="{cx:.1f}" y1="{cy - r:.1f}" x2="{cx:.1f}" y2="{cy + r * 0.4:.1f}" '
+            f'stroke="#111827" stroke-width="1.4"/>'
+            f'<polygon points="{cx:.1f},{cy + r:.1f} {cx - r * 0.5:.1f},{cy + r * 0.3:.1f} '
+            f'{cx + r * 0.5:.1f},{cy + r * 0.3:.1f}" fill="#111827"/>'
+        )
+    if action == "roll":
+        return (
+            f'<path d="M {cx - r:.1f} {cy:.1f} A {r:.1f} {r:.1f} 0 1 1 {cx + r:.1f} {cy:.1f}" '
+            f'fill="none" stroke="#111827" stroke-width="1.4"/>'
+            f'<polygon points="{cx + r + 1.5:.1f},{cy:.1f} {cx + r - 1.5:.1f},{cy - 2.5:.1f} '
+            f'{cx + r - 1.5:.1f},{cy + 2.5:.1f}" fill="#111827"/>'
+        )
+    if action == "slide":
+        return (
+            f'<line x1="{cx - r:.1f}" y1="{cy:.1f}" x2="{cx + r * 0.5:.1f}" y2="{cy:.1f}" '
+            f'stroke="#111827" stroke-width="1.4"/>'
+            f'<polygon points="{cx + r:.1f},{cy:.1f} {cx + r * 0.4:.1f},{cy - 2.5:.1f} '
+            f'{cx + r * 0.4:.1f},{cy + 2.5:.1f}" fill="#111827"/>'
+        )
+    return ""
 
 
 def _render_staff_symbol(entry: dict, ctx: _RenderContext,
@@ -377,8 +722,12 @@ def _render_staff_symbol(entry: dict, ctx: _RenderContext,
     symbol_id = symbol.get("symbol_id", "")
     facing = symbol.get("facing")
 
-    x_left = entry["x_left"] + 1   # small padding
-    x_right = entry["x_right"] - 1
+    # No horizontal padding: a direction symbol spans its column edge to edge
+    # (median 100% of column width across the reference plates), and in the
+    # support columns its inner edge must land on the centre line. Vertical
+    # padding stays -- consecutive symbols in time need to read as separate.
+    x_left = entry["x_left"]
+    x_right = entry["x_right"]
     y_top = entry["y_top"] + 1
     y_bottom = entry["y_bottom"] - 1
 
@@ -387,6 +736,14 @@ def _render_staff_symbol(entry: dict, ctx: _RenderContext,
     # Dispatch separators to dedicated renderer
     if symbol_id.startswith("separator"):
         return _render_separator(entry)
+
+    # Retention signs sit in a body-part column -- the column is half of what
+    # they say -- but they are not direction symbols and must not be drawn as
+    # one. Without this they came out byte-identical to a place-middle
+    # direction symbol, which is how flexion and extension failed before them:
+    # placed correctly, engraved as something else, their own renderer dead.
+    if symbol_id.startswith("retention."):
+        return _render_retention_sign(entry)
 
     # Whitespace band: blank gap instead of normal shape. Triggered either by
     # an explicit modifier on any symbol, or by the dedicated space.* family
@@ -437,7 +794,8 @@ def _render_staff_symbol(entry: dict, ctx: _RenderContext,
             f'stroke="#111827" stroke-width="0.8"/>'
             f'<path d="{path_d}" fill="none" stroke="{top_style["stroke"]}" stroke-width="1.5"/>'
         )
-        svg = _render_modifier_overlays(svg, modifiers, x_left, x_right, y_top, y_bottom)
+        svg = _render_modifier_overlays(svg, modifiers, entry.get("caption_x"),
+                                    x_left, x_right, y_top, y_bottom)
         if facing and facing != direction:
             svg += _render_facing_indicator(facing, x_right, y_top, y_bottom)
         svg += '</g>'
@@ -449,11 +807,29 @@ def _render_staff_symbol(entry: dict, ctx: _RenderContext,
     has_special_line = line_style not in ("single",)
     has_modifiers = bool(modifiers) and not (len(modifiers) == 1 and "line_style" in modifiers and line_style == "single")
 
-    def_key = (direction or "place", level)
-    use_href = use_defs.get(def_key) if use_defs and not has_special_line else None
-
     w = x_right - x_left
     h = y_bottom - y_top
+
+    # A <use> of a <symbol> scales uniformly and centres what is left over, so
+    # a box taller than the reference glyph letterboxed it: the sign came out
+    # the same size whatever its duration, floating in empty space, and a
+    # four-beat step engraved exactly like a one-beat one. In Labanotation the
+    # length of the symbol IS the duration, so anything longer than the
+    # reference is drawn inline at its true height instead.
+    # Direction symbols are always drawn inline. A <use> of a <symbol> scales
+    # uniformly, so its drawn height is capped by the reference glyph's own
+    # proportion however tall the box is — which made length monotonic in
+    # duration but not proportional to it (52, 118, 238 units for one, two and
+    # four beats: a ratio of 1 : 2.27 : 4.58).
+    #
+    # Knust's Third Principle does not allow that: "The length of the symbol
+    # indicates how long the movement lasts. For example, if a centimetre is
+    # chosen for the length of a crochet, a semi-breve will be 4 cm long, a
+    # minim 2 cm, a crochet 1 cm, a quaver 1/2 cm." The relation is linear, so
+    # the defs reuse has to go. The <symbol> definitions are still emitted for
+    # any other consumer of the markup.
+    def_key = (direction or "place", level)
+    use_href = None
 
     svg = (
         f'<g class="laban-symbol" data-symbol-id="{escape(symbol_id)}" '
@@ -473,7 +849,19 @@ def _render_staff_symbol(entry: dict, ctx: _RenderContext,
                 f'<path d="{path_d}" fill="none" stroke="{style["stroke"]}" '
                 f'stroke-width="3.5" opacity="0.3"{dash_attr}/>'
             )
-    svg = _render_modifier_overlays(svg, modifiers, x_left, x_right, y_top, y_bottom)
+        # Middle level's centre dot. It lives in the shared <symbol> def, so
+        # the inline branch has to draw it too -- otherwise a symbol long
+        # enough to be drawn inline silently loses its level marking.
+        if level == "middle":
+            svg += (
+                f'<circle cx="{(x_left + x_right) / 2:.1f}" '
+                f'cy="{(y_top + y_bottom) / 2:.1f}" r="2.5" fill="#111827"/>'
+            )
+    svg += _render_inside_sign(symbol, x_left, x_right, y_top, y_bottom)
+    svg = _render_modifier_overlays(svg, modifiers, entry.get("caption_x"),
+                                    x_left, x_right, y_top, y_bottom)
+    svg += _render_body_action_mark(symbol_id, x_left, x_right, y_top, y_bottom)
+    svg += _render_pre_sign(entry, x_left, x_right, y_top, y_bottom)
     if facing and facing != direction:
         svg += _render_facing_indicator(facing, x_right, y_top, y_bottom)
     svg += '</g>'
@@ -510,15 +898,47 @@ def _render_turn_annotation(entry: dict) -> str:
     rotation_degrees = symbol.get("rotation_degrees") or symbol.get("modifiers", {}).get("rotation_degrees")
     rotate_attr = f' transform="rotate({rotation_degrees}, {cx:.1f}, {cy:.1f})"' if rotation_degrees else ""
 
+    # The id's subtype never reached the drawing, so turn.pivot == turn.spin
+    # and turn.half == turn.full. Two independent distinctions live here: how
+    # far (half against full) and what kind (a pivot on the spot against a
+    # spin). They are drawn on different features so neither hides the other.
+    subtype = symbol_id.split(".")[1] if "." in symbol_id else ""
+    amount_mark = ""
+    if subtype == "half":
+        # Half the revolution: the arc stops at the top instead of coming
+        # round, so the sign reads as an unfinished turn.
+        arc = (f'<path d="M {cx - r:.1f} {cy:.1f} '
+               f'A {r:.1f} {r:.1f} 0 0 {sweep} {cx:.1f} {cy - r:.1f}" '
+               f'fill="none" stroke="#111827" stroke-width="1.5"/>')
+        head = (f'<polygon points="{cx + 1:.1f},{cy - r - 3:.1f} '
+                f'{cx - 3:.1f},{cy - r + 2:.1f} {cx + 3:.1f},{cy - r + 1:.1f}" '
+                f'fill="#111827"/>')
+    else:
+        arc = (f'<path d="M {cx - r:.1f} {cy:.1f} '
+               f'A {r:.1f} {r:.1f} 0 1 {sweep} {cx + r:.1f} {cy:.1f}" '
+               f'fill="none" stroke="#111827" stroke-width="1.5"/>')
+        head = (f'<polygon points="{cx + r + 4:.1f},{cy:.1f} '
+                f'{cx + r - 2:.1f},{cy - 3:.1f} {cx + r - 2:.1f},{cy + 3:.1f}" '
+                f'fill="#111827"/>')
+    if subtype == "spin":
+        # A spin keeps turning: a second, inner arc says the revolution
+        # continues past one turn.
+        amount_mark = (f'<path d="M {cx - disc_r - 1:.1f} {cy:.1f} '
+                       f'A {disc_r + 1:.1f} {disc_r + 1:.1f} 0 1 {sweep} '
+                       f'{cx + disc_r + 1:.1f} {cy:.1f}" '
+                       f'fill="none" stroke="#111827" stroke-width="1"/>')
+    elif subtype == "pivot":
+        # A pivot happens on one spot: a dot marks the axis it turns about.
+        amount_mark = (f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="1.6" '
+                       f'fill="#111827"/>')
+
     return (
         f'<g class="laban-annotation turn" data-level="{escape(level)}" '
+        f'data-turn-subtype="{escape(subtype)}" '
         f'data-symbol-id="{escape(symbol_id)}"{rotate_attr}>'
         f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{disc_r:.1f}" '
         f'fill="{style["fill"]}" stroke="{style["stroke"]}" stroke-width="1"/>'
-        f'<path d="M {cx - r:.1f} {cy:.1f} A {r:.1f} {r:.1f} 0 1 {sweep} {cx + r:.1f} {cy:.1f}" '
-        f'fill="none" stroke="#111827" stroke-width="1.5"/>'
-        f'<polygon points="{cx + r + 4:.1f},{cy:.1f} {cx + r - 2:.1f},{cy - 3:.1f} {cx + r - 2:.1f},{cy + 3:.1f}" '
-        f'fill="#111827"/>'
+        f'{arc}{head}{amount_mark}'
         f'</g>'
     )
 
@@ -543,8 +963,16 @@ def _render_jump_annotation(entry: dict) -> str:
     bow_bottom = y_bottom - 4
 
     modifiers = symbol.get("modifiers", {})
-    is_spring = modifiers.get("spring_jump", False)
-    stretch = modifiers.get("stretch", 0)
+    # The id's subtype never reached the drawing and nothing injects these
+    # modifiers from it, so a score built from catalog ids engraved all five
+    # jumps identically. Explicit modifiers still win.
+    #
+    # Note what is NOT read here: a jump sign carries no compass direction.
+    # The travel direction lives in the direction symbols in the support
+    # columns, so jumps sharing one glyph across directions is correct.
+    subtype = symbol_id.split(".")[1] if "." in symbol_id else ""
+    is_spring = modifiers.get("spring_jump", subtype == "spring")
+    stretch = modifiers.get("stretch", 2 if subtype == "large" else 0)
     duration = symbol.get("timing", {}).get("duration_beats", 1.0) if isinstance(symbol.get("timing"), dict) else 1.0
 
     # The jump family is universally ``requires_level``; show level by filling
@@ -606,6 +1034,28 @@ def _render_jump_annotation(entry: dict) -> str:
         f'<line x1="{cx:.1f}" y1="{bow_top:.1f}" x2="{cx:.1f}" y2="{bow_bottom - 4:.1f}" '
         f'stroke="#111827" stroke-width="1.2"/>'
     )
+
+    # Landing marks: what the feet do on the way down. assemble closes them
+    # together, sissonne parts them. Drawn at the base of the bow so they read
+    # against the landing, not the flight.
+    if subtype == "assemble":
+        svg += (
+            f'<line x1="{cx - 5:.1f}" y1="{bow_bottom + 3:.1f}" '
+            f'x2="{cx - 1:.1f}" y2="{bow_bottom:.1f}" '
+            f'stroke="#111827" stroke-width="1.2"/>'
+            f'<line x1="{cx + 5:.1f}" y1="{bow_bottom + 3:.1f}" '
+            f'x2="{cx + 1:.1f}" y2="{bow_bottom:.1f}" '
+            f'stroke="#111827" stroke-width="1.2"/>'
+        )
+    elif subtype == "sissonne":
+        svg += (
+            f'<line x1="{cx - 1:.1f}" y1="{bow_bottom:.1f}" '
+            f'x2="{cx - 5:.1f}" y2="{bow_bottom + 4:.1f}" '
+            f'stroke="#111827" stroke-width="1.2"/>'
+            f'<line x1="{cx + 1:.1f}" y1="{bow_bottom:.1f}" '
+            f'x2="{cx + 5:.1f}" y2="{bow_bottom + 4:.1f}" '
+            f'stroke="#111827" stroke-width="1.2"/>'
+        )
 
     svg += '</g>'
     return svg
@@ -695,14 +1145,26 @@ def _render_timing_annotation(entry: dict) -> str:
             f'fill="none" stroke="#111827" stroke-width="1.2"/>'
             f'</g>'
         )
-    # timing.duration.<value>: a vertical duration line whose length scales
-    # with the note value (1_8 shortest .. 4 longest), reading like a
-    # duration-sign stem in the timing column.
+    # timing.duration.<value>: a vertical duration line measuring the note
+    # value, drawn in the timing column.
+    #
+    # Knust's Third Principle governs this sign exactly as it governs a
+    # direction symbol: "if a centimetre is chosen for the length of a
+    # crochet, a semi-breve will be 4 cm long, a minim 2 cm, a crochet 1 cm,
+    # a quaver 1/2 cm." The first implementation scaled by an arithmetic
+    # table — 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0 for 1/8, 1/4, 1/2, 1, 2, 3
+    # and 4 beats — so a 32 : 1 span of time was engraved 4 : 1, and no step
+    # of the scale had the right ratio either. It read as distinct geometry to
+    # every structural test because the stems genuinely differed; they just
+    # differed by the wrong amounts.
+    #
+    # The scale is BEAT_HEIGHT, the same units-per-beat the direction symbols
+    # use. A four-beat duration sign and a four-beat direction symbol measure
+    # the same quantity and sit on the same page, so they have to come out the
+    # same height — otherwise the sign measures nothing.
     if symbol_id.startswith("timing.duration."):
         value = symbol_id.split(".")[-1]
-        factors = {"1_8": 1.0, "1_4": 1.5, "1_2": 2.0, "1": 2.5,
-                   "2": 3.0, "3": 3.5, "4": 4.0}
-        half = 2.0 * factors.get(value, 2.0)
+        half = 0.5 * BEAT_HEIGHT * _DURATION_SIGN_BEATS.get(value, 1.0)
         return (
             f'<g class="laban-annotation timing duration" data-symbol-id="{escape(symbol_id)}" '
             f'data-duration="{escape(value)}">'
@@ -797,15 +1259,115 @@ def _render_repeat_annotation(entry: dict) -> str:
     )
 
 
-def _render_retention_annotation(entry: dict) -> str:
-    """Render hold/release/cancel marks."""
+def _diamond_path(cx: float, cy: float, r: float) -> str:
+    """The retention diamond: a square on its point, drawn open.
+
+    Knust vol 2 Fig. 78b and 78c. Kept as one helper so the space hold and the
+    spot hold cannot drift apart — they are the same diamond, and only the dot
+    inside distinguishes them.
+    """
+    return (f'<path d="M {cx:.1f} {cy - r:.1f} L {cx + r:.1f} {cy:.1f} '
+            f'L {cx:.1f} {cy + r:.1f} L {cx - r:.1f} {cy:.1f} Z" '
+            f'fill="none" stroke="#111827" stroke-width="1.2"/>')
+
+
+def _render_inside_sign(symbol: dict, x_left: float, x_right: float,
+                        y_top: float, y_bottom: float) -> str:
+    """A retention sign written inside a movement symbol.
+
+    Two readings, both from Knust vol 1 p45, and they are different
+    instructions sharing one construction:
+
+    - a *spatial* hold inside a direction sign makes the movement undeviating
+    - the *round* hold inside a support sign makes it a slide
+
+    Slide first, because it is keyed off the symbol id rather than the
+    retention field: "Slide. The round retention sign is only written within a
+    support sign in order to indicate a slide (see D 233a, H 524b, L III
+    780e). The retention sign indicates that the foot in question keeps the
+    body weight."
+
+    The nine support.slide_support.* entries used to carry
+    behavior.pre_sign: foot.action.slide, drawing a mark beside the support
+    sign. That came in with the foot pre-signs and slide is not one of them --
+    those say which part of the foot takes the weight, this says the weight
+    stays on the foot while it travels.
+    """
+    symbol_id = symbol.get("symbol_id", "")
+    if symbol_id.startswith("support.slide_support"):
+        cx = (x_left + x_right) / 2
+        cy = (y_top + y_bottom) / 2
+        r = min((x_right - x_left) * 0.22, (y_bottom - y_top) * 0.28)
+        return (f'<g class="laban-slide" data-inside-sign="round_hold">'
+                f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{r:.1f}" '
+                f'fill="none" stroke="#111827" stroke-width="1.2"/></g>')
+    return _render_undeviating_mark(symbol, x_left, x_right, y_top, y_bottom)
+
+
+def _render_undeviating_mark(symbol: dict, x_left: float, x_right: float,
+                             y_top: float, y_bottom: float) -> str:
+    """A retention sign written inside a direction symbol.
+
+    Knust vol 1 p45: "For undeviating movements retention signs are written
+    within a direction sign ... A retention in space within a direction sign
+    (122a) indicates an undeviating curve or an undeviating step. A 'retention
+    at a spot' sign written within a direction sign (122b) indicates an
+    undeviating movement towards an aim." Again at p88: "a direction sign
+    which contains a space retention sign".
+
+    Only the two spatial holds carry the undeviating reading. The round sign
+    also goes inside a symbol, but it means something else and only in one
+    place: p45 again, "The round retention sign is only written within a
+    support sign in order to indicate a slide." That is not implemented; see
+    the audit doc.
+
+    Fig. 122b is drawn filled, where the standalone spot hold (78c) is an
+    outlined diamond with a separate dot inside it. Filled is what the plate
+    shows at this size, and it is also what keeps the two apart here: the
+    middle-level centre dot sits at the same point as the sign, so an
+    outlined diamond with a dot in it and a plain space hold over the level
+    dot engrave as the same mark. Filling 122b lets the level dot show
+    through 122a and be covered by 122b, which is the distinction Knust
+    prints. Whether the plate means "solid" or "a dot grown large enough to
+    fill" cannot be told from the scan, and is recorded as open.
+
+    The diamond comes from the same helper the standalone signs use, so the
+    inside and outside forms cannot drift apart.
+    """
+    retention = symbol.get("retention")
+    if retention not in ("space_hold", "spot_hold"):
+        return ""
+
+    cx = (x_left + x_right) / 2
+    cy = (y_top + y_bottom) / 2
+    # Sized off the column, not the symbol's height: the symbol grows with
+    # duration and the sign inside it must not.
+    r = min((x_right - x_left) * 0.28, (y_bottom - y_top) * 0.35)
+    svg = _diamond_path(cx, cy, r)
+    if retention == "spot_hold":
+        svg = svg.replace('fill="none"', 'fill="#111827"')
+    return (f'<g class="laban-undeviating" data-retention="{escape(retention)}">'
+            f'{svg}</g>')
+
+
+def _render_retention_sign(entry: dict) -> str:
+    """Render hold/release/cancel marks.
+
+    Drawn in a body-part column, not in the margin: the column is half of what
+    a retention sign says. Knust vol 1 Rule III, p67, "The round retention sign
+    placed in a support column means that the body part shown retains the
+    weight", against p75, the same sign in a gesture column meaning "retention
+    in the body". So the entry is a placed staff symbol with x_left/x_right,
+    not an annotation with x/width.
+    """
     symbol = entry["symbol"]
     symbol_id = symbol.get("symbol_id", "")
-    x = entry["x"]
     y_top = entry["y_top"]
     y_bottom = entry["y_bottom"]
-    w = entry["width"]
-    cx = x + w / 2
+    if "x_left" in entry:
+        cx = (entry["x_left"] + entry["x_right"]) / 2
+    else:
+        cx = entry["x"] + entry["width"] / 2
     cy = (y_top + y_bottom) / 2
 
     # Catalog IDs are "retention.{type}.{body_category}" (e.g.
@@ -817,38 +1379,118 @@ def _render_retention_annotation(entry: dict) -> str:
     retention = symbol.get("retention") or (symbol_id_parts[1] if len(symbol_id_parts) > 1 else symbol_id_parts[-1])
 
     if retention == "hold":
-        # Filled circle with tie arc above
+        # The round retention sign, Knust vol 2 Fig. 78a: an empty circle,
+        # nothing else. It was a filled disc under a tie arc; the arc is not
+        # in Fig. 78 at all, and vol 1 p74 states the sign is open — "The
+        # symbol for this cross of axes (101c) contains a small, empty circle.
+        # The connection between the two ideas of the retention in the body
+        # and the cross of the body axes becomes evident."
         return (
-            f'<g class="laban-annotation retention" data-symbol-id="{escape(symbol_id)}">'
-            f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="3" fill="#111827"/>'
-            f'<path d="M {cx - 6:.1f} {cy:.1f} Q {cx:.1f} {cy - 8:.1f} {cx + 6:.1f} {cy:.1f}" '
-            f'fill="none" stroke="#111827" stroke-width="1.2"/>'
+            f'<g class="laban-symbol retention" data-symbol-id="{escape(symbol_id)}">'
+            f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="3.5" fill="none" '
+            f'stroke="#111827" stroke-width="1.2"/>'
             f'</g>'
         )
-    if retention == "release":
-        # X mark
+    if retention == "space_hold":
+        # Retention in space, Knust vol 2 Fig. 78b: an empty diamond. Vol 1
+        # p87: "The retention in space (space hold) means the maintenance of
+        # the same spatial direction ... This retention is written with the
+        # diamond-shaped retention sign (251b)."
         return (
-            f'<g class="laban-annotation retention" data-symbol-id="{escape(symbol_id)}">'
-            f'<line x1="{cx - 4:.1f}" y1="{cy - 4:.1f}" x2="{cx + 4:.1f}" y2="{cy + 4:.1f}" '
-            f'stroke="#111827" stroke-width="1.5"/>'
-            f'<line x1="{cx + 4:.1f}" y1="{cy - 4:.1f}" x2="{cx - 4:.1f}" y2="{cy + 4:.1f}" '
-            f'stroke="#111827" stroke-width="1.5"/>'
+            f'<g class="laban-symbol retention" data-symbol-id="{escape(symbol_id)}">'
+            f'{_diamond_path(cx, cy, 4.5)}'
             f'</g>'
         )
-    if retention == "cancel":
-        # Diagonal slash
+    if retention == "spot_hold":
+        # Retention at a spot, Fig. 78c: the same diamond with a filled dot,
+        # meaning a body part stays fixed on a certain spot (vol 1 p10/78c).
         return (
-            f'<g class="laban-annotation retention" data-symbol-id="{escape(symbol_id)}">'
-            f'<line x1="{cx - 5:.1f}" y1="{cy + 5:.1f}" x2="{cx + 5:.1f}" y2="{cy - 5:.1f}" '
-            f'stroke="#111827" stroke-width="1.5"/>'
+            f'<g class="laban-symbol retention" data-symbol-id="{escape(symbol_id)}">'
+            f'{_diamond_path(cx, cy, 4.5)}'
+            f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="1.8" fill="#111827"/>'
+            f'</g>'
+        )
+    if retention in ("cancel", "release"):
+        # The decrease sign, Knust vol 2 Fig. 79a: two strokes meeting at a
+        # point above and splaying apart below. Vol 1 p39: "The general
+        # cancellation sign of Kinetography is the decrease sign (79a), which
+        # is derived from the music decrescendo sign."
+        #
+        # "Cancel X Retention" and "Release X Position" name one operation and
+        # the notation has one sign for it, so both draw this. They were an x
+        # and a diagonal slash — two invented glyphs, neither in Fig. 79. The
+        # ids stay separate because add_retention exposes both in its type
+        # enum; the synonymy is recorded in the audit doc.
+        return (
+            f'<g class="laban-symbol retention" data-symbol-id="{escape(symbol_id)}">'
+            f'<line x1="{cx:.1f}" y1="{cy - 5:.1f}" '
+            f'x2="{cx - 3:.1f}" y2="{cy + 5:.1f}" '
+            f'stroke="#111827" stroke-width="1.2"/>'
+            f'<line x1="{cx:.1f}" y1="{cy - 5:.1f}" '
+            f'x2="{cx + 3:.1f}" y2="{cy + 5:.1f}" '
+            f'stroke="#111827" stroke-width="1.2"/>'
             f'</g>'
         )
     # Fallback
     return (
-        f'<g class="laban-annotation retention" data-symbol-id="{escape(symbol_id)}">'
+        f'<g class="laban-symbol retention" data-symbol-id="{escape(symbol_id)}">'
         f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="3" fill="#111827"/>'
         f'</g>'
     )
+
+
+def _render_surface_annotation(entry: dict) -> str:
+    """Render a surface sign — contact along a body surface rather than at a
+    point.
+
+    These routed into ``_render_contact_annotation``, where the type comes from
+    parts[1]: for a surface id that is "contact"/"glide"/"brush", so
+    surface.contact hit the touch default and surface.glide with it. The
+    catalog settles that they are their own signs rather than aliases — each
+    carries its own glyph (U+224B, U+25CD, U+2248) and its own staff_column.
+
+    The shared idea is a surface, drawn as a horizontal band; what differs is
+    what happens along it.
+    """
+    symbol = entry["symbol"]
+    symbol_id = symbol.get("symbol_id", "")
+    x = entry["x"]
+    y_top = entry["y_top"]
+    y_bottom = entry["y_bottom"]
+    w = entry["width"]
+    cx = x + w / 2
+    cy = (y_top + y_bottom) / 2
+
+    kind = symbol_id.split(".")[1] if "." in symbol_id else ""
+
+    if kind == "contact":
+        # U+25CD: contact held over the surface — a filled band inside it.
+        body = (f'<rect x="{cx - 7:.1f}" y="{cy - 4:.1f}" width="14" height="8" '
+                f'rx="1.5" fill="none" stroke="#111827" stroke-width="1.3"/>'
+                f'<rect x="{cx - 4:.1f}" y="{cy - 1.5:.1f}" width="8" height="3" '
+                f'fill="#111827"/>')
+    elif kind == "glide":
+        # U+2248: travelling along the surface — two long parallel strokes.
+        body = "".join(
+            f'<line x1="{cx - 7:.1f}" y1="{cy + dy:.1f}" '
+            f'x2="{cx + 7:.1f}" y2="{cy + dy:.1f}" '
+            f'stroke="#111827" stroke-width="1.3"/>'
+            for dy in (-2.5, 2.5))
+    elif kind == "brush":
+        # U+224B: passing across the surface — three short waves.
+        body = "".join(
+            f'<path d="M {cx - 7:.1f} {cy + dy:.1f} '
+            f'Q {cx - 2:.1f} {cy + dy - 2.5:.1f} {cx + 2:.1f} {cy + dy:.1f} '
+            f'Q {cx + 5:.1f} {cy + dy + 2:.1f} {cx + 7:.1f} {cy + dy:.1f}" '
+            f'fill="none" stroke="#111827" stroke-width="1.1"/>'
+            for dy in (-3.5, 0.0, 3.5))
+    else:
+        body = (f'<rect x="{cx - 7:.1f}" y="{cy - 4:.1f}" width="14" height="8" '
+                f'rx="1.5" fill="none" stroke="#111827" stroke-width="1.3"/>')
+
+    return (f'<g class="laban-annotation surface" '
+            f'data-symbol-id="{escape(symbol_id)}" '
+            f'data-surface-kind="{escape(kind)}">{body}</g>')
 
 
 def _render_contact_annotation(entry: dict) -> str:
@@ -863,8 +1505,18 @@ def _render_contact_annotation(entry: dict) -> str:
     cy = (y_top + y_bottom) / 2
 
     modifiers = symbol.get("modifiers", {})
-    contact_type = modifiers.get("contact_type") or symbol_id.split(".")[-1]
-    surface_marks = modifiers.get("surface_marks", [])
+    # A contact id is `contact.<type>[.<surface>]`. Reading the *last* segment
+    # for the type meant `contact.grasp.front` resolved to "front", lost the
+    # grasp staple and drew the generic caret — only the bare ids ever worked.
+    # The surface suffix was ignored too, being read from modifiers alone.
+    id_parts = symbol_id.split(".")
+    id_type = id_parts[1] if len(id_parts) > 1 else ""
+    id_surface = id_parts[2] if len(id_parts) > 2 else ""
+
+    contact_type = modifiers.get("contact_type") or id_type
+    surface_marks = list(modifiers.get("surface_marks", []))
+    if id_surface and id_surface not in surface_marks:
+        surface_marks.append(id_surface)
 
     parts = ""
 
@@ -895,6 +1547,78 @@ def _render_contact_annotation(entry: dict) -> str:
             f'<line x1="{cx:.1f}" y1="{cy - 7:.1f}" x2="{cx:.1f}" y2="{cy + 7:.1f}" '
             f'stroke="#111827" stroke-width="1.2"/>'
         )
+    elif contact_type == "brush":
+        # Passing contact: caret with a trailing sweep off the top right
+        parts = (
+            f'<path d="M {cx - 6:.1f} {cy + 4:.1f} L {cx:.1f} {cy - 4:.1f} L {cx + 6:.1f} {cy + 4:.1f}" '
+            f'fill="none" stroke="#111827" stroke-width="1.5" stroke-linejoin="miter"/>'
+            f'<path d="M {cx + 2:.1f} {cy - 6:.1f} Q {cx + 8:.1f} {cy - 8:.1f} {cx + 9:.1f} {cy - 2:.1f}" '
+            f'fill="none" stroke="#111827" stroke-width="1"/>'
+        )
+    elif contact_type == "carry":
+        # Weight borne along: caret sitting on a baseline
+        parts = (
+            f'<path d="M {cx - 6:.1f} {cy + 2:.1f} L {cx:.1f} {cy - 6:.1f} L {cx + 6:.1f} {cy + 2:.1f}" '
+            f'fill="none" stroke="#111827" stroke-width="1.5" stroke-linejoin="miter"/>'
+            f'<line x1="{cx - 7:.1f}" y1="{cy + 5:.1f}" x2="{cx + 7:.1f}" y2="{cy + 5:.1f}" '
+            f'stroke="#111827" stroke-width="1.5"/>'
+        )
+    elif contact_type == "press":
+        # Sustained force into the surface: caret under a downward arrow
+        parts = (
+            f'<path d="M {cx - 6:.1f} {cy + 5:.1f} L {cx:.1f} {cy - 3:.1f} L {cx + 6:.1f} {cy + 5:.1f}" '
+            f'fill="none" stroke="#111827" stroke-width="1.5" stroke-linejoin="miter"/>'
+            f'<line x1="{cx:.1f}" y1="{cy - 10:.1f}" x2="{cx:.1f}" y2="{cy - 5:.1f}" '
+            f'stroke="#111827" stroke-width="1"/>'
+            f'<polygon points="{cx:.1f},{cy - 4:.1f} {cx - 2.5:.1f},{cy - 8:.1f} '
+            f'{cx + 2.5:.1f},{cy - 8:.1f}" fill="#111827"/>'
+        )
+    elif contact_type == "release":
+        # The broken retention sign, Knust vol 2 Fig. 79c. Vol 1 p39: "The end
+        # of a relationship, e.g. the release of a contact, is expressed by a
+        # special cancellation sign derived from the retention sign (the
+        # broken retention sign). It can be designed in two ways, as in
+        # Fig. 79c or as in Fig. 79c'."
+        #
+        # Derived from the *retention* sign: the round sign (78a) cut into two
+        # arcs which are then slid apart -- sideways in 79c, up and down in
+        # 79c'. 79c is drawn here. This was a broken version of contact.touch's
+        # caret instead, which is a reasonable guess derived from the wrong
+        # sign.
+        # Two halves of one circle, slid apart: the top half up and left, the
+        # bottom half down and right, so they interlock the way Fig. 79c
+        # prints. Drawing both arcs the same way round gives two commas side
+        # by side, which does not read as a broken ring.
+        r = 4.0
+        dx, dy = 1.8, 1.2
+        parts = (
+            f'<path d="M {cx - r - dx:.1f} {cy - dy:.1f} '
+            f'A {r:.1f} {r:.1f} 0 0 1 {cx + r - dx:.1f} {cy - dy:.1f}" '
+            f'fill="none" stroke="#111827" stroke-width="1.3"/>'
+            f'<path d="M {cx + r + dx:.1f} {cy + dy:.1f} '
+            f'A {r:.1f} {r:.1f} 0 0 1 {cx - r + dx:.1f} {cy + dy:.1f}" '
+            f'fill="none" stroke="#111827" stroke-width="1.3"/>'
+        )
+    elif contact_type == "interlock":
+        # Mutual hold: two staples facing each other
+        parts = (
+            f'<path d="M {cx - 7:.1f} {cy - 5:.1f} L {cx - 7:.1f} {cy + 1:.1f} '
+            f'L {cx + 1:.1f} {cy + 1:.1f} L {cx + 1:.1f} {cy - 5:.1f}" '
+            f'fill="none" stroke="#111827" stroke-width="1.4" stroke-linejoin="miter"/>'
+            f'<path d="M {cx + 7:.1f} {cy + 5:.1f} L {cx + 7:.1f} {cy - 1:.1f} '
+            f'L {cx - 1:.1f} {cy - 1:.1f} L {cx - 1:.1f} {cy + 5:.1f}" '
+            f'fill="none" stroke="#111827" stroke-width="1.4" stroke-linejoin="miter"/>'
+        )
+    elif contact_type == "support":
+        # Weight taken by the contact: caret on a doubled baseline
+        parts = (
+            f'<path d="M {cx - 6:.1f} {cy:.1f} L {cx:.1f} {cy - 8:.1f} L {cx + 6:.1f} {cy:.1f}" '
+            f'fill="none" stroke="#111827" stroke-width="1.5" stroke-linejoin="miter"/>'
+            f'<line x1="{cx - 7:.1f}" y1="{cy + 3:.1f}" x2="{cx + 7:.1f}" y2="{cy + 3:.1f}" '
+            f'stroke="#111827" stroke-width="1.5"/>'
+            f'<line x1="{cx - 7:.1f}" y1="{cy + 6:.1f}" x2="{cx + 7:.1f}" y2="{cy + 6:.1f}" '
+            f'stroke="#111827" stroke-width="1.5"/>'
+        )
     else:
         # Touch: clean upward caret (~12px wide, ~8px tall)
         parts = (
@@ -919,6 +1643,10 @@ def _render_contact_annotation(entry: dict) -> str:
     )
 
 
+# Degree as named by the last id segment. One hook set per degree.
+_FLEXION_DEGREES = {"45": 1, "90": 2, "full": 3}
+
+
 def _render_flexion_symbol(entry: dict) -> str:
     """Render ICKL-standard flexion/extension marks with hooked X arms.
 
@@ -938,7 +1666,12 @@ def _render_flexion_symbol(entry: dict) -> str:
     cy = (y_top + y_bottom) / 2
 
     modifiers = symbol.get("modifiers", {})
-    degree = max(1, min(int(modifiers.get("degree", 1)), 3))
+    # The degree is the id's last segment (.45/.90/.full); it was read from
+    # modifiers only, so every degree of a joint drew the same mark. An
+    # explicit modifier still wins.
+    id_degree = _FLEXION_DEGREES.get(symbol_id.rsplit(".", 1)[-1])
+    degree = modifiers.get("degree", id_degree if id_degree is not None else 1)
+    degree = max(1, min(int(degree), 3))
     is_extension = "extension" in symbol_id
 
     arm_len = 6
@@ -1028,6 +1761,32 @@ def _render_effort_diamond(entry: dict) -> str:
     factor = parts[1] if len(parts) > 1 else ""
     pole = parts[2] if len(parts) > 2 else ""
 
+    # Composite effort sign (basic effort action, drive, state): one action
+    # stroke with a diagonal per participating element.
+    composite = _EFFORT_COMPOSITES.get(f"{factor}.{pole}") if not active else None
+    if composite:
+        svg = (
+            f'<g class="laban-annotation effort" '
+            f'data-effort="{escape(factor)}.{escape(pole)}" '
+            f'data-symbol-id="{escape(identity_id)}">'
+            f'<line x1="{cx:.1f}" y1="{cy - s:.1f}" x2="{cx:.1f}" y2="{cy + s:.1f}" '
+            f'stroke="#111827" stroke-width="1.4"/>'
+        )
+        for el_factor, el_pole in composite:
+            dx, dy, filled = _EFFORT_STROKES[el_factor][el_pole]
+            tx = cx + dx * s
+            ty = (cy - s) + dy * s
+            svg += (
+                f'<line x1="{cx:.1f}" y1="{cy - s:.1f}" x2="{tx:.1f}" y2="{ty:.1f}" '
+                f'stroke="#111827" stroke-width="1.4"/>'
+            )
+            if filled:
+                svg += (
+                    f'<path d="M {cx:.1f} {cy - s:.1f} L {tx:.1f} {ty:.1f} '
+                    f'L {cx:.1f} {ty:.1f} Z" fill="#111827"/>'
+                )
+        return svg + '</g>'
+
     # Single-element effort sign: central action stroke + one factor stroke.
     if not active and factor in _EFFORT_STROKES and pole in _EFFORT_STROKES[factor]:
         dx, dy, filled = _EFFORT_STROKES[factor][pole]
@@ -1050,6 +1809,23 @@ def _render_effort_diamond(entry: dict) -> str:
             svg += (
                 f'<path d="M {cx:.1f} {cy - s:.1f} L {tx:.1f} {ty:.1f} '
                 f'L {cx:.1f} {ty:.1f} Z" fill="#111827"/>'
+            )
+        # Grading. parts[3] was never read, so a bound flow and a bound flow
+        # that is increasing engraved identically. The element keeps its
+        # stroke; the grading is added to the foot of the action stroke as a
+        # wedge opening the way the effort is going -- widening as it grows,
+        # narrowing as it fades.
+        grading = parts[3] if len(parts) > 3 else ""
+        if grading in ("increasing", "decreasing"):
+            growing = grading == "increasing"
+            near, far = (1.5, 4.5) if growing else (4.5, 1.5)
+            foot = cy + s
+            svg += (
+                f'<path d="M {cx - near:.1f} {foot - 5:.1f} '
+                f'L {cx - far:.1f} {foot:.1f} '
+                f'M {cx + near:.1f} {foot - 5:.1f} '
+                f'L {cx + far:.1f} {foot:.1f}" '
+                f'fill="none" stroke="#111827" stroke-width="1.1"/>'
             )
         svg += '</g>'
         return svg
@@ -1087,7 +1863,20 @@ def _render_effort_diamond(entry: dict) -> str:
 
 
 def _render_shape_symbol(entry: dict) -> str:
-    """Render LMA shape symbols (pin, wall, ball, screw)."""
+    """Render an LMA shape symbol.
+
+    A shape id is ``shape.<family>.<pole>``. Only the family was read, so one
+    fixed glyph was drawn per family and every semantic opposite engraved
+    identically: spreading as enclosing, rising as sinking, growing as
+    shrinking. The catalog gives each pole its own glyph (wall.spreading U+2194
+    vs wall.enclosing U+2195, ball.bulging U+2295 vs ball.hollowing U+2296),
+    which is the pairing followed here.
+
+    The poles are directional opposites along LMA's three dimensions, so the
+    family keeps its form and the pole sets the sense — an outward arrow pair
+    against an inward one, a plus against a minus, one rotation against the
+    other. Nothing is invented; the sign is simply read.
+    """
     symbol = entry["symbol"]
     symbol_id = symbol.get("symbol_id", "")
     x = entry["x"]
@@ -1098,89 +1887,273 @@ def _render_shape_symbol(entry: dict) -> str:
     cy = (y_top + y_bottom) / 2
 
     modifiers = symbol.get("modifiers", {})
-    # Shape ids are "shape.<family>.<variant>" (e.g. shape.wall.spreading), so
-    # the family that selects the glyph is token[1], not the trailing variant.
     parts = symbol_id.split(".")
     shape_type = modifiers.get("shape_type") or (parts[1] if len(parts) > 1 else "")
+    pole = parts[2] if len(parts) > 2 else ""
+
+    def wrap(body: str) -> str:
+        return (f'<g class="laban-annotation shape" '
+                f'data-symbol-id="{escape(symbol_id)}" '
+                f'data-shape-pole="{escape(pole)}">{body}</g>')
+
+    def arrow(tip_x, tip_y, dx, dy, size=3.0):
+        """Filled arrowhead at the tip, pointing along (dx, dy)."""
+        norm = (dx * dx + dy * dy) ** 0.5 or 1.0
+        ux, uy = dx / norm, dy / norm
+        px, py = -uy, ux
+        bx, by = tip_x - ux * size * 1.4, tip_y - uy * size * 1.4
+        return (f'<polygon points="{tip_x:.1f},{tip_y:.1f} '
+                f'{bx + px * size:.1f},{by + py * size:.1f} '
+                f'{bx - px * size:.1f},{by - py * size:.1f}" fill="#111827"/>')
 
     if shape_type == "pin":
-        # Vertical line with arrowhead
-        return (
-            f'<g class="laban-annotation shape" data-symbol-id="{escape(symbol_id)}">'
-            f'<line x1="{cx:.1f}" y1="{cy + 6:.1f}" x2="{cx:.1f}" y2="{cy - 6:.1f}" '
-            f'stroke="#111827" stroke-width="1.5"/>'
-            f'<polygon points="{cx:.1f},{cy - 8:.1f} {cx - 3:.1f},{cy - 4:.1f} {cx + 3:.1f},{cy - 4:.1f}" '
-            f'fill="#111827"/>'
-            f'</g>'
-        )
+        # Vertical dimension. rising/sinking are single-headed, lengthening and
+        # shortening doubled, matching the catalog's U+2191/U+2193 against
+        # U+21D1/U+21D3.
+        up = pole in ("rising", "lengthening")
+        sign = -1 if up else 1
+        body = (f'<line x1="{cx:.1f}" y1="{cy - sign * 6:.1f}" '
+                f'x2="{cx:.1f}" y2="{cy + sign * 5:.1f}" '
+                f'stroke="#111827" stroke-width="1.5"/>'
+                + arrow(cx, cy + sign * 8, 0, sign))
+        if pole in ("lengthening", "shortening"):
+            body += arrow(cx, cy + sign * 3, 0, sign, size=2.6)
+        return wrap(body)
+
     if shape_type == "wall":
-        # Horizontal line with arrows
-        return (
-            f'<g class="laban-annotation shape" data-symbol-id="{escape(symbol_id)}">'
-            f'<line x1="{cx - 7:.1f}" y1="{cy:.1f}" x2="{cx + 7:.1f}" y2="{cy:.1f}" '
-            f'stroke="#111827" stroke-width="1.5"/>'
-            f'<polygon points="{cx - 9:.1f},{cy:.1f} {cx - 5:.1f},{cy - 3:.1f} {cx - 5:.1f},{cy + 3:.1f}" '
-            f'fill="#111827"/>'
-            f'<polygon points="{cx + 9:.1f},{cy:.1f} {cx + 5:.1f},{cy - 3:.1f} {cx + 5:.1f},{cy + 3:.1f}" '
-            f'fill="#111827"/>'
-            f'</g>'
-        )
+        # Horizontal dimension. enclosing turns the axis vertical, as the
+        # catalog's U+2195 against U+2194 does; narrowing points inward.
+        if pole == "enclosing":
+            body = (f'<line x1="{cx:.1f}" y1="{cy - 6:.1f}" x2="{cx:.1f}" y2="{cy + 6:.1f}" '
+                    f'stroke="#111827" stroke-width="1.5"/>'
+                    + arrow(cx, cy - 8, 0, -1) + arrow(cx, cy + 8, 0, 1))
+        elif pole == "narrowing":
+            body = (f'<line x1="{cx - 7:.1f}" y1="{cy:.1f}" x2="{cx + 7:.1f}" y2="{cy:.1f}" '
+                    f'stroke="#111827" stroke-width="1.5"/>'
+                    + arrow(cx - 2, cy, 1, 0) + arrow(cx + 2, cy, -1, 0))
+        else:
+            # spreading / widening: outward, widening drawn wider (U+27F7).
+            reach = 9 if pole == "widening" else 7
+            body = (f'<line x1="{cx - reach:.1f}" y1="{cy:.1f}" '
+                    f'x2="{cx + reach:.1f}" y2="{cy:.1f}" '
+                    f'stroke="#111827" stroke-width="1.5"/>'
+                    + arrow(cx - reach - 2, cy, -1, 0)
+                    + arrow(cx + reach + 2, cy, 1, 0))
+        return wrap(body)
+
     if shape_type == "ball":
-        # Circle
-        return (
-            f'<g class="laban-annotation shape" data-symbol-id="{escape(symbol_id)}">'
-            f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="6" fill="none" stroke="#111827" stroke-width="1.5"/>'
-            f'</g>'
-        )
+        # U+2295 against U+2296: a plus for bulging, a minus for hollowing.
+        body = (f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="6" fill="none" '
+                f'stroke="#111827" stroke-width="1.5"/>'
+                f'<line x1="{cx - 3:.1f}" y1="{cy:.1f}" x2="{cx + 3:.1f}" y2="{cy:.1f}" '
+                f'stroke="#111827" stroke-width="1.5"/>')
+        if pole == "bulging":
+            body += (f'<line x1="{cx:.1f}" y1="{cy - 3:.1f}" '
+                     f'x2="{cx:.1f}" y2="{cy + 3:.1f}" '
+                     f'stroke="#111827" stroke-width="1.5"/>')
+        return wrap(body)
+
     if shape_type == "screw":
-        # Spiral line
-        return (
-            f'<g class="laban-annotation shape" data-symbol-id="{escape(symbol_id)}">'
-            f'<path d="M {cx:.1f} {cy + 6:.1f} '
-            f'Q {cx + 5:.1f} {cy + 3:.1f} {cx:.1f} {cy:.1f} '
-            f'Q {cx - 4:.1f} {cy - 2:.1f} {cx:.1f} {cy - 4:.1f} '
-            f'Q {cx + 3:.1f} {cy - 5:.1f} {cx + 2:.1f} {cy - 7:.1f}" '
-            f'fill="none" stroke="#111827" stroke-width="1.5"/>'
-            f'</g>'
-        )
+        if pole in ("forward", "backward"):
+            # Rotation sense: U+21BB clockwise against U+21BA anticlockwise.
+            clockwise = pole == "forward"
+            start_x = cx - 6 if clockwise else cx + 6
+            end_x = cx + 6 if clockwise else cx - 6
+            body = (f'<path d="M {start_x:.1f} {cy:.1f} '
+                    f'A 6 6 0 1 {1 if clockwise else 0} {end_x:.1f} {cy - 1:.1f}" '
+                    f'fill="none" stroke="#111827" stroke-width="1.5"/>'
+                    + arrow(end_x, cy + 2, 0, 1))
+        else:
+            # Sagittal pair: advancing U+229B carries the star, retreating
+            # U+229C the bars.
+            body = (f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="6" fill="none" '
+                    f'stroke="#111827" stroke-width="1.5"/>')
+            if pole == "advancing":
+                body += "".join(
+                    f'<line x1="{cx:.1f}" y1="{cy:.1f}" '
+                    f'x2="{cx + 4 * dx:.1f}" y2="{cy + 4 * dy:.1f}" '
+                    f'stroke="#111827" stroke-width="1.2"/>'
+                    for dx, dy in ((0, -1), (0.87, 0.5), (-0.87, 0.5)))
+            else:
+                body += (f'<line x1="{cx - 4:.1f}" y1="{cy - 2:.1f}" '
+                         f'x2="{cx + 4:.1f}" y2="{cy - 2:.1f}" '
+                         f'stroke="#111827" stroke-width="1.2"/>'
+                         f'<line x1="{cx - 4:.1f}" y1="{cy + 2:.1f}" '
+                         f'x2="{cx + 4:.1f}" y2="{cy + 2:.1f}" '
+                         f'stroke="#111827" stroke-width="1.2"/>')
+        return wrap(body)
+
     if shape_type == "flow":
-        # Flow shape change (growing/shrinking): an open wavy vertical stroke
-        return (
-            f'<g class="laban-annotation shape" data-symbol-id="{escape(symbol_id)}">'
-            f'<path d="M {cx:.1f} {cy + 7:.1f} '
-            f'Q {cx + 5:.1f} {cy + 3:.1f} {cx:.1f} {cy:.1f} '
-            f'Q {cx - 5:.1f} {cy - 3:.1f} {cx:.1f} {cy - 7:.1f}" '
-            f'fill="none" stroke="#111827" stroke-width="1.5"/>'
-            f'</g>'
-        )
-    if shape_type == "door":
-        # Door plane (vertical plane): a tall upright rectangle
-        return (
-            f'<g class="laban-annotation shape" data-symbol-id="{escape(symbol_id)}">'
-            f'<rect x="{cx - 4:.1f}" y="{cy - 7:.1f}" width="8" height="14" '
-            f'fill="none" stroke="#111827" stroke-width="1.5"/>'
-            f'</g>'
-        )
-    if shape_type == "table":
-        # Table plane (horizontal plane): a wide flat rectangle
-        return (
-            f'<g class="laban-annotation shape" data-symbol-id="{escape(symbol_id)}">'
-            f'<rect x="{cx - 7:.1f}" y="{cy - 4:.1f}" width="14" height="8" '
-            f'fill="none" stroke="#111827" stroke-width="1.5"/>'
-            f'</g>'
-        )
+        # Diagonal pair: growing U+2922 rises to the right, shrinking U+2921
+        # falls. The .upper/.lower suffix, when present, shifts the stroke.
+        # rise = -1 means the stroke climbs to the right (growing, U+2922);
+        # +1 falls (shrinking, U+2921). Getting this backwards passes a
+        # distinctness test happily, so it is spelled out: y0 is where the
+        # stroke starts on the left, y1 where it ends on the right.
+        rise = -1 if "growing" in symbol_id else 1
+        shift = -3 if symbol_id.endswith(".upper") else (
+            3 if symbol_id.endswith(".lower") else 0)
+        y0 = cy - rise * 6 + shift
+        y1 = cy + rise * 6 + shift
+        body = (f'<path d="M {cx - 6:.1f} {y0:.1f} '
+                f'Q {cx:.1f} {(y0 + y1) / 2 + rise * 3:.1f} {cx + 6:.1f} {y1:.1f}" '
+                f'fill="none" stroke="#111827" stroke-width="1.5"/>'
+                + arrow(cx + 8, y1 + rise * 1.5, 1, rise))
+        return wrap(body)
+
+    if shape_type in ("door", "table"):
+        # Plane pairs: the rectangle names the plane, the arrows the pole.
+        rx, ry = (4.0, 7.0) if shape_type == "door" else (7.0, 4.0)
+        body = (f'<rect x="{cx - rx:.1f}" y="{cy - ry:.1f}" '
+                f'width="{2 * rx:.1f}" height="{2 * ry:.1f}" '
+                f'fill="none" stroke="#111827" stroke-width="1.5"/>')
+        outward = pole == "spreading"
+        # Axis the arrows travel along: across the plane's short side, so they
+        # read as the plane opening or closing rather than sliding.
+        axis = ((0, -1), (0, 1)) if shape_type == "door" else ((-1, 0), (1, 0))
+        reach = (ry if shape_type == "door" else rx)
+        for dx, dy in axis:
+            if outward:
+                # Tip well clear of the rectangle, tail on its edge.
+                tip_x, tip_y = cx + dx * (reach + 7), cy + dy * (reach + 7)
+                body += (f'<line x1="{cx + dx * reach:.1f}" y1="{cy + dy * reach:.1f}" '
+                         f'x2="{tip_x:.1f}" y2="{tip_y:.1f}" '
+                         f'stroke="#111827" stroke-width="1.2"/>'
+                         + arrow(tip_x, tip_y, dx, dy, size=2.8))
+            else:
+                # Pointing back in at the rectangle from outside.
+                body += (f'<line x1="{cx + dx * (reach + 7):.1f}" '
+                         f'y1="{cy + dy * (reach + 7):.1f}" '
+                         f'x2="{cx + dx * (reach + 2):.1f}" '
+                         f'y2="{cy + dy * (reach + 2):.1f}" '
+                         f'stroke="#111827" stroke-width="1.2"/>'
+                         + arrow(cx + dx * reach, cy + dy * reach,
+                                 -dx, -dy, size=2.8))
+        return wrap(body)
+
     # Generic fallback
     label = shape_type[:3] if shape_type else "shp"
-    return (
-        f'<g class="laban-annotation shape" data-symbol-id="{escape(symbol_id)}">'
-        f'<text x="{cx:.1f}" y="{cy + 3:.1f}" text-anchor="middle" font-size="7" fill="#475569">'
-        f'{escape(label)}</text>'
-        f'</g>'
+    return wrap(
+        f'<text x="{cx:.1f}" y="{cy + 3:.1f}" text-anchor="middle" '
+        f'font-size="7" fill="#475569">{escape(label)}</text>'
     )
 
 
+# Stage geography as unit offsets from centre, x to stage right, y downstage.
+# Both the facing arrows and the zone grid read from this, so a facing and a
+# zone that name the same place point at the same spot.
+_STAGE_OFFSETS = {
+    "downstage": (0, 1), "upstage": (0, -1),
+    "stage_left": (-1, 0), "stage_right": (1, 0),
+    "downstage_left": (-1, 1), "downstage_right": (1, 1),
+    "upstage_left": (-1, -1), "upstage_right": (1, -1),
+    "downstage_center": (0, 1), "upstage_center": (0, -1),
+    "center": (0, 0), "center_left": (-1, 0), "center_right": (1, 0),
+    "wings_left": (-2, 0), "wings_right": (2, 0),
+}
+
+
+def _render_facing_marker(cx: float, cy: float, name: str) -> str:
+    """Arrow from centre pointing the way the dancer faces."""
+    dx, dy = _STAGE_OFFSETS.get(name, (0, 1))
+    r = 7.0
+    norm = (dx * dx + dy * dy) ** 0.5 or 1.0
+    tx, ty = cx + r * dx / norm, cy + r * dy / norm
+    # arrowhead basis
+    px, py = -dy / norm, dx / norm
+    return (
+        f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="2" fill="#111827"/>'
+        f'<line x1="{cx:.1f}" y1="{cy:.1f}" x2="{tx:.1f}" y2="{ty:.1f}" '
+        f'stroke="#111827" stroke-width="1.4"/>'
+        f'<polygon points="{tx + 2.5 * dx / norm:.1f},{ty + 2.5 * dy / norm:.1f} '
+        f'{tx + 2.5 * px:.1f},{ty + 2.5 * py:.1f} '
+        f'{tx - 2.5 * px:.1f},{ty - 2.5 * py:.1f}" fill="#111827"/>'
+    )
+
+
+def _render_zone_marker(cx: float, cy: float, name: str) -> str:
+    """Stage rectangle with the named cell filled."""
+    dx, dy = _STAGE_OFFSETS.get(name, (0, 0))
+    half_w, half_h, cell = 9.0, 6.0, 3.0
+    svg = (
+        f'<rect x="{cx - half_w:.1f}" y="{cy - half_h:.1f}" '
+        f'width="{2 * half_w:.1f}" height="{2 * half_h:.1f}" '
+        f'fill="none" stroke="#111827" stroke-width="1"/>'
+    )
+    # wings sit outside the stage rectangle, hence the clamp on x only
+    mx = cx + max(-1, min(1, dx)) * (half_w * 0.55)
+    if abs(dx) > 1:
+        mx = cx + (half_w + 3) * (1 if dx > 0 else -1)
+    my = cy + dy * (half_h * 0.55)
+    svg += (
+        f'<rect x="{mx - cell / 2:.1f}" y="{my - cell / 2:.1f}" '
+        f'width="{cell:.1f}" height="{cell:.1f}" fill="#111827"/>'
+    )
+    return svg
+
+
+def _render_formation_marker(cx: float, cy: float, name: str) -> str:
+    """Dancer dots arranged in the named group formation."""
+    r = 7.0
+    layouts = {
+        "line": [(-1, 0), (-0.33, 0), (0.33, 0), (1, 0)],
+        "diagonal": [(-1, -1), (-0.33, -0.33), (0.33, 0.33), (1, 1)],
+        "v_shape": [(-1, -1), (-0.5, 0), (0, 0.7), (0.5, 0), (1, -1)],
+        "cluster": [(-0.3, -0.3), (0.3, -0.3), (0, 0.15), (-0.3, 0.45), (0.3, 0.45)],
+        "scatter": [(-1, -0.6), (0.2, -1), (-0.5, 0.5), (0.9, 0.3), (0.1, 0.05)],
+    }
+    if name == "circle":
+        import math
+        pts = [(math.cos(a), math.sin(a))
+               for a in (i * math.pi / 3 for i in range(6))]
+    else:
+        pts = layouts.get(name, layouts["cluster"])
+    return "".join(
+        f'<circle cx="{cx + px * r:.1f}" cy="{cy + py * r:.1f}" r="1.6" '
+        f'fill="#111827"/>'
+        for px, py in pts
+    )
+
+
+def _render_travel_path_marker(cx: float, cy: float, name: str) -> str:
+    """The travel path drawn as its own shape."""
+    r = 8.0
+    paths = {
+        "straight": f'M {cx - r:.1f} {cy:.1f} L {cx + r:.1f} {cy:.1f}',
+        "curved": (f'M {cx - r:.1f} {cy + 3:.1f} '
+                   f'Q {cx:.1f} {cy - 8:.1f} {cx + r:.1f} {cy + 3:.1f}'),
+        "circular": (f'M {cx - 5:.1f} {cy:.1f} A 5 5 0 1 1 {cx + 5:.1f} {cy:.1f} '
+                     f'A 5 5 0 1 1 {cx - 5:.1f} {cy:.1f}'),
+        "spiral": (f'M {cx:.1f} {cy:.1f} A 2 2 0 1 1 {cx + 2:.1f} {cy - 2:.1f} '
+                   f'A 4.5 4.5 0 1 1 {cx - 4.5:.1f} {cy - 1:.1f} '
+                   f'A 7 7 0 1 1 {cx + 4:.1f} {cy + 6:.1f}'),
+        "zigzag": (f'M {cx - r:.1f} {cy + 4:.1f} L {cx - r / 2:.1f} {cy - 4:.1f} '
+                   f'L {cx:.1f} {cy + 4:.1f} L {cx + r / 2:.1f} {cy - 4:.1f} '
+                   f'L {cx + r:.1f} {cy + 4:.1f}'),
+        # Two loops stacked vertically, crossing at the centre. Written as
+        # four half-arcs so the crossing is a real crossing, not two arcs
+        # landing on the same point (which just draws one circle).
+        "figure_eight": (
+            f'M {cx:.1f} {cy:.1f} '
+            f'A 4 4 0 1 1 {cx:.1f} {cy - 8:.1f} '
+            f'A 4 4 0 1 1 {cx:.1f} {cy:.1f} '
+            f'A 4 4 0 1 0 {cx:.1f} {cy + 8:.1f} '
+            f'A 4 4 0 1 0 {cx:.1f} {cy:.1f}'),
+    }
+    d = paths.get(name, paths["straight"])
+    return (f'<path d="{d}" fill="none" stroke="#111827" stroke-width="1.3" '
+            f'stroke-linecap="round"/>')
+
+
 def _render_stage_marker(entry: dict) -> str:
-    """Render stage position marker."""
+    """Render a floor-plan reference placed in the staff's annotation column.
+
+    Four sub-families share this column and mean quite different things — a
+    facing, a stage zone, a group formation and a travel path — so each draws
+    its own shape, read from the symbol id. The id is the only source: none of
+    these catalog entries carries the ``stage_position`` field this used to
+    read, which is why all 31 previously rendered as one dot and a "?".
+    """
     symbol = entry["symbol"]
     symbol_id = symbol.get("symbol_id", "")
     x = entry["x"]
@@ -1190,19 +2163,29 @@ def _render_stage_marker(entry: dict) -> str:
     cx = x + w / 2
     cy = (y_top + y_bottom) / 2
 
-    stage_position = symbol.get("stage_position", {})
-    zone = ""
-    if isinstance(stage_position, dict):
-        zone = stage_position.get("zone", "")
-    # Abbreviate zone name
-    zone_abbr = "".join(word[0].upper() for word in zone.split("_")) if zone else "?"
+    parts = symbol_id.split(".")
+    kind = parts[1] if len(parts) > 2 else ""
+    name = ".".join(parts[2:]) if len(parts) > 2 else ""
+
+    if kind == "facing":
+        body = _render_facing_marker(cx, cy, name)
+    elif kind == "zone":
+        body = _render_zone_marker(cx, cy, name)
+    elif kind == "formation":
+        body = _render_formation_marker(cx, cy, name)
+    elif kind == "path":
+        body = _render_travel_path_marker(cx, cy, name)
+    else:
+        # An explicit stage_position on a symbol whose id names no sub-family.
+        stage_position = symbol.get("stage_position", {})
+        zone = stage_position.get("zone", "") if isinstance(stage_position, dict) else ""
+        body = _render_zone_marker(cx, cy, zone) if zone else (
+            f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="3" fill="#111827"/>')
 
     return (
         f'<g class="laban-annotation floor_plan" data-symbol-id="{escape(symbol_id)}">'
-        f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="3" fill="#111827"/>'
-        f'<text x="{cx:.1f}" y="{cy - 6:.1f}" text-anchor="middle" font-size="6" fill="#475569">'
-        f'{escape(zone_abbr)}</text>'
-        f'<line x1="{cx:.1f}" y1="{cy + 3:.1f}" x2="{cx:.1f}" y2="{y_bottom:.1f}" '
+        f'{body}'
+        f'<line x1="{cx:.1f}" y1="{cy + 8:.1f}" x2="{cx:.1f}" y2="{y_bottom:.1f}" '
         f'stroke="#999" stroke-width="0.5" stroke-dasharray="2,2"/>'
         f'</g>'
     )
@@ -1233,7 +2216,17 @@ def _render_rotation_degree(entry: dict) -> str:
 
 
 def _render_sequential_annotation(entry: dict) -> str:
-    """Render sequential/successive movement marks."""
+    """Render a sequential / successive movement mark.
+
+    The id was never read. One wavy line was drawn, with an arrow whose
+    direction came from ``modifiers.wave_direction`` (default "upward") — a
+    field nothing populates — so a simultaneous movement, a ripple, a
+    successive one and a proximal-to-distal sequence all engraved identically,
+    although the catalog gives each its own glyph.
+
+    ``wave.arm``/``body``/``leg`` deliberately keep one shared glyph: the
+    catalog gives all three U+223F and the limb is carried by placement.
+    """
     symbol = entry["symbol"]
     symbol_id = symbol.get("symbol_id", "")
     x = entry["x"]
@@ -1241,36 +2234,103 @@ def _render_sequential_annotation(entry: dict) -> str:
     y_bottom = entry["y_bottom"]
     w = entry["width"]
     cx = x + w / 2
+    cy = (y_top + y_bottom) / 2
 
     modifiers = symbol.get("modifiers", {})
-    wave_dir = modifiers.get("wave_direction", "upward")
+    parts = symbol_id.split(".")
+    kind = parts[1] if len(parts) > 1 else ""
+    variant = parts[2] if len(parts) > 2 else ""
 
-    # Undulating wavy line
-    wave_h = y_bottom - y_top
-    amp = 3
-    svg = (
-        f'<g class="laban-annotation sequential" data-symbol-id="{escape(symbol_id)}">'
-        f'<path d="M {cx:.1f} {y_bottom - 2:.1f} '
-        f'Q {cx + amp:.1f} {y_bottom - wave_h * 0.25:.1f} {cx:.1f} {y_bottom - wave_h * 0.33:.1f} '
-        f'Q {cx - amp:.1f} {y_bottom - wave_h * 0.5:.1f} {cx:.1f} {y_bottom - wave_h * 0.67:.1f} '
-        f'Q {cx + amp:.1f} {y_bottom - wave_h * 0.75:.1f} {cx:.1f} {y_top + 2:.1f}" '
-        f'fill="none" stroke="#111827" stroke-width="1.2"/>'
-    )
+    def wrap(body: str) -> str:
+        return (f'<g class="laban-annotation sequential" '
+                f'data-symbol-id="{escape(symbol_id)}" '
+                f'data-sequential-kind="{escape(kind)}">{body}</g>')
 
-    # Arrow indicating direction
+    def arrowhead(tip_x, tip_y, dx, dy, size=3.0):
+        norm = (dx * dx + dy * dy) ** 0.5 or 1.0
+        ux, uy = dx / norm, dy / norm
+        px, py = -uy, ux
+        bx, by = tip_x - ux * size * 1.5, tip_y - uy * size * 1.5
+        return (f'<polygon points="{tip_x:.1f},{tip_y:.1f} '
+                f'{bx + px * size:.1f},{by + py * size:.1f} '
+                f'{bx - px * size:.1f},{by - py * size:.1f}" fill="#111827"/>')
+
+    def vertical_wave(amp=3.0, top=None, bottom=None):
+        top = y_top + 2 if top is None else top
+        bottom = y_bottom - 2 if bottom is None else bottom
+        span = bottom - top
+        return (f'<path d="M {cx:.1f} {bottom:.1f} '
+                f'Q {cx + amp:.1f} {bottom - span * 0.25:.1f} '
+                f'{cx:.1f} {bottom - span * 0.33:.1f} '
+                f'Q {cx - amp:.1f} {bottom - span * 0.5:.1f} '
+                f'{cx:.1f} {bottom - span * 0.67:.1f} '
+                f'Q {cx + amp:.1f} {bottom - span * 0.75:.1f} '
+                f'{cx:.1f} {top:.1f}" '
+                f'fill="none" stroke="#111827" stroke-width="1.2"/>')
+
+    # An explicit modifier still overrides the id.
+    wave_dir = modifiers.get("wave_direction")
+
+    if kind == "simultaneous":
+        # U+21D5: everything at once, so a double-headed vertical with no wave.
+        body = (f'<line x1="{cx:.1f}" y1="{y_top + 3:.1f}" '
+                f'x2="{cx:.1f}" y2="{y_bottom - 3:.1f}" '
+                f'stroke="#111827" stroke-width="1.4"/>'
+                + arrowhead(cx, y_top, 0, -1) + arrowhead(cx, y_bottom, 0, 1))
+        return wrap(body)
+
+    if kind == "ripple":
+        # U+224B: a ripple is repeated waves, so draw three side by side.
+        body = "".join(
+            f'<path d="M {cx + dx:.1f} {y_bottom - 3:.1f} '
+            f'Q {cx + dx + 2.5:.1f} {cy + 3:.1f} {cx + dx:.1f} {cy:.1f} '
+            f'Q {cx + dx - 2.5:.1f} {cy - 3:.1f} {cx + dx:.1f} {y_top + 3:.1f}" '
+            f'fill="none" stroke="#111827" stroke-width="1.1"/>'
+            for dx in (-4.5, 0.0, 4.5))
+        return wrap(body)
+
+    if kind == "sequential":
+        # U+21C7 / U+21C9: body-part order, so a horizontal doubled arrow.
+        outward = variant == "proximal_to_distal"
+        sign = 1 if outward else -1
+        body = "".join(
+            f'<line x1="{cx - sign * 6:.1f}" y1="{cy + dy:.1f}" '
+            f'x2="{cx + sign * 4:.1f}" y2="{cy + dy:.1f}" '
+            f'stroke="#111827" stroke-width="1.2"/>'
+            + arrowhead(cx + sign * 7, cy + dy, sign, 0, size=2.6)
+            for dy in (-3.0, 3.0))
+        return wrap(body)
+
+    if kind == "successive":
+        if variant == "lateral" and not wave_dir:
+            # U+21C4: across the body, so a horizontal pair pointing opposite
+            # ways rather than a vertical wave.
+            body = (f'<line x1="{cx - 7:.1f}" y1="{cy - 3:.1f}" '
+                    f'x2="{cx + 5:.1f}" y2="{cy - 3:.1f}" '
+                    f'stroke="#111827" stroke-width="1.2"/>'
+                    + arrowhead(cx + 8, cy - 3, 1, 0, size=2.6)
+                    + f'<line x1="{cx + 7:.1f}" y1="{cy + 3:.1f}" '
+                      f'x2="{cx - 5:.1f}" y2="{cy + 3:.1f}" '
+                      f'stroke="#111827" stroke-width="1.2"/>'
+                    + arrowhead(cx - 8, cy + 3, -1, 0, size=2.6))
+            return wrap(body)
+        # U+290A / U+290B: a wave travelling up or down the body.
+        downward = (wave_dir or variant) == "downward"
+        body = vertical_wave()
+        if downward:
+            body += arrowhead(cx, y_bottom, 0, 1)
+        else:
+            body += arrowhead(cx, y_top, 0, -1)
+        return wrap(body)
+
+    # wave.* and anything unrecognised: the plain undulating stroke. All three
+    # wave limbs share it on purpose.
+    body = vertical_wave()
     if wave_dir == "downward":
-        svg += (
-            f'<polygon points="{cx:.1f},{y_bottom:.1f} {cx - 3:.1f},{y_bottom - 5:.1f} '
-            f'{cx + 3:.1f},{y_bottom - 5:.1f}" fill="#111827"/>'
-        )
-    else:
-        svg += (
-            f'<polygon points="{cx:.1f},{y_top:.1f} {cx - 3:.1f},{y_top + 5:.1f} '
-            f'{cx + 3:.1f},{y_top + 5:.1f}" fill="#111827"/>'
-        )
-
-    svg += '</g>'
-    return svg
+        body += arrowhead(cx, y_bottom, 0, 1)
+    elif wave_dir:
+        body += arrowhead(cx, y_top, 0, -1)
+    return wrap(body)
 
 
 def _render_path_annotation(entry: dict) -> str:
@@ -1332,6 +2392,47 @@ def _render_music_rest_annotation(entry: dict) -> str:
     y_bottom = entry["y_bottom"]
     w = entry["width"]
     cx = x + w / 2
+
+    cy = (y_top + y_bottom) / 2
+
+    # Only the rest.* ids were handled; time signatures, tempo and cadence
+    # marks all fell through to the quarter-rest default, so music.time.3_4
+    # engraved as a quarter rest and every music symbol looked the same.
+    if symbol_id.startswith("music.time."):
+        numerator, _, denominator = symbol_id.rsplit(".", 1)[-1].partition("_")
+        content = (
+            f'<text x="{cx:.1f}" y="{cy - 1:.1f}" text-anchor="middle" '
+            f'font-size="9" font-family="serif" font-weight="700" '
+            f'fill="#111827">{escape(numerator)}</text>'
+            f'<text x="{cx:.1f}" y="{cy + 8:.1f}" text-anchor="middle" '
+            f'font-size="9" font-family="serif" font-weight="700" '
+            f'fill="#111827">{escape(denominator)}</text>'
+        )
+        return (f'<g class="laban-annotation music" '
+                f'data-symbol-id="{escape(symbol_id)}">{content}</g>')
+
+    if symbol_id.startswith("music.tempo"):
+        # Metronome mark: a filled note head with a stem.
+        content = (
+            f'<ellipse cx="{cx - 2:.1f}" cy="{cy + 4:.1f}" rx="3" ry="2.2" '
+            f'fill="#111827"/>'
+            f'<line x1="{cx + 1:.1f}" y1="{cy + 4:.1f}" x2="{cx + 1:.1f}" '
+            f'y2="{cy - 6:.1f}" stroke="#111827" stroke-width="1.2"/>'
+            f'<line x1="{cx + 4:.1f}" y1="{cy - 1:.1f}" x2="{cx + 9:.1f}" '
+            f'y2="{cy - 1:.1f}" stroke="#111827" stroke-width="1"/>'
+        )
+        return (f'<g class="laban-annotation music" '
+                f'data-symbol-id="{escape(symbol_id)}">{content}</g>')
+
+    if symbol_id.startswith("music.cadence"):
+        # Phrase close: a bracket turning down at both ends.
+        content = (
+            f'<path d="M {cx - 6:.1f} {cy + 4:.1f} L {cx - 6:.1f} {cy - 3:.1f} '
+            f'L {cx + 6:.1f} {cy - 3:.1f} L {cx + 6:.1f} {cy + 4:.1f}" '
+            f'fill="none" stroke="#111827" stroke-width="1.3"/>'
+        )
+        return (f'<g class="laban-annotation music" '
+                f'data-symbol-id="{escape(symbol_id)}">{content}</g>')
 
     if symbol_id.endswith("rest.sixteenth"):
         content = (
@@ -1447,13 +2548,23 @@ def _render_motif_annotation(entry: dict) -> str:
     return f'<g class="laban-annotation motif" data-symbol-id="{escape(symbol_id)}">{content}</g>'
 
 
-def _render_pin_annotation(entry: dict) -> str:
-    """Render dedicated pin symbols with head variants.
+# The catalog states each pin's head in behavior.cap_shape; this is the only
+# place that spelling is translated to a drawing.
+_PIN_CAP_HEADS = {
+    "diamond_head": "diamond",
+    "round_head": "circle",
+    "hold_bar": "bar",
+}
 
-    Pin heads based on modifiers.pin_head:
-    - "circle": vertical line with open circle at top
-    - "diamond": vertical line with small rotated square at top
-    - default: vertical line with filled triangle arrowhead at top
+# pin.floorplan_exit carries no behavior block, so its head comes from the id.
+_PIN_ID_HEADS = {"pin.floorplan_exit": "open_square"}
+
+
+def _render_pin_annotation(entry: dict) -> str:
+    """Render a pin, with the head the catalog asks for.
+
+    Head selection order: an explicit ``modifiers.pin_head``, else the
+    catalog's ``behavior.cap_shape``, else a per-id fallback, else a triangle.
     """
     symbol = entry["symbol"]
     symbol_id = symbol.get("symbol_id", "")
@@ -1465,7 +2576,14 @@ def _render_pin_annotation(entry: dict) -> str:
     cy = (y_top + y_bottom) / 2
 
     modifiers = symbol.get("modifiers", {})
-    pin_head = modifiers.get("pin_head", "triangle")
+    # The head came from modifiers.pin_head, which nothing populates, so every
+    # pin drew the default triangle -- while the catalog's own
+    # behavior.cap_shape sat unread beside it. pin.entry declares
+    # "diamond_head" and pin.hold "hold_bar"; those now select the head, and an
+    # explicit modifier still overrides them.
+    cap_shape = (entry.get("spec") or {}).get("behavior", {}).get("cap_shape", "")
+    pin_head = modifiers.get("pin_head") or _PIN_CAP_HEADS.get(
+        cap_shape, _PIN_ID_HEADS.get(symbol_id, "triangle"))
     pin_length = modifiers.get("pin_length", 10)
     half_len = pin_length / 2
 
@@ -1494,6 +2612,19 @@ def _render_pin_annotation(entry: dict) -> str:
             f'L {cx - s:.1f} {head_y - s:.1f} Z" '
             f'fill="#111827" stroke="#111827" stroke-width="0.8"/>'
         )
+    elif pin_head == "bar":
+        # hold_bar: a crossbar rather than a point — the pin marks a place
+        # held, not a direction taken.
+        svg += (
+            f'<line x1="{cx - 4:.1f}" y1="{head_y - 2:.1f}" '
+            f'x2="{cx + 4:.1f}" y2="{head_y - 2:.1f}" '
+            f'stroke="#111827" stroke-width="2"/>'
+        )
+    elif pin_head == "open_square":
+        svg += (
+            f'<rect x="{cx - 3:.1f}" y="{head_y - 6:.1f}" width="6" height="6" '
+            f'fill="none" stroke="#111827" stroke-width="1.2"/>'
+        )
     else:
         # Default: filled triangle arrowhead
         svg += (
@@ -1521,7 +2652,11 @@ def _render_bow_annotation(entry: dict) -> str:
     cx = x + w / 2
 
     modifiers = symbol.get("modifiers", {})
-    bow_type = modifiers.get("bow_type", "hook")
+    # bow_type came from modifiers alone, defaulting to "hook", so the id's own
+    # subtype never reached the drawing: bow.horizontal (U+2322) and
+    # bow.vertical (U+22C2) are opposite orientations and both drew the hook.
+    bow_type = modifiers.get("bow_type") or (
+        symbol_id.split(".")[1] if "." in symbol_id else "hook")
 
     svg = f'<g class="laban-annotation bow" data-symbol-id="{escape(symbol_id)}">'
 
@@ -1530,7 +2665,32 @@ def _render_bow_annotation(entry: dict) -> str:
     base_y = y_bottom - 4
     peak_y = y_top + 4
 
-    if bow_type == "tie":
+    if bow_type == "vertical":
+        # U+22C2: the arc turns upright, spanning the two staff sides rather
+        # than two moments in time.
+        mid_y = (base_y + peak_y) / 2
+        svg += (
+            f'<path d="M {cx - 5:.1f} {mid_y + 6:.1f} '
+            f'C {cx + 6:.1f} {mid_y + 6:.1f} '
+            f'{cx + 6:.1f} {mid_y - 6:.1f} '
+            f'{cx - 5:.1f} {mid_y - 6:.1f}" '
+            f'fill="none" stroke="#111827" stroke-width="1.5"/>'
+        )
+        svg += '</g>'
+        return svg
+
+    if bow_type == "small":
+        # U+02D8: a breve — the same arc, drawn short and shallow.
+        mid_y = (base_y + peak_y) / 2
+        svg += (
+            f'<path d="M {cx - 4:.1f} {mid_y - 1:.1f} '
+            f'Q {cx:.1f} {mid_y + 4:.1f} {cx + 4:.1f} {mid_y - 1:.1f}" '
+            f'fill="none" stroke="#111827" stroke-width="1.4"/>'
+        )
+        svg += '</g>'
+        return svg
+
+    if bow_type in ("tie", "horizontal"):
         # Symmetric shallow arc for hold/legato
         svg += (
             f'<path d="M {left_x:.1f} {base_y:.1f} '
@@ -1837,8 +2997,10 @@ def _render_annotation(entry: dict) -> str:
     if family == "repeat":
         return _render_repeat_annotation(entry)
     if family == "retention":
-        return _render_retention_annotation(entry)
-    if family in ("contact", "surface"):
+        return _render_retention_sign(entry)
+    if family == "surface":
+        return _render_surface_annotation(entry)
+    if family == "contact":
         return _render_contact_annotation(entry)
     if family == "path":
         return _render_path_annotation(entry)
@@ -1856,7 +3018,7 @@ def _render_annotation(entry: dict) -> str:
         return _render_adlib_annotation(entry)
     if family == "motif":
         return _render_motif_annotation(entry)
-    if family == "flexion":
+    if family in ("flexion", "extension"):
         return _render_flexion_symbol(entry)
     if family == "shape":
         return _render_shape_symbol(entry)
@@ -2243,26 +3405,39 @@ def render_laban_svg(ir: dict) -> str:
         # show columns. They do not print"). The staff prints only its three
         # vertical lines and its measure lines.
 
-        # Bar lines cross the staff itself with a small overhang, not the full
-        # column extent — the arm/gesture/path columns are outside the staff.
-        BAR_OVERHANG = 4
-        bar_left = s_col_positions["left_support"][0] - BAR_OVERHANG
-        bar_right = s_col_positions["right_support"][1] + BAR_OVERHANG
+        # A measure line is solid across the staff, stopping exactly on the
+        # outer staff lines, and continues outward on both sides as a dashed
+        # time reference. On the reference plates that dashed part ties the
+        # same count across every staff on the page and out to the count
+        # numbers in the margin, so here it runs to the notation column extent
+        # -- everything drawn at that moment.
+        bar_left = s_col_positions["left_support"][0]
+        bar_right = s_col_positions["right_support"][1]
+        ext_left = s_col_positions[STAFF_COLUMNS[0]][0]
+        ext_right = s_col_positions[STAFF_COLUMNS[-1]][1]
+
+        def _measure_rule(y: float) -> list[str]:
+            parts = [
+                f'<line x1="{bar_left:.1f}" y1="{y:.1f}" '
+                f'x2="{bar_right:.1f}" y2="{y:.1f}" '
+                f'stroke="#111827" stroke-width="1.2"/>'
+            ]
+            for x1, x2 in ((ext_left, bar_left), (bar_right, ext_right)):
+                if x2 - x1 > 1:
+                    parts.append(
+                        f'<line x1="{x1:.1f}" y1="{y:.1f}" '
+                        f'x2="{x2:.1f}" y2="{y:.1f}" '
+                        f'stroke="#111827" stroke-width="1" '
+                        f'stroke-dasharray="5,4"/>'
+                    )
+            return parts
 
         # Measure bar lines
         for m in range(start_m, end_m + 1):
             m_bottom, m_top = s_measure_positions[m]
-            elements.append(
-                f'<line x1="{bar_left:.1f}" y1="{m_bottom:.1f}" '
-                f'x2="{bar_right:.1f}" y2="{m_bottom:.1f}" '
-                f'stroke="#111827" stroke-width="1.2"/>'
-            )
+            elements.extend(_measure_rule(m_bottom))
             if m == end_m:
-                elements.append(
-                    f'<line x1="{bar_left:.1f}" y1="{m_top:.1f}" '
-                    f'x2="{bar_right:.1f}" y2="{m_top:.1f}" '
-                    f'stroke="#111827" stroke-width="1.2"/>'
-                )
+                elements.extend(_measure_rule(m_top))
 
             # Beat tick marks
             measure_h = m_bottom - m_top
@@ -2305,20 +3480,29 @@ def render_laban_svg(ir: dict) -> str:
         sp_top = sys.get("starting_pos_top")
         sp_bottom = sys.get("starting_pos_bottom")
         if sp_top is not None and sp_bottom is not None:
-            # Dashed boundary for starting position box
+            # The starting position is the staff itself continuing below the
+            # opening double bar, closed by a rule at the bottom. All solid:
+            # the OPENING plate of the reference score shows the three staff
+            # lines running straight down past the double bar with a solid
+            # closing rule beneath, and nothing dashed anywhere in the area.
+            # A dashed box reads as a UI affordance, not as notation.
+            elements.append('<g class="laban-starting-position">')
+            for line_x, stroke in (
+                (s_col_positions["left_support"][0], "2"),
+                (s_staff_center_x, "2.5"),
+                (s_col_positions["right_support"][1], "2"),
+            ):
+                elements.append(
+                    f'<line x1="{line_x:.1f}" y1="{sp_top:.1f}" '
+                    f'x2="{line_x:.1f}" y2="{sp_bottom:.1f}" '
+                    f'stroke="#111827" stroke-width="{stroke}"/>'
+                )
             elements.append(
-                f'<rect x="{s_staff_left:.1f}" y="{sp_top:.1f}" '
-                f'width="{s_staff_right - s_staff_left:.1f}" '
-                f'height="{sp_bottom - sp_top:.1f}" '
-                f'fill="none" stroke="#111827" stroke-width="1" '
-                f'stroke-dasharray="4,3"/>'
+                f'<line x1="{bar_left:.1f}" y1="{sp_bottom:.1f}" '
+                f'x2="{bar_right:.1f}" y2="{sp_bottom:.1f}" '
+                f'stroke="#111827" stroke-width="1.2"/>'
             )
-            # Center line extends into starting position
-            elements.append(
-                f'<line x1="{s_staff_center_x:.1f}" y1="{sp_top:.1f}" '
-                f'x2="{s_staff_center_x:.1f}" y2="{sp_bottom:.1f}" '
-                f'stroke="#111827" stroke-width="1.5" stroke-dasharray="4,3"/>'
-            )
+            elements.append('</g>')
 
         # Measure numbers
         for m in range(start_m, end_m + 1):

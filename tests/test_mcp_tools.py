@@ -1,5 +1,6 @@
 """Tests for the 10 direct-manipulation MCP tools."""
 
+import re
 import unittest
 
 from dancenotation_mcp.mcp_server.server import handle
@@ -709,7 +710,7 @@ class TestAddRetention(unittest.TestCase):
         # catalog, so every add_retention symbol used to fail validation
         # with "Unknown symbol id". The real catalog family is
         # "retention.{type}.{body_category}".
-        self.assertEqual(sym["symbol_id"], "retention.hold.arm")
+        self.assertEqual(sym["symbol_id"], "retention.hold")
         self.assertEqual(sym["retention"], "hold")
         self.assertEqual(sym["body_part"], "left_arm")
         self.assertEqual(sym["timing"]["duration_beats"], 2.0)
@@ -731,7 +732,7 @@ class TestAddRetention(unittest.TestCase):
             "measure": 2, "beat": 1.0,
         }))
         sym = result["symbols"][0]
-        self.assertEqual(sym["symbol_id"], "retention.release.leg")
+        self.assertEqual(sym["symbol_id"], "retention.release")
         self.assertEqual(sym["retention"], "release")
 
     def test_cancel(self):
@@ -741,6 +742,33 @@ class TestAddRetention(unittest.TestCase):
             "measure": 3, "beat": 1.0,
         }))
         self.assertEqual(result["symbols"][0]["retention"], "cancel")
+
+    def test_every_accepted_type_produces_a_score_that_validates(self):
+        """Whatever the tool accepts, the validator must accept.
+
+        The retention type is whitelisted in three places — the tool, the MCP
+        schema enum, and the validator — and adding space_hold and spot_hold
+        to the first two left the third behind, so the tool cheerfully built
+        a score that failed validation with INVALID_RETENTION. Enumerating the
+        tool's own list here means the next type added cannot repeat it.
+        """
+        from dancenotation_mcp.validation.validator import (
+            RETENTION_TYPES, validate_ir)
+        self.assertGreaterEqual(len(RETENTION_TYPES), 3, "type list looks wrong")
+
+        for retention_type in RETENTION_TYPES:
+            with self.subTest(type=retention_type):
+                result = _ok(_call("add_retention", {
+                    "ir": _make_ir(), "type": retention_type,
+                    "body_part": "left_arm", "measure": 1, "beat": 2.0,
+                }))
+                errors = [i for i in validate_ir(result)["issues"]
+                          if i["severity"] == "error"]
+                self.assertEqual(
+                    errors, [],
+                    f"add_retention accepts '{retention_type}' but the score "
+                    f"it builds does not validate: "
+                    + "; ".join(i["message"] for i in errors))
 
     def test_invalid_type(self):
         ir = _make_ir()

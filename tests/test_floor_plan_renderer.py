@@ -1,4 +1,5 @@
 import json
+import re
 import unittest
 from pathlib import Path
 
@@ -40,8 +41,10 @@ class MultiDancerFloorPlanTests(unittest.TestCase):
         self.assertIn("<line x1=", self.rendered)     # straight path
 
     def test_facing_arrows_rendered_for_each_position(self):
-        # 6 positions total, each with a facing -> 6 arrowhead polygons
-        self.assertEqual(self.rendered.count("<polygon"), 6)
+        # 6 positions, each with a facing -> 6 facing arrowheads. Counted by
+        # class now: travel paths grew arrowheads of their own, which are also
+        # polygons, so a bare "<polygon" count no longer means facing.
+        self.assertEqual(self.rendered.count('class="fp-facing"'), 6)
 
 
 class PinSexShapeTests(unittest.TestCase):
@@ -189,3 +192,74 @@ class WingColumnAndCaptionTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class PrintSurvivalTests(unittest.TestCase):
+    """The floor plan is a deliverable, not a preview.
+
+    generate_score writes it to SVG *and* PDF, so anything it says only in
+    colour is lost the moment the score is printed. Soirée musicale p58 tells
+    its two performers apart by sign — one a filled dot, the other a small
+    open circle on a stem — and puts an arrowhead on every travel path,
+    including the curved one.
+    """
+
+    def _plan(self, performers=("C", "MC")):
+        entries = []
+        for pid in performers:
+            for measure, zone in ((1, "upstage_left"), (2, "downstage_right")):
+                entries.append({"performer_id": pid, "measure": measure,
+                                "beat": 1, "position": {"zone": zone}})
+        return {"schema_version": "1.0", "metadata": {"title": "print probe"},
+                "symbols": [], "extensions": {"floor_plan": entries}}
+
+    @staticmethod
+    def _colourless(markup):
+        """The same markup as it reaches a monochrome printer."""
+        return re.sub(r'(?:fill|stroke)="#[0-9a-fA-F]{3,6}"', "", markup)
+
+    def _marks_for(self, svg, performer_index):
+        group = re.search(
+            r'<g[^>]*data-performer-index="' + str(performer_index)
+            + r'"[^>]*>(.*?)</g>', svg, re.S)
+        self.assertIsNotNone(
+            group, f"performer {performer_index} is not identifiable in the SVG")
+        return group.group(1)
+
+    def test_two_performers_are_told_apart_without_colour(self):
+        svg = render_floor_plan_svg(self._plan())
+        first = self._colourless(self._marks_for(svg, 0))
+        second = self._colourless(self._marks_for(svg, 1))
+        self.assertNotEqual(
+            first, second,
+            "the two performers are identical once colour is removed, so the "
+            "printed plan cannot tell them apart")
+
+    def test_a_travel_path_shows_which_way_it_goes(self):
+        """Facing arrows already existed; the path between two positions had
+        no arrowhead, so the direction of travel was not written down."""
+        svg = render_floor_plan_svg(self._plan(performers=("C",)))
+        self.assertRegex(
+            svg, r'(?:marker-end="url\(#|<polygon[^>]*class="fp-arrow)',
+            "no arrowhead on the travel path")
+
+    def test_the_arrowhead_is_not_hidden_under_the_pin(self):
+        """It was drawn at the endpoint, where the pin is painted over it.
+
+        Present in the markup, invisible on the page, and the assertion above
+        passes either way — the arrowhead has to clear the pin's radius.
+        """
+        svg = render_floor_plan_svg(self._plan(performers=("C",)))
+        arrow = re.search(r'<polygon class="fp-arrow" points="([^"]+)"', svg)
+        self.assertIsNotNone(arrow, "no travel arrowhead drawn")
+        tip = tuple(float(v) for v in arrow.group(1).split()[0].split(","))
+
+        pins = [(float(m.group(1)), float(m.group(2))) for m in
+                re.finditer(r'<circle cx="([\d.]+)" cy="([\d.]+)" r="5"', svg)]
+        self.assertTrue(pins, "no pins drawn")
+        for px, py in pins:
+            distance = ((tip[0] - px) ** 2 + (tip[1] - py) ** 2) ** 0.5
+            self.assertGreater(
+                distance, 5.0,
+                f"the arrowhead tip is {distance:.1f} from a pin of radius 5, "
+                f"so the pin covers it")

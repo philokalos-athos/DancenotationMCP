@@ -7,6 +7,8 @@ Labanotation scores using any of the catalog symbols.
 from __future__ import annotations
 
 import copy
+
+from dancenotation_mcp.validation.validator import RETENTION_TYPES
 from typing import Any
 
 from dancenotation_mcp.ir.models import BODY_PARTS, PIN_SEXES, STAGE_ZONES, STAGE_FACINGS
@@ -442,30 +444,26 @@ def create_empty_score(args: dict) -> dict:
 
 # ── Tool 9: add_retention ────────────────────────────────────────────
 
-# Maps an IR body_part to the catalog's coarser retention.{type}.{category}
-# suffix (retention.json only has arm/leg/torso/head/hand/shoulder/full_body
-# variants, not one per fine-grained joint). Anything not listed here falls
-# back to "full_body" as the most general, always-valid retention.
-_RETENTION_BODY_CATEGORY = {
-    "left_arm": "arm", "right_arm": "arm",
-    "left_upper_arm": "arm", "right_upper_arm": "arm",
-    "left_lower_arm": "arm", "right_lower_arm": "arm",
-    "left_leg": "leg", "right_leg": "leg",
-    "left_upper_leg": "leg", "right_upper_leg": "leg",
-    "left_lower_leg": "leg", "right_lower_leg": "leg",
-    "torso": "torso", "upper_spine": "torso", "lower_spine": "torso", "pelvis": "torso",
-    "head": "head", "neck": "head",
-    "left_hand": "hand", "right_hand": "hand",
-    "left_shoulder": "shoulder", "right_shoulder": "shoulder",
-    "whole_body": "full_body",
-}
-
 
 def add_retention(args: dict) -> dict:
-    """Add a retention (hold/release/cancel) symbol.
+    """Add a retention symbol.
 
-    Required args: ir, type ('hold', 'release', or 'cancel'), body_part, measure, beat
+    Required args: ir, type, body_part, measure, beat
     Optional args: duration_beats (default 1.0)
+
+    The types are Knust's, vol 2 Fig. 78-79:
+
+      hold        the round retention sign (78a) -- retention in the body, or
+                  retaining the weight when it sits in a support column
+      space_hold  the diamond (78b) -- retention in space, maintaining the
+                  same spatial direction while the body turns under it
+      spot_hold   the diamond with a dot (78c) -- retention at a spot
+      cancel      the decrease sign (79a), Kinetography's general
+                  cancellation sign
+      release     a synonym of cancel; it engraves the same sign, because
+                  "Release X Position" and "Cancel X Retention" name one
+                  operation and the notation has one sign for it. Kept
+                  because it is already in this tool's public enum.
     """
     ir = copy.deepcopy(args["ir"])
     ret_type = args["type"]
@@ -474,7 +472,9 @@ def add_retention(args: dict) -> dict:
     beat = float(args["beat"])
     duration_beats = float(args.get("duration_beats", 1.0))
 
-    valid_types = ("hold", "release", "cancel")
+    # One list, in the validator, so the tool cannot accept what the
+    # validator will then reject.
+    valid_types = RETENTION_TYPES
     if ret_type not in valid_types:
         raise ValueError(
             f"Invalid retention type '{ret_type}'. Must be one of: {', '.join(valid_types)}"
@@ -491,8 +491,12 @@ def add_retention(args: dict) -> dict:
     # torso/head/hand/shoulder/full_body) — "timing.retention.{type}" doesn't
     # exist at all, which previously made every add_retention symbol fail
     # validation with "Unknown symbol id".
-    category = _RETENTION_BODY_CATEGORY.get(body_part, "full_body")
-    symbol_id = f"retention.{ret_type}.{category}"
+    # One id per sign. The body part is carried by the symbol's own
+    # body_part field, which is what places it -- BODY_TO_COLUMN reads that,
+    # never an id suffix. The family used to cross five types with seven body
+    # categories for 35 entries, duplicating the field in the id the way
+    # turn.right duplicated the direction field before that prune.
+    symbol_id = f"retention.{ret_type}"
 
     retention_symbol: dict[str, Any] = {
         "symbol_id": symbol_id,
