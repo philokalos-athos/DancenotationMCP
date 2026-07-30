@@ -229,6 +229,83 @@ class NothingCrossesTheCentreLineTests(unittest.TestCase):
                         f" by {overlap} units at the same beat")
 
 
+class LegGestureColumnTests(unittest.TestCase):
+    """A leg that is not carrying weight has its own column.
+
+    Knust vol 1 p31, defining the staff: "On both sides the columns are
+    numbered outwards from the middle line. The first columns, immediately
+    right and left of the middle line, are for the notation of the movements
+    of the body as a whole, i.e. progression of the body as a whole with steps
+    and jumps, and turns of the body as a whole. The second columns are called
+    the leg gesture columns. In these columns are written the movements of the
+    legs when they are not carrying the body weight."
+
+    BODY_TO_COLUMN sent every leg part to a support column whatever the
+    symbol, so a gesture and a support on the same leg shared one column and
+    could be drawn on top of each other.
+    """
+
+    def _columns(self, symbols):
+        layout = compute_laban_layout({
+            "schema_version": "1.0",
+            "metadata": {"title": "leg gesture probe"},
+            "symbols": symbols,
+        })
+        return {e["symbol"]["symbol_id"]: e["column"]
+                for e in layout["placed_symbols"]}
+
+    @staticmethod
+    def _sym(symbol_id, body_part, beat=1):
+        return {"symbol_id": symbol_id, "body_part": body_part,
+                "direction": "forward", "level": "middle",
+                "timing": {"measure": 1, "beat": beat, "duration_beats": 1},
+                "modifiers": {}}
+
+    def test_a_weight_bearing_leg_stays_in_the_support_column(self):
+        columns = self._columns([self._sym("support.step", "left_leg")])
+        self.assertEqual(columns["support.step"], "left_support")
+
+    def test_a_leg_gesture_goes_to_the_leg_gesture_column(self):
+        columns = self._columns([self._sym("gesture.leg", "right_leg")])
+        self.assertEqual(columns["gesture.leg"], "right_leg_gesture")
+
+    def test_a_support_and_a_gesture_on_one_leg_do_not_share_a_column(self):
+        """The collision this removes: measure 25 of the example score had two
+        symbols stacked in right_support because both went there."""
+        columns = self._columns([
+            self._sym("support.step", "left_leg"),
+            self._sym("gesture.leg", "left_leg"),
+        ])
+        self.assertNotEqual(columns["support.step"], columns["gesture.leg"])
+
+    def test_the_drawn_staff_encloses_support_and_leg_gesture(self):
+        """Knust p31: Laban's staff is a five-line staff with only the first,
+        third and fifth lines drawn, the second and fourth imaginary. The
+        drawn lines therefore sit outside the second column, enclosing
+        support and leg gesture on each side — four columns, which is what
+        Hutchinson Guest fig. 162a rules its staff box into."""
+        layout = compute_laban_layout({
+            "schema_version": "1.0", "metadata": {"title": "staff probe"},
+            "symbols": [self._sym("support.step", "left_leg")],
+        })
+        system = layout["systems"][0]
+        columns = system["col_positions"]
+        left, right = layout["staff_left"], layout["staff_right"]
+        # staff_left/right span every column; the drawn box is narrower.
+        inside = ("left_leg_gesture", "left_support",
+                  "right_support", "right_leg_gesture")
+        outside = ("left_body", "right_body", "left_arm", "right_arm")
+        box_left = min(columns[c][0] for c in inside)
+        box_right = max(columns[c][1] for c in inside)
+        for column in outside:
+            with self.subTest(column=column):
+                start, end = columns[column]
+                self.assertTrue(
+                    end <= box_left or start >= box_right,
+                    f"{column} at {start}..{end} is inside the drawn staff "
+                    f"box {box_left}..{box_right}")
+
+
 class WhatTheLayoutStacksTheValidatorReportsTest(unittest.TestCase):
     """If two symbols are drawn on the same pixels, something must say so.
 

@@ -35,14 +35,22 @@ COL_WIDTH = 20  # default fallback; per-column widths below override this
 # keep that contact and open the gap on the outer side instead.
 CENTER_GAP = 0
 
-# ICKL-standard column widths: support widest, body medium, arm/gesture/path narrow
+# Column widths: support widest, body medium, arm/gesture/path narrow.
+#
+# Knust vol 1 p31 numbers them outward from the middle line: 1st support
+# ("the body as a whole ... steps and jumps, and turns"), 2nd leg gesture
+# ("the movements of the legs when they are not carrying the body weight"),
+# 3rd upper body, 4th arms. The leg gesture columns were missing and every
+# leg part went to a support column whatever it was doing.
 COLUMN_WIDTHS = {
     "left_path":         14,
     "left_arm_gesture":  16,
     "left_arm":          18,
     "left_body":         18,
+    "left_leg_gesture":  22,
     "left_support":      26,
     "right_support":     26,
+    "right_leg_gesture": 22,
     "right_body":        18,
     "right_arm":         18,
     "right_arm_gesture": 16,
@@ -71,17 +79,21 @@ STAFF_COLUMNS = [
     "left_arm_gesture",
     "left_arm",
     "left_body",
+    "left_leg_gesture",
     "left_support",
     # ── center line ──
     "right_support",
+    "right_leg_gesture",
     "right_body",
     "right_arm",
     "right_arm_gesture",
     "right_path",
 ]
 
-LEFT_COLUMNS = {"left_path", "left_arm_gesture", "left_arm", "left_body", "left_support"}
-RIGHT_COLUMNS = {"right_support", "right_body", "right_arm", "right_arm_gesture", "right_path"}
+LEFT_COLUMNS = {"left_path", "left_arm_gesture", "left_arm", "left_body",
+                "left_leg_gesture", "left_support"}
+RIGHT_COLUMNS = {"right_support", "right_leg_gesture", "right_body",
+                 "right_arm", "right_arm_gesture", "right_path"}
 
 BODY_TO_COLUMN = {
     # Legs → support columns
@@ -144,6 +156,15 @@ BODY_TO_COLUMN = {
 # represents retention in the body." In the annotation lane, where all 21
 # entries used to go, those two readings are one mark at one x.
 PRIMARY_FAMILIES = {"support", "direction", "gesture", "body", "retention"}
+
+# Families that put a leg in a support column rather than a leg gesture one.
+#
+# "support" is the weight itself. "travel" and "jump" are progression of the
+# body as a whole, which Knust p31 names as the first column's business along
+# with steps and turns. "retention" belongs here because the round sign in a
+# support column is precisely the statement that the part keeps the weight
+# (Rule III, p67) -- sent to the gesture column it would say the opposite.
+_WEIGHT_BEARING = {"support", "travel", "jump", "retention"}
 
 # Symbol families placed in annotation areas beside the staff.
 ANNOTATION_FAMILIES = {"turn", "jump", "path", "quality", "timing",
@@ -294,7 +315,21 @@ def _resolve_column(symbol: dict, spec: dict) -> str:
         return "annotation"
 
     # Map body part to column
-    col = BODY_TO_COLUMN.get(body_part, "center")
+    col = BODY_TO_COLUMN.get(body_part, "left_body")
+
+    # A leg only belongs in a support column while it carries the weight.
+    # Knust vol 1 p31: the first columns are "for the notation of the
+    # movements of the body as a whole, i.e. progression of the body as a
+    # whole with steps and jumps, and turns of the body as a whole", and "the
+    # second columns are called the leg gesture columns. In these columns are
+    # written the movements of the legs when they are not carrying the body
+    # weight."
+    #
+    # Which of the two it is comes from the symbol, not the body part -- the
+    # same leg steps and gestures -- so BODY_TO_COLUMN alone could not decide
+    # it and sent everything to the support column.
+    if col in ("left_support", "right_support") and family not in _WEIGHT_BEARING:
+        return col.replace("_support", "_leg_gesture")
     return col
 
 

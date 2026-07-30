@@ -426,6 +426,52 @@ pre-signs were modelled — slide was grouped with heel and toe, and it is a
 different kind of statement: those say which part of the foot takes the
 weight, a slide says the weight stays on the foot while it travels.
 
+### The staff was missing its leg gesture columns
+
+Knust vol 1 p31 defines the staff outward from the middle line: "The first
+columns, immediately right and left of the middle line, are for the notation
+of the movements of the body as a whole, i.e. progression of the body as a
+whole with steps and jumps, and turns of the body as a whole. The second
+columns are called the leg gesture columns. In these columns are written the
+movements of the legs when they are not carrying the body weight." Third is
+upper body, fourth arms.
+
+Ours ran support, body, arm, arm gesture, path. No leg gesture column, and
+body sitting where the leg gesture belongs. Every leg part went to a support
+column whatever it was doing, so a step and a gesture on the same leg shared
+one column.
+
+Which of the two a leg symbol wants is decided by the symbol, not the body
+part — the same leg steps and gestures — so the body-part map could not
+express it. `_WEIGHT_BEARING` now names the families that keep a leg in the
+support column: support, travel and jump, which are Knust's "progression of
+the body as a whole", plus retention, because the round sign in a support
+column is exactly the statement that the part keeps the weight (Rule III,
+p67) and would say the opposite from a gesture column.
+
+The same page settles something about the drawn staff. "Laban took over the
+five-lined staff from music notation, but turned it 90 degrees ... From this
+staff only the first, third, and fifth lines are written. The second and
+fourth lines ... are imaginary." So the three drawn lines enclose the first
+and second columns on each side — support and leg gesture, four columns — and
+the upper body and arm columns lie outside. That is exactly how Hutchinson
+Guest fig. 162a rules its box: five verticals at 308, 369, 407, 448, 507,
+being the two outer lines, the centre, and the two imaginary ones drawn in.
+
+Which also lets the staff-proportion figure be checked box against box rather
+than column against column, now that both boxes hold four columns:
+
+| | box width | columns | beat height | column / beat |
+|---|---|---|---|---|
+| Hutchinson fig. 162a | 199 | 4 | 195 | 0.255 |
+| ours | 96 | 4 | 102 | 0.235 |
+
+Within 8%, measuring the same object on both sides for the first time.
+
+Page proportion improved as a side effect, the canvas going from 1 : 2.16 to
+1 : 1.93 against the plates' 1 : 1.37, because the staff widened while its
+height did not. Still open, and still the page composition question.
+
 ### Nothing sits on the centre line
 
 torso, pelvis, upper_spine, lower_spine and whole_body mapped to a "center"
