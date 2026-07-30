@@ -376,11 +376,34 @@ ending a retention is not a sign at all: vol 1 p67, "A movement symbol in one
 support column cancels previous retention signs in both support columns."
 Writing the next movement is the cancellation.
 
-Still open: 78d, retention of a relationship, and the broken retention signs
-79c/79c′. Also unimplemented is writing a retention sign *inside* a direction
-symbol, which vol 1 p45 says makes the movement undeviating — a space hold
-inside a direction sign means an undeviating curve or step, a spot hold means
-an undeviating movement towards an aim.
+A retention sign written *inside* a direction symbol is a separate
+construction, and it is implemented. Vol 1 p45: "For undeviating movements
+retention signs are written within a direction sign ... A retention in space
+within a direction sign (122a) indicates an undeviating curve or an
+undeviating step. A 'retention at a spot' sign written within a direction
+sign (122b) indicates an undeviating movement towards an aim."
+
+One detail there had to be settled by looking at the plate. Fig. 122b is
+drawn **filled**, where the standalone spot hold (78c) is an outlined diamond
+with a separate dot in it. That matters beyond fidelity: the mark sits at the
+symbol's centre and so does the middle-level dot, so an outlined diamond with
+a dot inside and an outlined diamond over the level dot render as the same
+picture. The first implementation did exactly that, and a string comparison
+of the two passed — the markup differed by one `<circle>` — while the two
+pictures were identical. Filling 122b restores the distinction the plate
+prints and lets the level dot show through 122a. Whether the plate means
+"solid" or "a dot grown large enough to fill" cannot be told from the scan.
+
+Still open:
+
+- 78d, retention of a relationship, and the broken retention signs 79c/79c′.
+- **Slide is modelled wrong.** p45, immediately after the undeviating
+  passage: "The round retention sign is only written within a support sign in
+  order to indicate a slide." We give the nine `support.slide_support.*`
+  entries `behavior.pre_sign: foot.action.slide`, which puts a mark beside the
+  support sign instead of the round retention sign inside it. Introduced when
+  the foot pre-signs were modelled; slide was grouped with heel and toe, and
+  it does not belong there.
 
 ### Staff proportions
 

@@ -857,6 +857,7 @@ def _render_staff_symbol(entry: dict, ctx: _RenderContext,
                 f'<circle cx="{(x_left + x_right) / 2:.1f}" '
                 f'cy="{(y_top + y_bottom) / 2:.1f}" r="2.5" fill="#111827"/>'
             )
+    svg += _render_undeviating_mark(symbol, x_left, x_right, y_top, y_bottom)
     svg = _render_modifier_overlays(svg, modifiers, entry.get("caption_x"),
                                     x_left, x_right, y_top, y_bottom)
     svg += _render_body_action_mark(symbol_id, x_left, x_right, y_top, y_bottom)
@@ -1268,6 +1269,52 @@ def _diamond_path(cx: float, cy: float, r: float) -> str:
     return (f'<path d="M {cx:.1f} {cy - r:.1f} L {cx + r:.1f} {cy:.1f} '
             f'L {cx:.1f} {cy + r:.1f} L {cx - r:.1f} {cy:.1f} Z" '
             f'fill="none" stroke="#111827" stroke-width="1.2"/>')
+
+
+def _render_undeviating_mark(symbol: dict, x_left: float, x_right: float,
+                             y_top: float, y_bottom: float) -> str:
+    """A retention sign written inside a direction symbol.
+
+    Knust vol 1 p45: "For undeviating movements retention signs are written
+    within a direction sign ... A retention in space within a direction sign
+    (122a) indicates an undeviating curve or an undeviating step. A 'retention
+    at a spot' sign written within a direction sign (122b) indicates an
+    undeviating movement towards an aim." Again at p88: "a direction sign
+    which contains a space retention sign".
+
+    Only the two spatial holds carry the undeviating reading. The round sign
+    also goes inside a symbol, but it means something else and only in one
+    place: p45 again, "The round retention sign is only written within a
+    support sign in order to indicate a slide." That is not implemented; see
+    the audit doc.
+
+    Fig. 122b is drawn filled, where the standalone spot hold (78c) is an
+    outlined diamond with a separate dot inside it. Filled is what the plate
+    shows at this size, and it is also what keeps the two apart here: the
+    middle-level centre dot sits at the same point as the sign, so an
+    outlined diamond with a dot in it and a plain space hold over the level
+    dot engrave as the same mark. Filling 122b lets the level dot show
+    through 122a and be covered by 122b, which is the distinction Knust
+    prints. Whether the plate means "solid" or "a dot grown large enough to
+    fill" cannot be told from the scan, and is recorded as open.
+
+    The diamond comes from the same helper the standalone signs use, so the
+    inside and outside forms cannot drift apart.
+    """
+    retention = symbol.get("retention")
+    if retention not in ("space_hold", "spot_hold"):
+        return ""
+
+    cx = (x_left + x_right) / 2
+    cy = (y_top + y_bottom) / 2
+    # Sized off the column, not the symbol's height: the symbol grows with
+    # duration and the sign inside it must not.
+    r = min((x_right - x_left) * 0.28, (y_bottom - y_top) * 0.35)
+    svg = _diamond_path(cx, cy, r)
+    if retention == "spot_hold":
+        svg = svg.replace('fill="none"', 'fill="#111827"')
+    return (f'<g class="laban-undeviating" data-retention="{escape(retention)}">'
+            f'{svg}</g>')
 
 
 def _render_retention_sign(entry: dict) -> str:

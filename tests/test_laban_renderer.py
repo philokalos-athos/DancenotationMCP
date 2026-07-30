@@ -2457,6 +2457,91 @@ class RetentionColumnTest(unittest.TestCase):
             f"{columns}")
 
 
+class RetentionInsideADirectionSymbolTest(unittest.TestCase):
+    """A retention sign written inside a direction symbol makes it undeviating.
+
+    Knust vol 1 p45: "For undeviating movements retention signs are written
+    within a direction sign ... A retention in space within a direction sign
+    (122a) indicates an undeviating curve or an undeviating step. A 'retention
+    at a spot' sign written within a direction sign (122b) indicates an
+    undeviating movement towards an aim." Vol 1 p88 again, on the same
+    construction: "a direction sign which contains a space retention sign".
+
+    The IR already carries the field. The renderer dropped it: a step with
+    retention "space_hold" and one with none came out byte-identical.
+    """
+
+    def _step(self, retention=None):
+        symbol = {"symbol_id": "support.step", "body_part": "left_leg",
+                  "direction": "forward", "level": "middle",
+                  "timing": {"measure": 1, "beat": 1, "duration_beats": 2},
+                  "modifiers": {}}
+        if retention is not None:
+            symbol["retention"] = retention
+        svg = render_laban_svg({"schema_version": "1.0",
+                                "metadata": {"title": "undeviating probe"},
+                                "symbols": [symbol]})
+        group = re.search(
+            r'<g class="laban-symbol"[^>]*data-symbol-id="support\.step"'
+            r'[^>]*>(.*?)</g>', svg, re.S)
+        self.assertIsNotNone(group, "the step drew nothing")
+        return group.group(1)
+
+    def test_a_space_hold_inside_a_step_is_drawn(self):
+        plain = self._step()
+        marked = self._step("space_hold")
+        self.assertNotEqual(
+            plain, marked,
+            "a step marked undeviating engraves identically to a plain step")
+
+    def test_the_two_holds_are_told_apart(self):
+        """122a means an undeviating curve, 122b an undeviating movement
+        towards an aim. Different instructions, different marks."""
+        self.assertNotEqual(self._step("space_hold"), self._step("spot_hold"))
+
+    def test_the_two_holds_are_told_apart_to_the_eye(self):
+        """The string comparison above passed while the two looked identical.
+
+        The mark sits at the symbol's centre and so does the middle-level
+        dot, so an outlined diamond with a dot drawn inside it and an
+        outlined diamond sitting over the level dot come out as the same
+        picture. The markup differed — one had an extra <circle> — and the
+        assertion was satisfied by that difference while the rendering was
+        ambiguous. Fig. 122b is filled, which is the distinction the plate
+        actually prints.
+        """
+        space = self._step("space_hold")
+        spot = self._step("spot_hold")
+        space_diamond = re.findall(r'<path d="M [^"]+" fill="([^"]*)"', space)
+        spot_diamond = re.findall(r'<path d="M [^"]+" fill="([^"]*)"', spot)
+        self.assertIn("none", space_diamond,
+                      "the space hold's diamond is not open")
+        self.assertNotIn(
+            "none", spot_diamond[1:],
+            "the spot hold's diamond is open, so over the middle-level dot it "
+            "is indistinguishable from a space hold")
+
+    def test_the_mark_sits_inside_the_direction_symbol(self):
+        """Inside, not beside — that is the whole construction."""
+        marked = self._step("space_hold")
+        nums = r"-?\d*\.?\d+"
+        outline = re.search(r'<path d="([^"]+)"', marked)
+        self.assertIsNotNone(outline, "no direction outline drawn")
+        body = [float(n) for n in re.findall(nums, outline.group(1))]
+        xs, ys = body[0::2], body[1::2]
+
+        diamonds = re.findall(r'<path d="([^"]+)"', marked)[1:]
+        self.assertTrue(diamonds, "the retention sign drew no path")
+        for d in diamonds:
+            dn = [float(n) for n in re.findall(nums, d)]
+            for x in dn[0::2]:
+                self.assertGreaterEqual(x, min(xs))
+                self.assertLessEqual(x, max(xs))
+            for y in dn[1::2]:
+                self.assertGreaterEqual(y, min(ys))
+                self.assertLessEqual(y, max(ys))
+
+
 class FlexionExtensionRoutingTest(unittest.TestCase):
     """Flexion and extension marks are annotation signs, not direction symbols.
 
